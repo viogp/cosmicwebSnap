@@ -1,14 +1,17 @@
 
 ## Models ##
 
-* Understand the differences between gp15newmg and gp17
+* What plots can help understanding the differences between gp15newmg and gp17? and gp17.spin/gp17?
 
-* Understand the differences between gp17.spin and gp17
+* Finish the plots for gp17.spin
+
+* Do I need new runs for snapshot 39?
 
 * What if I use a model that reproduces the passive fraction at z=0 by changing the Font model.
 
 ## Cosmic Web ##
-* Complete the information on how to copy to taurus and where to run things (make a test!)
+
+* Make a test with the file I copied to taurus.
 
 
 ## Analysis ##

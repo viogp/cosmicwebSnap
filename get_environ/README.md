@@ -1,11 +1,25 @@
 # README #
 
-**xyz2ascii.py** Output the x,y,z coordinates of galaxies into ascii file. The resulting tables should be copied to taurus. How??
+At the moment, we are able to get the environment for objects in snapshot 39 (MS-W7 simulation), given an ascii table with x,y,z coordinates.
+
+STEPS:
+
+1. **xyz2ascii.py** Output the x,y,z coordinates of galaxies into ascii file. 
+
+2. Copy to taurus the resulting ascii table (maybe use rsync?):
+   scp [name] vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/gal_files/
+
+3. Run Wiguang's code with the script:
+   vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/get_env.py
 
 ## Weiguang's code  ##
 
-**getE.py** reads a lits of x,y,z and gets the environment. This program can be found ??
+**getE.py** reads a lits of x,y,z and gets the environment. This is a copy of the module placed at taurus:
 
+/data1/users/weiguang/Violeta/get_environments/getE.py
+
+This code needs numpy, to install it locally:
+'''pip install --user numpy'''
 
 ## Particles ##
 

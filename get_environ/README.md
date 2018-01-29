@@ -4,7 +4,7 @@ At the moment, we are able to get the environment for objects in snapshot 39 (MS
 
 STEPS:
 
-1. **xyz2ascii.py** Output the x,y,z coordinates of galaxies into ascii file. 
+1. **xyz2ascii.py** Output the x,y,z coordinates of galaxies into an ascii file named: [cut]\_sn[#]\_[all/centrals/satellites].dat 
 
 2. Copy to taurus the resulting ascii table (maybe use rsync?):
    scp [name] vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/gal_files/

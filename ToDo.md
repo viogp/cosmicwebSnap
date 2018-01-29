@@ -14,7 +14,18 @@
 * Make a test with the file I copied to taurus.
 
 
-## Analysis ##
+## ELGs ##
+
+* Can I use VVDS-Wide? it seemed like it had changed a lot! Is this due to using different fibers?
+
+* Update the eBOSS definition? -> need to check e-mails and papers
+
+* Make a LF plot at sn=29 for DEEP2, VVDS-WIDE, eBOSS, DESI (add Hizels data?). 
+
+* Make stellar mass and SFR function plots with the number density of the ELGs on top and select the comparison samples.
+
+
+## Comparing populations ##
 
 * Find out about possibilities to compare the classifications. Maybe focus only on those galaxies that do not overlap? Moustaka's bayesian something for weighting probabilites?
 

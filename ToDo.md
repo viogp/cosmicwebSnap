@@ -5,8 +5,6 @@
 
 * Finish the plots for gp17.spin
 
-* Do I need new runs for snapshot 39?
-
 * What if I use a model that reproduces the passive fraction at z=0 by changing the Font model.
 
 ## Cosmic Web ##

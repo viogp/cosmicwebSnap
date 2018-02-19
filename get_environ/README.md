@@ -29,3 +29,9 @@ The snapshot with particle information was copied from cosma (/gpfs/data/Millgas
 
 > rsync -avzhe ssh snapdir_039/ vgonzalez@taurus.ft.uam.es:/data1/users/weiguang/Violeta/
 
+> rsync -avzhe ssh snapdir_039/ vgonzalez@taurus.ft.uam.es:/data1/users/weiguang/Violeta/
+
+From /cosma5/data/GRID/jch/millgas
+
+    rsync -avzhe ssh snapdir_041/ vgonzalez@taurus.ft.uam.es:/data1/users/weiguang/Violeta/snapdir_041/
+

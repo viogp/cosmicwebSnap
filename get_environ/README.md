@@ -21,6 +21,12 @@ STEPS:
 This code needs numpy, to install it locally:
 '''pip install --user numpy'''
 
+This code runs over the Vweb data stored in the files:
+
+/data1/users/weiguang/Violeta/VPweb_data/VP_039_DM_MHD.000256.Vweb
+
+/data1/users/weiguang/Violeta/VPweb_data/VP_041_DM_MHD_512.000512.Vweb
+
 ## Particles ##
 
 **particles2ascii.py** Example program to read the hdf5 files and produce ascii files.

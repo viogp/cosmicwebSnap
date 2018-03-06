@@ -16,8 +16,8 @@ plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 3 #64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.sph'
-models = ['gp17','gp17.spin'] ; inleg = models
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.acce'
+models = ['gp17','gp17.spin','gp17.spin.acce0.1'] ; inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.'
 #models = ['gp17','gp17.spin']

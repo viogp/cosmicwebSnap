@@ -11,10 +11,33 @@ import mpl_style
 plt.style.use(mpl_style.style1)
 
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 3 #64
+nvol = 64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.raseed.'
-models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.005','gp17.spin.ramt0.005.seed1'] ; inleg = models
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.choosing'
+models = ['gp17','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075','gp17.spin.ramt0.01.stabledisk0.75.ac085'] #'gp17.spin.ramt0.01.stabledisk0.75.e01','gp17.spin.ramt0.01.stabledisk0.75.e01.ac087']
+inleg = models  
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.stb.gbh.'  
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075'] ; inleg = models 
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.stb.e.ac.'
+#models = ['gp17.spin.ramt0.01','gp17.spin.ramt0.01.ac07','gp17.spin.ramt0.01.ac08','gp17.spin.ramt0.01.ac085','gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] ; inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.e.ac'
+#models = ['gp17.spin.ramt0.01','gp17.spin.ramt0.01.stabledisk0.65','gp17.spin.ramt0.01.e004','gp17.spin.ramt0.01.ac0.2','gp17.spin.ramt0.01.stabledisk0.75.e01.ac085','gp17.spin.ramt0.01.e01.ac06','gp17.spin.ramt0.01.e01.fburst01'] ; inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt01.'
+#models = ['gp17.spin.ramt0.01.fgasburst0.4','gp17.spin.ramt0.01.btburst4','gp17.spin.ramt0.01.stabledisk0.75','gp17.spin.ramt0.01.ah3.4e01','gp17.spin.ramt0.01.nu074'] ; inleg = models
+#gp17.spin.ramt0.01.griffin
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt01.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.stabledisk0.85','gp17.spin.ramt0.01.fgasburst0.2','gp17.spin.ramt0.01.fellip0.2'] ; inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt01.'
+#models = ['gp17','gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.seed1'] ; inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.raseed.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.005','gp17.spin.ramt0.005.seed1'] ; inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.aram.'
 #models = ['gp17.spin','gp17.spin.tidal','gp17.spin.aram0','gp17.spin.aram0.5','gp17.spin.aram1','gp17.spin.aram1.5'] ; inleg = models

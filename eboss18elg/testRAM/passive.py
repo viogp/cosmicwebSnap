@@ -14,13 +14,25 @@ import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 3 #64
+nvol = 64
+
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.choosing'
+models = ['gp17','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075','gp17.spin.ramt0.01.stabledisk0.75.ac085']
+#'gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.sd085.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.stabledisk0.85','gp17.spin.ramt0.01.fgasburst0.2','gp17.spin.ramt0.01.fellip0.2'] ; inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt01.'
+#models = ['gp17','gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.seed1'] ; inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt.'
-#models = ['gp17.spin','gp17.spin.ramt0','gp17.spin.ramt0.5','gp17.spin.ramt0.01','gp17.spin.ramt1.0'] ; inleg = models
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.005','gp17.spin.ramt0.001','gp17.spin.ramt0.005.seed1'] ; inleg = models
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.raseed.'
-models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.005','gp17.spin.ramt0.001','gp17.spin.ramt0.005.seed1'] ; inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.raseed.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.005','gp17.spin.ramt0.001','gp17.spin.ramt0.005.seed1'] ; inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.aram.'
 #models = ['gp17.spin','gp17.spin.tidal','gp17.spin.aram0','gp17.spin.aram0.5','gp17.spin.aram1','gp17.spin.aram1.5'] ; inleg = models
@@ -44,6 +56,9 @@ nsat  = np.zeros(shape=(len(models),len(mbins)))
 nsp1 = np.zeros(shape=(len(models),len(mbins)))
 nsp2 = np.zeros(shape=(len(models),len(mbins)))
 
+ndis  = np.zeros(shape=(len(models),len(mbins)))
+nsph  = np.zeros(shape=(len(models),len(mbins)))
+
 ###########################################
 # Define a class that forces representation of float to look a certain way
 # This remove trailing zero so '1.0' becomes '1'
@@ -61,6 +76,7 @@ for index,model in enumerate(models):
     volume = 0. ; first = True
     for ivol in range(nvol):
         gfile = path+model+'/iz61/ivol'+str(ivol)+'/galaxies.hdf5'
+        print gfile
         if(os.path.isfile(gfile)):
             # Read the relevant information from galaxies.hdf5
             f = h5py.File(gfile,'r') #; print gfile
@@ -89,6 +105,16 @@ for index,model in enumerate(models):
             sfr1 = sdisk + sbulge            
 
             sat = group['type'].value
+            f.close()
+
+            efile = path+model+'/iz61/ivol'+str(ivol)+'/elgs.hdf5'
+            if(os.path.isfile(efile)):
+                ff = h5py.File(efile,'r') 
+                bot= ff['Output001/BoT'].value
+                ff.close()
+            else:
+                print 'STOP: No ',efile ; sys.exit()
+
 
             # All
             ind = np.where((mass1>0.) & (sfr1>0.))
@@ -132,7 +158,23 @@ for index,model in enumerate(models):
                 np.histogram(mass,bins=np.append(mbins,mmax))
             nsp2[index,:] = nsp2[index,:] +H
 
-            f.close()
+            # Disks and bulges
+            ind = np.where((mass1>0.) & (sfr1>0.))
+            ssfr = np.zeros(shape=(len(sfr1)))
+            ssfr[ind] = sfr1[ind]/mass1[ind]
+
+            ind = np.where((mass1>0.) & (ssfr<0.3*slim) & (bot<0.5))
+            mass = np.log10(mass1[ind])
+            H, bins_edges =\
+                np.histogram(mass,bins=np.append(mbins,mmax))
+            ndis[index,:] = ndis[index,:] +H
+
+            ind = np.where((mass1>0.) & (ssfr<0.3*slim) & (bot>=0.5))
+            mass = np.log10(mass1[ind])
+            H, bins_edges =\
+                np.histogram(mass,bins=np.append(mbins,mmax))
+            nsph[index,:] = nsph[index,:] +H
+
         else:
             print 'NOT found:',gfile
             
@@ -145,12 +187,18 @@ for index,model in enumerate(models):
 
                 nsp1[index,i] = nsp1[index,i]/ntot[index,i]
                 nsp2[index,i] = nsp2[index,i]/ntot[index,i]
+
+                ndis[index,i] = ndis[index,i]/ntot[index,i]
+                nsph[index,i] = nsph[index,i]/ntot[index,i]
             else:
                 npas1[index,i] = -999.
                 npas2[index,i] = -999.
 
                 nsp1[index,i] = -999.
                 nsp2[index,i] = -999.
+
+                ndis[index,i] = -999.
+                nsph[index,i] = -999.
 
 
 # Figure http://matplotlib.org/users/gridspec.html
@@ -186,22 +234,30 @@ ax.errorbar(xo,p, yerr=erro, color=col, ecolor=col,\
 for ii in range(len(models)):
     py = npas1[ii,:] ; ind = np.where(py>0.)
     x = mhist[ind] ; y = py[ind]
-    ax.plot(x[ind],y[ind],color=colors[ii],label=inleg[ii])
+    ax.plot(x,y,color=colors[ii],label=inleg[ii])
 
     #py = npas2[ii,:] ; ind = np.where(py>0.)
     #y = py[ind]
-    #ax.plot(x[ind],y[ind],color=colors[ii],\
+    #ax.plot(x,y,color=colors[ii],\
     #            linestyle=':')
 
     py = nsp1[ii,:] ; ind = np.where(py>0.)
     x = mhist[ind] ; y = py[ind]
-    print ii,np.shape(x),np.shape(y)
-    ax.plot(x[ind],y[ind],color=colors[ii],linestyle='--')
+    ax.plot(x,y,color=colors[ii],linestyle='--')
 
     #py = npas2[ii,:] ; ind = np.where(py>0.)
     #y = py[ind]
-    #ax.plot(x[ind],y[ind],color=colors[ii],\
+    #ax.plot(x,y,color=colors[ii],\
     #            linestyle='.-')
+
+    #py = ndis[ii,:] ; ind = np.where(py>0.)
+    #x = mhist[ind] ; y = py[ind]
+    #ax.plot(x,y,color=colors[ii],linestyle='-.')
+
+    #py = nsph[ii,:] ; ind = np.where(py>0.)
+    #x = mhist[ind] ; y = py[ind]
+    #ax.plot(x,y,color=colors[ii],linestyle=':')
+
 
 ## Legend
 leg = ax.legend(loc=2,fontsize='small')

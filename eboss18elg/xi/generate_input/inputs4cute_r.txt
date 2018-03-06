@@ -1,0 +1,10 @@
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz42/OII3727_DEEP2_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz42/OII3727_VVDSWIDE_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz42/OII3727_VVDSDEEP_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz42/OII3727_eBOSS_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz42/OII3727_DESI_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz40/OII3727_DEEP2_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz40/OII3727_VVDSWIDE_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz40/OII3727_VVDSDEEP_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz40/OII3727_eBOSS_4cute.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp17.spin.ramt0.01/iz40/OII3727_DESI_4cute.dat

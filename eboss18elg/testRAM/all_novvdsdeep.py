@@ -22,7 +22,7 @@ inleg = ['All','DEEP2 cuts','VVDS-Wide cuts','eBOSS cuts','DESI cuts']
 ############
 
 #snap_list = [44, 42, 40, 37, 34] #MillGas
-snap_list = [42, 40]
+snap_list = [40]
 nvol = 3 #64
 
 #path = '/gpfs/data/violeta/Galform_Out/v2.6.0/aquarius_trees/'
@@ -30,7 +30,11 @@ nvol = 3 #64
 
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/'
 #model = 'MillGas/gp17/'  #model = 'MillGas/gp17.spin/' 
-model = 'MillGas/gp17.spin.ramt0.01/'
+#model = 'MillGas/gp17.spin.ramt0.01/'
+#model = 'MillGas/gp17.spin.ramt0.01.griffinBH/'
+#model = 'MillGas/gp17.spin.ramt0.01.griffinBH.stb075/'
+model = 'MillGas/gp17.spin.ramt0.01.stabledisk0.75.ac085/'
+
 
 line = 'OII3727' ; lline = '[OII]'
 outdir = '/gpfs/data/violeta/lines/desi_hod_o2/'

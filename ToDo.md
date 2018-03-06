@@ -1,11 +1,9 @@
 
 ## Models ##
 
-* What plots can help understanding the differences between gp15newmg and gp17? and gp17.spin/gp17?
+* griffinBH or griffinBH.stb075
 
-* Finish the plots for gp17.spin
-
-* What if I use a model that reproduces the passive fraction at z=0 by changing the Font model.
+* prepare DB: check bands and properties output, make a mini test, create ref file, write Peder for him to launch if he can.
 
 ## Cosmic Web ##
 
@@ -14,9 +12,7 @@
 
 ## ELGs ##
 
-* Can I use VVDS-Wide? it seemed like it had changed a lot! Is this due to using different fibers?
-
-* Update the eBOSS definition? -> need to check e-mails and papers
+* VVDS-Wide: I used r-band, instead of i. Shall I create an Erratum or simply comment? The only issue with the later: I don't think I'll be using VVDS.
 
 * Make a LF plot at sn=29 for DEEP2, VVDS-WIDE, eBOSS, DESI (add Hizels data?). 
 

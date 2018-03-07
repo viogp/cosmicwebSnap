@@ -1,7 +1,6 @@
-
 ## Models ##
 
-* griffinBH or griffinBH.stb075
+* Update galform
 
 * prepare DB: check bands and properties output, make a mini test, create ref file, write Peder for him to launch if he can.
 

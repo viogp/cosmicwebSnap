@@ -13,9 +13,9 @@ plt.style.use(mpl_style.style1)
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.choosing'
-models = ['gp17','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075','gp17.spin.ramt0.01.stabledisk0.75.ac085'] #'gp17.spin.ramt0.01.stabledisk0.75.e01','gp17.spin.ramt0.01.stabledisk0.75.e01.ac087']
-inleg = models  
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
+models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.stb.gbh.'  
 #models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075'] ; inleg = models 

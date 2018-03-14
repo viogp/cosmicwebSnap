@@ -14,11 +14,15 @@ import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 64
+nvol = 3 #64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
-models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.'
+models = ['gp17','gp18','gp17.spin.ramt0.01.griffinBH'] 
 inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+#inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.sd085.'
 #models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.stabledisk0.85','gp17.spin.ramt0.01.fgasburst0.2','gp17.spin.ramt0.01.fellip0.2'] ; inleg = models
@@ -229,11 +233,12 @@ erro = lm*0.
 ax.errorbar(xo,p, yerr=erro, color=col, ecolor=col,\
                 label ='Bauer+10', fmt = '^')
 
+lsty = ['-','-','--']
 # Models
 for ii in range(len(models)):
     py = npas1[ii,:] ; ind = np.where(py>0.)
     x = mhist[ind] ; y = py[ind]
-    ax.plot(x,y,color=colors[ii],label=inleg[ii])
+    ax.plot(x,y,color=colors[ii],label=inleg[ii],linestyle=lsty[ii])
 
     #py = npas2[ii,:] ; ind = np.where(py>0.)
     #y = py[ind]
@@ -242,7 +247,7 @@ for ii in range(len(models)):
 
     py = nsp1[ii,:] ; ind = np.where(py>0.)
     x = mhist[ind] ; y = py[ind]
-    ax.plot(x,y,color=colors[ii],linestyle='--')
+    ax.plot(x,y,color=colors[ii],linestyle=lsty[ii])
 
     #py = npas2[ii,:] ; ind = np.where(py>0.)
     #y = py[ind]

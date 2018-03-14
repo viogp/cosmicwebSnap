@@ -1,8 +1,10 @@
 ## Models ##
 
-* Update galform
+* prepare DB: make a mini test, wait for Peder to reply
 
-* prepare DB: check bands and properties output, make a mini test, create ref file, write Peder for him to launch if he can.
+* New model plots and write about those
+
+* Redo all ELG's paper plots with gp18.BH
 
 ## Cosmic Web ##
 
@@ -11,12 +13,11 @@
 
 ## ELGs ##
 
-* VVDS-Wide: I used r-band, instead of i. Shall I create an Erratum or simply comment? The only issue with the later: I don't think I'll be using VVDS.
+* VVDS-Wide: I used r-band, instead of i. Shall I create an Erratum or simply comment? The only issue with the later: I don't think I'll be using VVDS. According to the MNRAS website, Erratums are advise if there is a change to the conclusions.
 
 * Make a LF plot at sn=29 for DEEP2, VVDS-WIDE, eBOSS, DESI (add Hizels data?). 
 
 * Make stellar mass and SFR function plots with the number density of the ELGs on top and select the comparison samples.
-
 
 ## Comparing populations ##
 
@@ -25,7 +26,7 @@
 * Could I compare directly w r0? Maybe using the lightcone?
 
 ## Read ##
-* Weiguan papers: Hoffman Y., Metuki O., Yepes 2012 and https://arxiv.org/abs/1708.02302
+* Liebskin+18
 * Zehavi,+ Contreras (2017)
 * Forero-Romero et al. 2014.
 * Hizels papers

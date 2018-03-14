@@ -12,11 +12,15 @@ plt.style.use(mpl_style.style1)
 
 path6 = '/gpfs/data/violeta/Galform_Out/v2.6.0/aquarius_trees/MillGas/'
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 64
+nvol = 3 #64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
-models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.'
+models = ['gp17','gp18','gp17.spin.ramt0.01.griffinBH'] 
 inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+#inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.stb.gbh.'
 #models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075'] ; inleg = models
@@ -146,11 +150,12 @@ ox = mag[ind]-0.089
 oy = den[ind] ; oerr = err[ind] 
 
 # Plot predictions
+lsty = ['-','-','--']
 for im in range(len(models)):
     py = plfe[im,:]
     ind = np.where(py < 0.)
     x = xlf[ind] ; y = 10**py[ind] 
-    ax.plot(x,py[ind],color=cols[im],label=inleg[im])
+    ax.plot(x,py[ind],color=cols[im],label=inleg[im],linestyle=lsty[im])
 
     # Chi2
     my = np.interp(ox,x,y)

@@ -15,11 +15,15 @@ plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
 path6 = '/gpfs/data/violeta/Galform_Out/v2.6.0/aquarius_trees/MillGas/'
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 64
+nvol = 3 #64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
-models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.'
+models = ['gp17','gp18','gp17.spin.ramt0.01.griffinBH'] 
 inleg = models
+
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.ramt0.01.'
+#models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075']#'gp17.spin.ramt0.01.stabledisk0.75.ac085','gp17.spin.ramt0.01.stabledisk0.75.e01',,'gp17.spin.ramt0.01.stabledisk0.75.e01.ac087'] 
+#inleg = models
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/spin.stb.gbh.'
 #models = ['gp17.spin','gp17.spin.ramt0.01','gp17.spin.ramt0.01.griffinBH','gp17.spin.ramt0.01.griffinBH.stb075'] ; inleg = models
@@ -226,11 +230,12 @@ plt.setp(axs.get_yticklabels(), visible=False)
 #oh = 0.71 
 #ls,hs,lphi,error = np.loadtxt(file,unpack=True)            
 
+lsty = ['-','-','--']
 for ii in range(len(models)):
     px = ssfrf[ii,:] ; ind = np.where(px>0.)
     y = shist[ind] ; x = np.log10(px[ind])
     ind = np.where(x < 0.)
-    axs.plot(x[ind],y[ind],color=cols[ii],label=inleg[ii])
+    axs.plot(x[ind],y[ind],color=cols[ii],label=inleg[ii],linestyle=lsty[ii])
 
 # Legend
 leg = axs.legend(bbox_to_anchor=(1., 1.4),fontsize='small')

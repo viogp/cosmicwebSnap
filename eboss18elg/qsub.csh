@@ -1,6 +1,6 @@
 #! /bin/tcsh -f
 
-set name    = one
+set name    = modelplots
 set logpath = /gpfs/data/$user/Junk/$name
 
 

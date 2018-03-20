@@ -2,7 +2,7 @@
 
 * prepare DB: make a mini test, wait for Peder to reply
 
-* New model plots and write about those
+* Text on model
 
 * Redo all ELG's paper plots with gp18.BH
 
@@ -15,7 +15,7 @@
 
 * VVDS-Wide: I used r-band, instead of i. Shall I create an Erratum or simply comment? The only issue with the later: I don't think I'll be using VVDS. According to the MNRAS website, Erratums are advise if there is a change to the conclusions.
 
-* Make a LF plot at sn=29 for DEEP2, VVDS-WIDE, eBOSS, DESI (add Hizels data?). 
+* Make a LF plot at sn=39,41 for DEEP2, VVDS-WIDE, eBOSS, DESI (add Hizels data?). 
 
 * Make stellar mass and SFR function plots with the number density of the ELGs on top and select the comparison samples.
 

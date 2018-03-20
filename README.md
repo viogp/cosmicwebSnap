@@ -1,6 +1,6 @@
 # README #
 
-At the moment, we are able to get the environment for objects in snapshot 39 (MS-W7 simulation), given an ascii table with x,y,z coordinates.
+At the moment, we are able to get the environment for objects in snapshots 39 and 41 (MS-W7 simulation), given an ascii table with x,y,z coordinates.
 
 ## Models ##
 Relevant plots can be found also in the Galform wiki: [for the Spin part](http://galform.pbworks.com/w/page/123049548/Spin-up%20on%20and%20off) and for the [exploration of the passive fraction plot](http://galform.pbworks.com/w/page/123760410/The%20passive%20fraction). 

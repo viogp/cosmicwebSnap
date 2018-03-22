@@ -1,6 +1,6 @@
 # README #
 
-At the moment, we are able to get the environment for objects in snapshot 39 (MS-W7 simulation), given an ascii table with x,y,z coordinates.
+We get the environment for objects in snapshots 39, z=1, and 41, z=0.83 (MS-W7 simulation), given an ascii table with x,y,z coordinates.
 
 STEPS:
 
@@ -11,6 +11,11 @@ STEPS:
 
 3. Run Wiguang's code with the script:
    vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/get_env.py
+
+## 'cosmicweb' folder at taurus ##
+
+**get_env.py** This program reads the positions of galaxies from the files 'gal_files/*_sn*.dat' and find the environment. This information is stored in 'env_files'. Those files that have already been processed or are not being process in the run should be moved to the folder 'gal_files/processed/'. A copy of this program should be fine also in this cosma folder.
+
 
 ## Weiguang's code  ##
 

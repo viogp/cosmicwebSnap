@@ -12,41 +12,30 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/'
-#model = 'MillGas/gp17/'  model = 'MillGas/gp17.spin/'
-model = 'MillGas/gp17.spin.ramt0.01/'
+path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+model = 'gp18/'
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/cuts/'+model+'compared4_'
+outdir = '/gpfs/data/violeta/lines/cosmicweb/plots/'+model+'lfs/compared2_'
 plotfile = outdir+line+'.pdf'
 ############################# Obs
 obsh0 = 0.677
 obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/'
 #############################
 
-#snap_list = [44, 42, 40, 37] #MillGas
-snap_list = [42, 40] #MillGas
+snap_list = [42,37] #[41,39] #MillGas
 nvol = 3 #64
 
-#obsnom = ['DEEP2','VVDSWIDE','VVDSDEEP']
-#obands = ['R24.2','I22.5','I24']
-#
-#bands = ['RK','m2','m2','eBOSS','DESI']
-#mcuts = [24.1,22.5,24]
-#fcuts = [2.7*10.**-17., 3.5*10.**-17., 1.9*10.**-17.,10.**-17.,8.*10.**-17.]
-#
-#inleg = ['DEEP2 cuts','VVDS-WIDE cuts','VVDS-DEEP cuts','eBOSS cuts','DESI cuts']
+#####
+obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
+obands = ['R24.2','I24','I22.5']
 
-#####No VVDS-DEEP
-obsnom = ['DEEP2','VVDSWIDE']
-obands = ['R24.2','I22.5']
+bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
+mcuts = [24.1, 24, 22.5]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','eBOSS-SGC','eBOSS-NGC','DESI']
-mcuts = [24.1,22.5]
-fcuts = [2.7*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
-
-inleg = ['All','DEEP2 cuts','VVDS-Wide cuts','eBOSS cuts','DESI cuts']
+inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
 ##########
 
 ntypes = len(inleg)
@@ -112,40 +101,30 @@ for iz,zsnap in enumerate(snap_list):
                     if index==0:
                         ind  = np.where(lum_ext>0.)
                         indi = np.where(lum>0.)
-                    elif index<3:
-                        ib = bands[index-1]
-                        mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
-                            + tomag
-                        icut = mcuts[index-1] ; fluxcut = fcuts[index-1]
+                    elif ((inleg[index] == 'eBOSS-SGC') or (inleg[index] == 'DESI')):
+                        fluxcut = fcuts[index-1]
                         lcut = emission_line_luminosity(fluxcut,zz)
-                        ind  = np.where((mag<icut) & (lum_ext>lcut))
-                        indi = np.where((mag<icut) & (lum>lcut))
-                    else:
+
                         g = f['Output001/mag_DES-g_o_tot_ext'].value + tomag
                         r = f['Output001/mag_DES-r_o_tot_ext'].value + tomag
                         z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
                         rz = r-z ; gr = g-r
 
-                        if index==3: #eBOSS decam180 selection
-                            fluxcut = 10.**-16.
-                            lcut = emission_line_luminosity(fluxcut,zz)
+                        if (inleg[index] == 'eBOSS-SGC'): 
+                            ind = np.where((lum_ext>lcut) & \
+                                               (g>21.825) & (g<22.825) & \
+                                               (gr>-0.068*rz + 0.457) & \
+                                               (gr<0.112*rz + 0.773) & \
+                                               (rz>0.218*gr + 0.571) & \
+                                               (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                               (g>21.825) & (g<22.825) & \
+                                               (gr>-0.068*rz + 0.457) & \
+                                               (gr<0.112*rz + 0.773) & \
+                                               (rz>0.218*gr + 0.571) & \
+                                               (rz<-0.555*gr + 1.901))
 
-                            ind = np.where((g>22.1) & (g<22.8) & \
-                                               (gr>0.3) & (gr<0.7) & \
-                                               (rz>0.25) & (rz<1.4) & \
-                                               (rz>0.5*gr+0.4) & \
-                                               (rz<0.5*gr+0.8) & \
-                                               (lum_ext>lcut))
-                            indi = np.where((g>22.1) & (g<22.8) & \
-                                       (gr>0.3) & (gr<0.7) & \
-                                       (rz>0.25) & (rz<1.4) & \
-                                       (rz>0.5*gr+0.4) & \
-                                       (rz<0.5*gr+0.8) & (lum>lcut))
-
-                        elif index==4: #DESI                            
-                            fluxcut = 8.*10.**-17.
-                            lcut = emission_line_luminosity(fluxcut,zz)
-
+                        elif (inleg[index] == 'DESI'): 
                             ind  = np.where((r<23.4) & \
                                                 (rz>0.3) & (gr>-0.3) & \
                                                 (rz>0.9*gr+0.12) & \
@@ -157,6 +136,18 @@ for iz,zsnap in enumerate(snap_list):
                                                 (rz>0.9*gr+0.12) & \
                                                 (rz<1.345-0.85*gr) & \
                                                 (lum>lcut))
+
+                    else:
+                        ib = bands[index-1]
+                        mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
+                            + tomag
+                        icut = mcuts[index-1]
+                        fluxcut = fcuts[index-1]
+                        lcut = emission_line_luminosity(fluxcut,zz)
+
+                        ind  = np.where((mag<icut) & (lum_ext>lcut))
+                        indi = np.where((mag<icut) & (lum>lcut))
+
                         
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -181,12 +172,12 @@ for iz,zsnap in enumerate(snap_list):
         ax1.set_autoscale_on(False) ;  ax1.minorticks_on()
         ax1.set_xlabel(xtit) ; ax1.set_ylabel(ytit)
         #ax1.tick_params(labelsize=fs-2) 
-        ax1.text(43., -1.5, zleg[iz])
+        ax1.text(42.5, -1.7, zleg[iz])
     else:
         ax = fig.add_subplot(jj,sharex=ax1,sharey=ax1)
         ax.set_autoscale_on(False) ;  ax.minorticks_on()
         ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
-        ax.text(43., -1.5, zleg[iz])
+        ax.text(42.5, -1.7, zleg[iz])
 
     # Plot all observations
     ox, oy, el, eh = jc.read_jc_lf(obs_dir,zz,h0=obsh0,\
@@ -255,11 +246,15 @@ for iz,zsnap in enumerate(snap_list):
 
         # Legend
         if (iz == len(snap_list)-1):
-            leg = plt.legend(loc=2, handlelength=0, handletextpad=0)
+            leg = plt.legend(loc=1, handlelength=0, handletextpad=0)
+            renderer = fig.canvas.get_renderer()
+            shift1 = max([t.get_window_extent(renderer).width for t in leg.get_texts()])
+            shift2 = min([t.get_window_extent(renderer).width for t in leg.get_texts()])
             for item in leg.legendHandles:
                 item.set_visible(False)
             for color,text in zip(cols,leg.get_texts()):
                 text.set_color(color)
+                text.set_ha('right') ; text.set_position((shift1-shift2,0))
                 leg.draw_frame(False)           
 
 

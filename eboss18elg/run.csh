@@ -6,7 +6,7 @@
 #set exec = ssfr_m.py
 #set exec = lf1_dust.py
 #set exec = lf1_cuts.py
-#set exec = lf4_cuts.py
+#set exec = lf2_cuts.py
 set exec = decam_eboss.py
 
 python $exec

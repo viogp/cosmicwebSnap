@@ -24,8 +24,8 @@ obsh0 = 0.677
 obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/'
 #############################
 
-snap_list = [42,37] #[41,39] #MillGas
-nvol = 3 #64
+snap_list = [41,39] #MillGas
+nvol = 64
 
 #####
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']

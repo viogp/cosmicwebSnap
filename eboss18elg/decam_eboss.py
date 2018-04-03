@@ -19,7 +19,6 @@ model = 'gp18/'
 #zlist = [61, 44, 42, 40, 37] #z=0, 0.6, 0.75, 0.9, 1.18
 zlist = [44, 41, 39, 34] #z=0.6, 0.83, 1., 1.5
 cols = get_distinct(len(zlist)) 
-cols.insert(0,'k') 
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
@@ -75,8 +74,7 @@ rz4 = (1.901 - 0.555*0.457)/(1. - 0.555*0.068)
 gr4 = -0.068*rz4 + 0.457
 x = [rz1,rz2,rz3,rz4,rz1]
 y = [gr1,gr2,gr3,gr4,gr1]
-cs, = plt.plot(x,y,color=cols[0],linewidth=3.5)
-zleg.append('eBOSS cuts')
+cs, = plt.plot(x,y,'k',linewidth=3.5)
 lines.append(cs)
 
 # Model
@@ -137,19 +135,20 @@ print 'Start plotting'
 for ii in range(len(zlist)):
     X, Y = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1])
     Z = np.zeros(shape=(len(X),len(Y))) ; Z.fill(-999.)
-    al = [-4.0,-1.5,1.] 
+    al = [-4.5,-1.5,1.] 
     if (vols[ii]>0.):  
         zzhist = zhist[ii,:,:]
         ind = np.where(zzhist >0.)
         Z[ind] = np.log10(zzhist[ind]/vols[ii]/dxy/dxy)  # In Mpc^3/h^3
         cs = plt.contour(X, Y, Z.T, levels=al, \
-                            linestyles='-',colors=cols[ii+1],\
+                            linestyles='-',colors=cols[ii],\
                              label=zleg[ii])
         lines.append(cs.collections[0])
 
 
 # Legend
-leg = plt.legend(lines,zleg,loc=2, handlelength=0, handletextpad=0)
+plt.text(0.05,1.35,'eBOSS cuts')
+leg = plt.legend(lines,zleg,loc=4, handlelength=0, handletextpad=0)
 for item in leg.legendHandles:
     item.set_visible(False)
 for color,text in zip(cols,leg.get_texts()):

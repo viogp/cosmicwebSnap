@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 import read_jc_obs as jc
 from Cosmology import * 
+from stats import n_gt_x
 from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
@@ -21,8 +22,8 @@ outdir = '/gpfs/data/violeta/lines/cosmicweb/plots/'+model+'selections/mass_cum_
 plotfile = outdir+line+'.pdf'
 #############################
 
-snap_list = [42,37] #[41,39] #MillGas
-nvol = 3 #64
+snap_list = [41,39] #MillGas
+nvol = 64
 
 #####
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
@@ -41,28 +42,33 @@ cols = get_distinct(ntypes-1)
 cols.insert(0,'grey')
 
 # Initialize bins
-lmin = 8.5
-lmax = 12.
-dl = 0.1
-lbins = np.arange(lmin,lmax,dl)
+pmin = 8.
+pmax = 13.
+dp = 0.1
+pbins = np.arange(pmin,pmax,dp)
 
 ############################################
 # Initialize the parameters for the figures
-fig = plt.figure(figsize=(6.5,14.))
-
-xtit = "${\\rm log}_{10}(L\\rm{"+lline+"}/h^{-2}erg\, s^{-1})$"
-ytit = "${\\rm log}_{10}(\Phi/ Mpc^{-3}h^3 {\\rm dex}^{-1})$"
+fig = plt.figure(figsize=(7.,13.))
+ax = fig.add_subplot(111) 
+ax.spines['top'].set_color('none')
+ax.spines['bottom'].set_color('none')
+ax.spines['left'].set_color('none')
+ax.spines['right'].set_color('none')
+ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
+ax.set_xlabel('${\\rm log}_{10}({\\rm M}/M_{\odot}h^{-1})$')
+ax.set_ylabel('${\\rm log}_{10}(n_{\\rm gal}(>X)/Mpc^{-3}h^3)$')
 
 xmin = 8.5 ; xmax = 12.
-ymin = -7 ; ymax = 0.
+ymin = -5.9 ; ymax = 0.
 
 # Loop over the redshifts of interest
-jj = 410
+jj = 210
 for iz,zsnap in enumerate(snap_list):
     jj = jj + 1
 
-    lf = np.zeros(shape=(ntypes,len(lbins)))
-    lf_ext = np.zeros(shape=(ntypes,len(lbins)))
+    ncum = np.zeros(shape=(ntypes,len(pbins)))
+    ncum_ext = np.zeros(shape=(ntypes,len(pbins)))
 
     volume = 0. ; firstpass = True
     for ivol in range(nvol):
@@ -70,13 +76,22 @@ for iz,zsnap in enumerate(snap_list):
         if (os.path.isfile(gfile)):
             # Get some of the model constants
             f = h5py.File(gfile,'r')
-            zz   = f['Output001/redshift'].value
             group = f['Parameters']
             vol1 = group['volume'].value ; volume = volume + vol1
             h0 = group['h0'].value 
-            omega0 = f['Parameters/omega0'].value
-            omegab = f['Parameters/omegab'].value
-            lambda0 = f['Parameters/lambda0'].value
+            omega0 = group['omega0'].value
+            omegab = group['omegab'].value
+            lambda0 =group['lambda0'].value
+
+            group = f['Output001']
+            zz   = group['redshift'].value
+            mdisk = group['mstars_disk'].value 
+            mbulge = group['mstars_bulge'].value
+            mass1 = mdisk + mbulge 
+
+            lmass = np.arange(len(mass1)) ; lmass.fill(-999.)
+            ind = np.where(mass1>0.) 
+            lmass = np.log10(mass1[ind])
             f.close()
 
             if(firstpass):
@@ -143,22 +158,22 @@ for iz,zsnap in enumerate(snap_list):
 
                         ind  = np.where((mag<icut) & (lum_ext>lcut))
                         indi = np.where((mag<icut) & (lum>lcut))
-
                         
+                    print(ivol,index)
                     if (np.shape(ind)[1] > 0.):
-                        ll = np.log10(lum_ext[ind]) + 40.
-                        H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
-                        lf_ext[index,:] = lf_ext[index,:] + H
+                        ll = lmass[ind]
+                        H = n_gt_x(pbins,ll)
+                        ncum_ext[index,:] = ncum_ext[index,:] + H
 
                     if (np.shape(indi)[1] > 0.):
-                        ll = np.log10(lum[indi]) + 40.
-                        H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
-                        lf[index,:] = lf[index,:] + H
+                        ll = lmass[indi]
+                        H = n_gt_x(pbins,ll)
+                        ncum[index,:] = ncum[index,:] + H
                 f.close()
 
 
-    lf = lf/dl/volume
-    lf_ext = lf_ext/dl/volume
+    ncum = ncum/dp/volume 
+    ncum_ext = ncum_ext/dp/volume
     print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
 
     # Plot
@@ -166,83 +181,42 @@ for iz,zsnap in enumerate(snap_list):
         ax1 = fig.add_subplot(jj) ; ax1.set_autoscale_on(False)
         ax1.set_xlim([xmin,xmax]) ; ax1.set_ylim([ymin,ymax]) 
         ax1.set_autoscale_on(False) ;  ax1.minorticks_on()
-        ax1.set_xlabel(xtit) ; ax1.set_ylabel(ytit)
-        #ax1.tick_params(labelsize=fs-2) 
-        ax1.text(42.5, -1.7, zleg[iz])
+        plt.setp(ax1.get_xticklabels(), visible=False)
+        ax1.text(xmin+0.1, ymin+0.2, zleg[iz])
     else:
-        ax = fig.add_subplot(jj,sharex=ax1,sharey=ax1)
-        ax.set_autoscale_on(False) ;  ax.minorticks_on()
-        ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
-        ax.text(42.5, -1.7, zleg[iz])
-
-    # Plot all observations
-    ox, oy, el, eh = jc.read_jc_lf(obs_dir,zz,h0=obsh0,\
-                                       infile=\
-                                       'O2_3728-data-summary-Planck15.txt')
-    ind = np.where(oy>-5) 
-    oxr = ox[ind] ; oyr = oy[ind]
-    arrinds = oxr.argsort()
-    oxr = oxr[arrinds]
-    oyr = oyr[arrinds]
-
-    if(isinstance(ox, (np.ndarray))):
-        if (iz == 0):
-            ax1.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
-                             ecolor='grey',color='grey',mec='grey')
-        else:
-            ax.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
-                            ecolor='grey',color='grey',mec='grey')
-    # Plot the observations  O2_3728-*-z*.txt
-    for i,isurvey in enumerate(obsnom):        
-        ox, oy, el, eh = jc.read_jc_indlf(obs_dir+'individual_LF/',\
-                                              zz,h0=obsh0,\
-                                              line='O2_3728',\
-                                              survey=isurvey,band=obands[i])
-        if(isinstance(ox, (np.ndarray))):
-            col = cols[i+1]
-            if (iz == 0):
-                ax1.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
-                                 ecolor=col,color=col,mec=col)
-            else:
-                ax.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
-                                ecolor=col,color=col,mec=col)
+        ax2 = fig.add_subplot(jj,sharex=ax1,sharey=ax1)
+        ax2.set_autoscale_on(False) ;  ax2.minorticks_on()
+        ax2.text(xmin+0.1, ymin+0.2 , zleg[iz])
 
     # Plot the model predictions
     for index in range(ntypes):
         # Attenuated
-        py = 0. ; py = lf_ext[index,:]
+        py = 0. ; py = ncum_ext[index,:]
         ind = np.where(py > 0)
-        x = lbins[ind]
+        x = pbins[ind]
         y = np.log10(py[ind])
         ind = np.where(y < 0.)       
         if (iz == 0):
-            ax1.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
+            ax1.step(x[ind],y[ind],color=cols[index],linestyle='-',\
                          label=inleg[index])
         else:
-            ax.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
+            ax2.step(x[ind],y[ind],color=cols[index],linestyle='-',\
                         label=inleg[index])
 
-        # Ratios
-        if (index == 0):
-            my = np.interp(oxr,x,y) 
-            diff = abs(my-oyr) ; ratio = 10.**(diff)
-            print max(ratio),' diff(min,max)',min(diff),max(diff)
-            print oxr,ratio
-
         # Intrinsic
-        #py = 0. ; py = lf[index,:]
+        #py = 0. ; py = ncum[index,:]
         #ind = np.where(py > 0)
-        #x = lbins[ind]
+        #x = pbins[ind]
         #y = np.log10(py[ind])
         #ind = np.where(y < 0.)
         #if (iz == 0):
         #    ax1.plot(x[ind],y[ind],color=cols[index],linestyle=':')
         #else:
-        #    ax.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+        #    ax2.plot(x[ind],y[ind],color=cols[index],linestyle=':')
 
         # Legend
         if (iz == len(snap_list)-1):
-            leg = plt.legend(loc=1, handlelength=0, handletextpad=0)
+            leg = plt.legend(loc=1)
             renderer = fig.canvas.get_renderer()
             shift1 = max([t.get_window_extent(renderer).width for t in leg.get_texts()])
             shift2 = min([t.get_window_extent(renderer).width for t in leg.get_texts()])
@@ -259,7 +233,7 @@ for iz,zsnap in enumerate(snap_list):
 #line2, = plt.plot([3,2,1], label="Line 2", linewidth=4)
 #
 ## Create a legend for the first line.
-#first_legend = plt.legend(handles=[line1], loc=1)
+#first_legend = plt.legend(handpes=[line1], loc=1)
 #
 ## Add the legend manually to the current Axes.
 #ax = plt.gca().add_artist(first_legend)

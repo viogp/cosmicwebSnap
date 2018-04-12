@@ -26,9 +26,8 @@ Vweb = True
 #---------------------------------
 
 # Read files from gal_files
-# The name should be: [cut]_sn[#]_[all/centrals/satellites].dat
-# Test file: head_sn41_centrals.dat
-files = glob.glob('gal_files/'+'*_sn*.dat')
+# The name should be: *.dat
+files = glob.glob('gal_files/'+'*.dat')
 for infile in files:
     time0 = time.clock()
     
@@ -40,18 +39,18 @@ for infile in files:
     count = -1
     with open(infile) as ff:
         for line in ff:
-            count += 1 #; print count           
-            x = float(line.split()[0])
-            y = float(line.split()[1])
-            z = float(line.split()[2])
-            newpos = np.array([x,y,z])
-            newpos = np.expand_dims(newpos, axis=0)
+            if (line[0] != '#'):
+                count += 1 #; print count           
+                x = float(line.split()[0])
+                y = float(line.split()[1])
+                z = float(line.split()[2])
+                newpos = np.array([x,y,z])
+                newpos = np.expand_dims(newpos, axis=0)
 
-            if (count == 0):
-                pos = newpos
-            else:
-                pos = np.vstack((pos, newpos))
-                
+                if (count == 0):
+                    pos = newpos
+                else:
+                    pos = np.vstack((pos, newpos))
     print 'Spent time line by line = ',time.clock()-time0, np.shape(pos)
 
     env = return_env(pos, boxsize, threshold = threshold, \
@@ -66,6 +65,10 @@ for infile in files:
     if os.path.exists(outfile):
         os.remove(outfile)
 
-    np.savetxt(outfile, tofile)
-
-    print 'Output: ',outfile
+    outf = open(outfile,'w')
+    outf.write('# x,y,z (Mpc/h), environments: 0 Void; 1 sheet; 2 \
+filament; 3 Knots \n')
+    np.savetxt(outf, tofile, fmt='%.5f %.5f %.5f %1i')
+    outf.close()
+    
+    print('Output: ',outfile)

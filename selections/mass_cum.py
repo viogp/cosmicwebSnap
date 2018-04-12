@@ -39,7 +39,7 @@ inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
 ntypes = len(inleg)
 zleg = []
 cols = get_distinct(ntypes-1)
-cols.insert(0,'grey')
+cols.insert(0,'k')
 
 # Initialize bins
 pmin = 8.
@@ -49,7 +49,7 @@ pbins = np.arange(pmin,pmax,dp)
 
 ############################################
 # Initialize the parameters for the figures
-fig = plt.figure(figsize=(7.,13.))
+fig = plt.figure(figsize=(6.,12.))
 ax = fig.add_subplot(111) 
 ax.spines['top'].set_color('none')
 ax.spines['bottom'].set_color('none')
@@ -89,9 +89,9 @@ for iz,zsnap in enumerate(snap_list):
             mbulge = group['mstars_bulge'].value
             mass1 = mdisk + mbulge 
 
-            lmass = np.arange(len(mass1)) ; lmass.fill(-999.)
+            lmass = np.zeros(len(mass1)) ; lmass.fill(-999.)
             ind = np.where(mass1>0.) 
-            lmass = np.log10(mass1[ind])
+            lmass[ind] = np.log10(mass1[ind])
             f.close()
 
             if(firstpass):
@@ -159,7 +159,6 @@ for iz,zsnap in enumerate(snap_list):
                         ind  = np.where((mag<icut) & (lum_ext>lcut))
                         indi = np.where((mag<icut) & (lum>lcut))
                         
-                    print(ivol,index)
                     if (np.shape(ind)[1] > 0.):
                         ll = lmass[ind]
                         H = n_gt_x(pbins,ll)
@@ -171,10 +170,29 @@ for iz,zsnap in enumerate(snap_list):
                         ncum[index,:] = ncum[index,:] + H
                 f.close()
 
-
     ncum = ncum/dp/volume 
     ncum_ext = ncum_ext/dp/volume
     print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
+
+    # Write output
+    outfile = '/gpfs/data/violeta/lines/cosmicweb/selections/mass_cum_sn'+\
+        str(zsnap)+'.dat'
+    with open(outfile,'w') as outf:
+        outf.write('# log10(M/Msun/h) log10(ngal for ')
+        outf.write(' '.join(str(i) for i in inleg))
+        outf.write(') \n')
+
+        tofile1 = np.copy(np.transpose(ncum_ext))
+        ind = np.where(tofile1<1e-8)
+        tofile1[ind] = -999.
+        
+        ind = np.where(tofile1>0.)
+        tofile1[ind] = np.log10(tofile1[ind])
+
+        tofile = np.column_stack((pbins,tofile1))
+
+        np.savetxt(outf, tofile, fmt='%.5f')
+    print('Output: ',outfile)
 
     # Plot
     if (iz == 0):
@@ -191,28 +209,26 @@ for iz,zsnap in enumerate(snap_list):
     # Plot the model predictions
     for index in range(ntypes):
         # Attenuated
-        py = 0. ; py = ncum_ext[index,:]
-        ind = np.where(py > 0)
-        x = pbins[ind]
-        y = np.log10(py[ind])
-        ind = np.where(y < 0.)       
+        py = np.zeros(len(pbins)) ; py.fill(-999.)
+        a = np.copy(ncum_ext[index,:])
+        ind = np.where(a > 0) ; py[ind] = np.log10(a[ind])
         if (iz == 0):
-            ax1.step(x[ind],y[ind],color=cols[index],linestyle='-',\
+            ax1.step(pbins,py,color=cols[index],linestyle='-',\
                          label=inleg[index])
         else:
-            ax2.step(x[ind],y[ind],color=cols[index],linestyle='-',\
+            ax2.step(pbins,py,color=cols[index],linestyle='-',\
                         label=inleg[index])
 
-        # Intrinsic
-        #py = 0. ; py = ncum[index,:]
-        #ind = np.where(py > 0)
-        #x = pbins[ind]
-        #y = np.log10(py[ind])
-        #ind = np.where(y < 0.)
+        ## Intrinsic
+        #py = np.zeros(len(pbins)) ; py.fill(-999.)
+        #a = np.copy(ncum[index,:])
+        #ind = np.where(a > 0) ; py[ind] = np.log10(a[ind])
         #if (iz == 0):
-        #    ax1.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+        #    ax1.step(pbins,py,color=cols[index],linestyle='-',\
+        #                 label=inleg[index])
         #else:
-        #    ax2.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+        #    ax2.step(pbins,py,color=cols[index],linestyle='-',\
+        #                label=inleg[index])
 
         # Legend
         if (iz == len(snap_list)-1):
@@ -226,20 +242,6 @@ for iz,zsnap in enumerate(snap_list):
                 text.set_color(color)
                 text.set_ha('right') ; text.set_position((shift1-shift2,0))
                 leg.draw_frame(False)           
-
-
-#On splitting the legend
-#line1, = plt.plot([1,2,3], label="Line 1", linestyle='--')
-#line2, = plt.plot([3,2,1], label="Line 2", linewidth=4)
-#
-## Create a legend for the first line.
-#first_legend = plt.legend(handpes=[line1], loc=1)
-#
-## Add the legend manually to the current Axes.
-#ax = plt.gca().add_artist(first_legend)
-#
-## Create another legend for the second line.
-#plt.legend(handles=[line2], loc=4)
     
 # Save figures
 fig.subplots_adjust(hspace=0)

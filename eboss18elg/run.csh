@@ -4,10 +4,8 @@
 #set exec = lf_bJ.py
 #set exec = passive.py
 #set exec = ssfr_m.py
-#set exec = lf1_dust.py
-#set exec = lf1_cuts.py
-#set exec = lf2_cuts.py
-set exec = decam_eboss.py
+set exec = lf2_cuts.py
+#set exec = decam_eboss.py
 
 python $exec
 

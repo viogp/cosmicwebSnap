@@ -1,0 +1,14 @@
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_fm18gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_fm17gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_f5m17gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_fm16gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_f5m16gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_g22.8gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz41/OII3727_g22.2gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_fm18gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_fm17gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_f5m17gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_fm16gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_f5m16gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_g22.8gflux_4cute_z.dat
+/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/gp18/iz39/OII3727_g22.2gflux_4cute_z.dat

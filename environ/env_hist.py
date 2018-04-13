@@ -12,7 +12,7 @@ epath = '/gpfs/data/violeta/lines/cosmicweb/env_files/'
 #files = ['head_sn41_centrals.dat']
 #files = [epath+s for s in files]
 ## Or use all the files in the epath directory
-files = glob(epath+'*.dat') 
+files = glob(epath+'*eBOSS*_m8.5_sn41.dat') 
 
 # Plot histogram: 0 Void; 1 sheet; 2 filament; 3 Knots.
 fig = plt.figure(figsize=(8.5,9.))

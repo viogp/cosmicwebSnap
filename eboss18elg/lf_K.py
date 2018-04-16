@@ -13,9 +13,10 @@ plt.style.use(mpl_style.style1)
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
-models = ['gp17','gp18'] 
-inleg = ['GP18','This work'] 
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
+plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/' 
+models = ['gp18','gp18.font','gp18.starvation','gp17'] 
+inleg = ['This work','10% stripping ','Starvation','GP18']
 
 # Bands for LF
 iband = 'UKIRT-K' ; iband6 = 'K'
@@ -94,8 +95,9 @@ ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 #ax.tick_params(labelsize=fs-2)   
 start, end = ax.get_xlim()
 
-cols = get_distinct(len(models)) 
-colors = cols ; g = ['grey'] ; colors.extend(g)
+cols = get_distinct(len(models)+1) 
+colors = cols #; g = ['grey'] ; colors.extend(g)
+colors[len(colors)-1] = 'grey'        
 
 # Observational data
 dobs = '/cosma/home/violeta/Galform2/galform-2.6.0/Obs_Data2/'
@@ -120,12 +122,14 @@ ox = mag[ind]-0.089
 oy = den[ind] ; oerr = err[ind] 
 
 # Plot predictions
-lsty = ['--','-',':']
+lsty = ['-','--',':','-']   
+lwdt = [3.,1.5,1.5,1.5]
 for im in range(len(models)):
     py = plfe[im,:]
     ind = np.where(py < 0.)
     x = xlf[ind] ; y = 10**py[ind] 
-    ax.plot(x,py[ind],cols[im],label=inleg[im],linestyle=lsty[im])
+    ax.plot(x,py[ind],cols[im],label=inleg[im],\
+                linestyle=lsty[im],linewidth=lwdt[im])
     
     # Chi2
     my = np.interp(ox,x,y)
@@ -146,8 +150,9 @@ plotfile = plotdir + 'lf_K.pdf'
 fig.savefig(plotfile)
 print 'Output: ',plotfile
 
-#Total volume considered = ( 500.0  Mpc/h)^3
-#Total volume considered = ( 500.0  Mpc/h)^3
 #gp14.r595   Chi2 4886.93721148 305.433575718
 #gp15newmg   Chi2 12965.566347 810.34789669
-#Output:  /gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/lf_K.pdf
+#This work   Chi2 14285.2265612 892.826660072
+#10% stripping    Chi2 13067.0347076 816.689669225
+#Starvation   Chi2 12523.1485008 782.696781302
+#GP18   Chi2 12967.3617295 810.460108094

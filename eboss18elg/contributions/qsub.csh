@@ -3,9 +3,9 @@
 #set noms = (deep2 vvdsdeep vvdswide eboss desi)
 set noms = ( deep2)
 
-#set model = 'MillGas/gp17/'  
-#set model = 'MillGas/gp17.spin/'
-set model = 'MillGas/gp17.spin.ramt0.01/'
+#set model = 'gp18'  
+#set model = 'gp18.font'  
+set model = 'gp18.starvation'  
 
 foreach nom ($noms)
     set logpath = /gpfs/data/$user/Junk/contributions_$nom  

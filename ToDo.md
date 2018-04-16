@@ -1,5 +1,7 @@
 ## Models ##
 
+* Passive fraction: add legend w 'z=', remove GP18 at sn 39 and 41
+
 * prepare DB: make a mini test, wait for Peder to reply
 
 * Text on model

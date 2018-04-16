@@ -13,9 +13,10 @@ plt.style.use(mpl_style.style1)
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
-models = ['gp17','gp18'] 
-inleg = ['GP18','This work'] 
+#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
+plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/'
+models = ['gp18','gp18.font','gp18.starvation','gp17'] 
+inleg = ['This work','10% stripping ','Starvation','GP18'] 
 
 # Bands for LF
 iband = 'Bj' ; iband1 = 'BJ'
@@ -94,8 +95,9 @@ ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 #ax.tick_params(labelsize=fs-2)   
 start, end = ax.get_xlim()
 
-cols = get_distinct(len(models)) 
-colors = cols ; g = ['grey'] ; colors.extend(g)
+cols = get_distinct(len(models)+1) 
+colors = cols #; g = ['grey'] ; colors.extend(g)
+colors[len(colors)-1] = 'grey'
 
 # Observational data
 dobs = '/cosma/home/violeta/Galform2/galform-2.6.0/Obs_Data2/'
@@ -121,12 +123,14 @@ ox = mag[ind]-0.089
 oy = den[ind] ; oerr = err[ind] 
 
 # Plot predictions
-lsty = ['--','-',':']
+lsty = ['-','--',':','-']
+lwdt = [3.,1.5,1.5,1.5]
 for im in range(len(models)):
     py = plfe[im,:]
     ind = np.where(py < 0.)
     x = xlf[ind] ; y = 10**py[ind] 
-    ax.plot(x,py[ind],color=cols[im],label=inleg[im],linestyle=lsty[im])
+    ax.plot(x,py[ind],color=cols[im],label=inleg[im],\
+                linestyle=lsty[im],linewidth=lwdt[im])
 
     # Chi2
     my = np.interp(ox,x,y)
@@ -149,8 +153,10 @@ fig.savefig(plotfile)
 print 'Output: ',plotfile
 
 #Output information
-#Total volume considered = ( 500.0  Mpc/h)^3
-#Total volume considered = ( 500.0  Mpc/h)^3
 #gp14.r595   Chi2 6049.95690098 208.619203482
 #gp15newmg   Chi2 4308.89452314 148.582569763
-#Output:  /gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/lf_bJ.pdf
+#This work   Chi2 11770.3719189 405.874893757
+#10% stripping    Chi2 10362.0446389 357.311884099
+#Starvation   Chi2 10470.3262726 361.04573354
+#GP18   Chi2 4299.96193136 148.274549357
+

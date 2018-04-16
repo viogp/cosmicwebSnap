@@ -13,13 +13,12 @@ from stats import *
 import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
-path6 = '/gpfs/data/violeta/Galform_Out/v2.6.0/aquarius_trees/MillGas/'
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 64
+nvol = 2 #64
 
-plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
-models = ['gp17','gp18'] 
-inleg = ['GP18','This work'] 
+plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/' 
+models = ['gp18','gp18.font','gp18.starvation','gp17']  
+inleg = ['This work','10% stripping ','Starvation','GP18'] 
 
 # Initialize GSMF
 mmin = 8.5
@@ -119,8 +118,9 @@ fig = plt.figure(figsize=(8.5,9.))
 gs = gridspec.GridSpec(3, 3)
 gs.update(wspace=0., hspace=0.)
 ax = plt.subplot(gs[1:,:-1])
-cols = get_distinct(len(models)) 
-colors = cols ; g = ['grey'] ; colors.extend(g)
+cols = get_distinct(len(models) + 1) 
+colors = cols #; g = ['grey'] ; colors.extend(g)
+colors[len(colors)-1] = 'grey'
 
 # SFRF vs M
 xtit="$log_{10}(\\rm M_{*}/M_{\odot}h^{-1})$"
@@ -136,7 +136,8 @@ ax.plot(x,y,'k',linewidth=1)
 y = [np.log10(0.3*slim),np.log10(0.3*slim)] ; x= [xmin,xmax]
 ax.plot(x,y,'k',linewidth=2)
 
-lsty = ['dashed','solid','dotted']
+lsty = ['solid','dashed','dotted','solid']
+lwdt = [3.,1.5,1.5,1.5]
 for ii in range(len(models)):
     matplotlib.rcParams['contour.negative_linestyle'] = lsty[ii]
     zz = np.zeros(shape=(len(shist),len(mhist))) 
@@ -152,7 +153,8 @@ for ii in range(len(models)):
     al = [-3.5,-2.5,-1.5] 
     # Smooth
     #zz = ndimage.gaussian_filter(zz, sigma=0.5)
-    cs = ax.contour(xx, yy, zz, levels=al, colors=cols[ii])
+    cs = ax.contour(xx, yy, zz, levels=al, \
+                        colors=cols[ii],linewidths=lwdt[ii])
     cs.levels = [nf(val) for val in cs.levels]
     ax.clabel(cs, cs.levels, inline=1,inline_spacing=0,\
                   fontsize=10,fmt='%r')#fmt='%r %%')

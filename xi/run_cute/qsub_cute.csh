@@ -1,7 +1,7 @@
 #! /bin/tcsh
 
 set zspace  = true
-set model   = gp18
+set model   = gp18.starvation
 
 set testing = false
 echo "Running CUTE with testing =" $testing

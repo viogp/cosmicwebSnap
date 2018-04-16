@@ -5,8 +5,8 @@ from Cosmology import *
 
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 #model = 'gp18'
-model = 'gp18.font'
-#model = 'gp18.starvation'
+#model = 'gp18.font'
+model = 'gp18.starvation'
 
 info_file = model+'_inputs4cute_gflux_z.txt' 
 

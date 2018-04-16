@@ -9,27 +9,31 @@ import matplotlib.ticker as ticker
 import read_jc_obs as jc
 from Cosmology import * 
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/'
+path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 model = str(sys.argv[1])
+
+snap_list = [61, 41, 39] #MillGas #z=0, 0.83, 0.99
+zleg = ['z=0.','z=0.83', 'z=0.99']
+nvol = 64
+
+obsnom = 'DEEP2' ; fluxcut = 2.7*10.**-17. 
+obands = 'R24.2' ; band = 'DEIMOS-R' ; icut = 24.1 
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/cuts/'+model+'att_compared_'
-plotfile = outdir+line+'_deep2.pdf'
+outdir = '/gpfs/data/violeta/lines/cosmicweb/contributions/'+model+'/att_'
+
+plotfile = outdir+line+'_'+obsnom+'.pdf'
+outfile = outdir+obsnom+'.dat'
+outf = open(outfile,'w')
+print>>outf,(('# {} {} \n').format(model,obsnom))
+outf.close()
+outf = open(outfile,'a')
+
 ############################# Obs
 obsh0 = 0.677
 obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/individual_LF/'
 #############################
-
-snap_list = [61, 44, 42, 40, 37, 34] #MillGas #z=0, 0.6, 0.75, 0.9, 1.18
-zleg = ['z=0.','z=0.6','z=0.75', 'z=0.9', 'z=1.18', 'z=1.5']
-nvol = 64
-
-snap_list = [42, 40] # Test
-zleg = ['z=0.76', 'z=0.9']
-nvol = 3
-
-obsnom = 'DEEP2' ; obands = 'R24.2' ; band = 'DEIMOS-R' ; icut = 24.1 ; fluxcut = 2.7*10.**-17. 
 
 inleg1 = ['Attenuated','Centrals','Quiescent','High sSFR','Big','Spheroid']
 inleg2 = ['Intrinsic','Satellites','Bursty','Low sSFR','Small','Disk']
@@ -69,7 +73,7 @@ for iz,zsnap in enumerate(snap_list):
     nbig=0. ; nsmall=0. ; nspheroid=0. ; ndisk=0.
     mmin = 999. ; mmean =0. ; firstpass = True
     for ivol in range(nvol):
-        gfile = path+model+'iz'+str(zsnap)+'/ivol'+str(ivol)+'/galaxies.hdf5'
+        gfile = path+model+'/iz'+str(zsnap)+'/ivol'+str(ivol)+'/galaxies.hdf5'
         if (os.path.isfile(gfile)):
             #print gfile
             # Get some of the model constants
@@ -105,7 +109,7 @@ for iz,zsnap in enumerate(snap_list):
 
             f.close()
 
-            efile = path+model+'iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
+            efile = path+model+'/iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
             if (os.path.isfile(efile)):
                 f = h5py.File(efile,'r')
                 BoT = f['Output001/BoT'].value
@@ -253,39 +257,31 @@ for iz,zsnap in enumerate(snap_list):
 
     lf = lf/dl/volume
     lf_ext = lf_ext/dl/volume
-    print '---------------------------------------------'
-    print 'z= ',zz,', Boundary sSFR = ',slim
-    print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
-    print ' '
-    print '  mhalo_min= ',mmin,'  mhalo_mean= ',mmean
-    print ' '
-    print 'ntot=',ntot,' , ntotsf =',ntotsf
-    print ' '
-    print 'no2=',no2,' , nli =',nli
-    print 'no2(%)=',no2,' (',no2*100./ntot,\
-        '), nli(%)=',nli,' (',nli*100./ntot,')'
-    print 'no2/volume=',no2/volume
-    print ' '
+    print>>outf,'z= ',zz,'######################## \n'
+    print>>outf,'Boundary sSFR = ',slim,' \n'
+    print>>outf,'Side of the explored box (Mpc/h) = ',pow(volume,1./3.),' \n'
+    print>>outf,'  mhalo_min= ',mmin,'  mhalo_mean= ',mmean,' \n'
+    print>>outf,'ntot=',ntot,' , ntotsf =',ntotsf,' \n'
+    print>>outf,'no2=',no2,' , nli =',nli,' \n'
+    print>>outf,'no2(%)=',no2,' (',no2*100./ntot,\
+        '), nli(%)=',nli,' (',nli*100./ntot,'), \n'
+    print>>outf,'no2/volume=',no2/volume,' \n'
     if (no2>0.):
-        print 'ncen(%)=',ncen,' (',ncen*100./no2,\
-            '), nsat(%)=',nsat,' (',nsat*100./no2,') , ncen+nsat=',ncen+nsat
-        print ' '
-        print 'nqui(%)=',nqui,' (',nqui*100./no2,\
-            '), nbur(%)=',nbur,' (',nbur*100./no2,') , nqui+nbur=',nqui+nbur
-        print ' '
-        print 'nsfh(%)=',nsfh,' (',nsfh*100./no2,\
-            '), nsfl(%)=',nsfl,' (',nsfl*100./no2,') , nsfh+nsfl=',nsfh+nsfl
-        print 'nsfh(%total sf)=',nsfh*100./ntotsf, \
-            'nsfhm(%total sf)=',nsfhm,' (',nsfhm*100./ntotsf,')'
-        print ' '
-        print 'nbig(%)=',nbig,' (',nbig*100./no2,\
+        print>>outf,'ncen(%)=',ncen,' (',ncen*100./no2,\
+            '), nsat(%)=',nsat,' (',nsat*100./no2,') , ncen+nsat=',ncen+nsat,' \n'
+        print>>outf,'nqui(%)=',nqui,' (',nqui*100./no2,\
+            '), nbur(%)=',nbur,' (',nbur*100./no2,') , nqui+nbur=',nqui+nbur,' \n'
+        print>>outf,'nsfh(%)=',nsfh,' (',nsfh*100./no2,\
+            '), nsfl(%)=',nsfl,' (',nsfl*100./no2,') , nsfh+nsfl=',nsfh+nsfl,' \n'
+        print>>outf,'nsfh(%total sf)=',nsfh*100./ntotsf, \
+            'nsfhm(%total sf)=',nsfhm,' (',nsfhm*100./ntotsf,') \n'
+        print>>outf,'nbig(%)=',nbig,' (',nbig*100./no2,\
             '), nsmall(%)=',nsmall,' (',nsmall*100./no2, \
-            ') , nbig+nsmall=',nbig+nsmall
-        print ' '
-        print 'nspheroid(%)=',nspheroid,' (',nspheroid*100./no2,\
+            ') , nbig+nsmall=',nbig+nsmall,' \n'
+        print>>outf,'nspheroid(%)=',nspheroid,' (',nspheroid*100./no2,\
             '), ndisk(%)=',ndisk,' (',ndisk*100./no2, \
-            ') , nspheroid+ndisk=',nspheroid+ndisk
-    print '---------------------------------------------'
+            ') , nspheroid+ndisk=',nspheroid+ndisk,' \n'
+
 
     # Plot
     ax = fig.add_subplot(jj)
@@ -331,3 +327,7 @@ for iz,zsnap in enumerate(snap_list):
 fig.tight_layout()
 fig.savefig(plotfile)
 print 'Output: ',plotfile
+
+# Close file
+outf.close()
+print 'Output: ',outfile

@@ -7,4 +7,4 @@
 *.out
 auto/
 blu
-run_cute/params/params*
+params/

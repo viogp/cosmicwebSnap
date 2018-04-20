@@ -9,8 +9,11 @@ STEPS:
 2. Copy to taurus the resulting ascii table (maybe use rsync?):
    scp [name] vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/gal_files/
 
-3. Run Wiguang's code with the script:
+3. Run Wiguang's code with the script for both sn39 and sn41 (note that the path to Vweb should be changed accordingly):
    vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/get_env.py
+
+   > nohup python get_env.py >& out &
+   > ps ax | grep get_env
 
 4. Copy into cosma the environment files:
    scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /gpfs/data/violeta/lines/cosmicweb/

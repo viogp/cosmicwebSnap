@@ -250,6 +250,9 @@ for im in range(len(models)):
     #    linestyle=':',linewidth=lwdt[im])
 
 ## Legend
+szz = 'z='+str(zz)
+ax.text(xmin+0.05*(xmax-xmin),ymin+0.05*(ymax-ymin), szz) 
+
 leg = ax.legend(loc=2,fontsize='small')
 for color,text in zip(colors,leg.get_texts()):
     text.set_color(color)

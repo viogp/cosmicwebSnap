@@ -21,7 +21,8 @@ def return_env(Pos, threshold=0.1, webf="../VPweb_data/VP_039_DM_MHD.000256.Vweb
 #----LSE parameters---------------
 boxsize = 500.  # Side of the simulation box (Mpc/h)
 threshold = 0.1  # For classifying environments
-pathVweb = '/data1/users/weiguang/Violeta/VPweb_data/VP_039_DM_MHD.000256.Vweb'
+pathVweb = '/data1/users/weiguang/Violeta/VPweb_data/VP_039_DM_MHD_512.000512.Vweb'
+#pathVweb = '/data1/users/weiguang/Violeta/VPweb_data/VP_041_DM_MHD_512.000512.Vweb'
 Vweb = True 
 #---------------------------------
 

@@ -13,10 +13,11 @@ STEPS:
    vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/get_env.py
 
    > nohup python get_env.py >& out &
+
    > ps ax | grep get_env
 
 4. Copy into cosma the environment files:
-   scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /gpfs/data/violeta/lines/cosmicweb/
+   scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /gpfs/data/violeta/lines/cosmicweb/env_files
 
 ## 'cosmicweb' folder at taurus ##
 

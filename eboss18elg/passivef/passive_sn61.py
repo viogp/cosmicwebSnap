@@ -17,9 +17,9 @@ path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 sn = '61'
 
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/'
-models = ['gp18','gp18.font','gp18.starvation','gp17']   
-inleg = ['This work','10% stripping ','Starvation','GP18']
+plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/thiswork.'
+models = ['gp18']#,'gp18.font','gp18.starvation','gp17']   
+inleg = ['This work']#,'10% stripping ','Starvation','GP18']
 
 # Initialize GSMF
 mmin = 8.5

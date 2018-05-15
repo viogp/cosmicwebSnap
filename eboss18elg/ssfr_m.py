@@ -14,11 +14,11 @@ import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
 path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 2 #64
+nvol = 64
 
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/' 
-models = ['gp18','gp18.font','gp18.starvation','gp17']  
-inleg = ['This work','10% stripping ','Starvation','GP18'] 
+plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/thiswork.' 
+models = ['gp18']#,'gp18.font','gp18.starvation','gp17']  
+inleg = ['This work']#,'10% stripping ','Starvation','GP18'] 
 
 # Initialize GSMF
 mmin = 8.5
@@ -136,7 +136,7 @@ ax.plot(x,y,'k',linewidth=1)
 y = [np.log10(0.3*slim),np.log10(0.3*slim)] ; x= [xmin,xmax]
 ax.plot(x,y,'k',linewidth=2)
 
-lsty = ['solid','dashed','dotted','solid']
+lsty = ['solid','dashed','dashed','solid']
 lwdt = [3.,1.5,1.5,1.5]
 for ii in range(len(models)):
     matplotlib.rcParams['contour.negative_linestyle'] = lsty[ii]
@@ -184,13 +184,16 @@ herr[indx]  = np.log10(p3[indx] + dp3[indx])-3. -3.*np.log10(oh)
 plt.errorbar(xobs, yobs, yerr=[yobs-lerr,herr-yobs], fmt='o', ecolor='grey',color='grey', mec='grey',label="Baldry+2012, z<0.06")
 
 # Models
-lsty = ['--','-',':']
+#lsty = ['solid','dashed','dotted','solid']
+lsty = ['-','--',':','-']
+lwdt = [3.,1.5,1.5,1.5]
 for ii in range(len(models)):
     py = gsmf[ii,:] ; ind = np.where(py>0.)
     x = mhist[ind] ; y = np.log10(py[ind])
     ind = np.where(y < 0.)
     axm.plot(x[ind],y[ind],color=cols[ii],\
-                 linestyle=lsty[ii],label=inleg[ii])
+                 linestyle=lsty[ii],linewidth=lwdt[ii], \
+                 label=inleg[ii])
 
 
 # SFRF
@@ -212,7 +215,8 @@ for ii in range(len(models)):
     px = ssfrf[ii,:] ; ind = np.where(px>0.)
     y = shist[ind] ; x = np.log10(px[ind])
     ind = np.where(x < 0.)
-    axs.plot(x[ind],y[ind],color=cols[ii],label=inleg[ii],linestyle=lsty[ii])
+    axs.plot(x[ind],y[ind],color=cols[ii],label=inleg[ii],\
+                 linestyle=lsty[ii],linewidth=lwdt[ii])
 
 # Legend
 leg = axs.legend(bbox_to_anchor=(1., 1.4),fontsize='small')

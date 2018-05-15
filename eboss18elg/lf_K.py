@@ -14,9 +14,9 @@ path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 
 #plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/' 
-models = ['gp18','gp18.font','gp18.starvation','gp17'] 
-inleg = ['This work','10% stripping ','Starvation','GP18']
+plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/thiswork.' 
+models = ['gp18']#,'gp18.font','gp18.starvation','gp17'] 
+inleg = ['This work']#,'10% stripping ','Starvation','GP18']
 
 # Bands for LF
 iband = 'UKIRT-K' ; iband6 = 'K'

@@ -6,8 +6,8 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-#snap = '41' ; survey = 'eBOSS-SGC'
-snap = '39' ; survey = 'DEEP2'
+snap = '41' ; survey = 'eBOSS'
+#snap = '39' ; survey = 'DEEP2'
 
 endings = ['_m8.5_sn'+snap+'.dat','_s3.0_sn'+snap+'.dat']
 root = ['mcut_','scut_']

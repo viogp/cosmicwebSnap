@@ -1,0 +1,13 @@
+#input information
+data_filename= /gpfs/data/Millgas/data/dm/500/snapdir_039/500_dm_039
+num_lines= all
+input_format= 5
+output_filename= /gpfs/data/violeta/mr7corr/xi_real_sn039.txt
+box_size= 500.000000
+#tree stuff
+use_tree= 0
+max_tree_order= 6
+max_tree_nparts= 100
+#irrelevant yet
+use_pm= 0
+n_grid_side= 256

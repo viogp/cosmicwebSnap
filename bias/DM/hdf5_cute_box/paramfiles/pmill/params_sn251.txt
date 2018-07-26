@@ -1,0 +1,13 @@
+#input information
+data_filename= /cosma5/data/jch/L800/Sample/data/snapshot_251
+num_lines= all
+input_format= 5
+output_filename= /gpfs/data/nmccull/pmill/xi_real_sn251.txt
+box_size= 542.160000
+#tree stuff
+use_tree= 0
+max_tree_order= 6
+max_tree_nparts= 100
+#irrelevant yet
+use_pm= 0
+n_grid_side= 256

@@ -6,6 +6,8 @@ STEPS:
 
 1. **xyz2ascii.py** Output the x,y,z coordinates of galaxies into an ascii file named: [cut]\_sn[#]\_[all/centrals/satellites].dat 
 
+Plus the output from ../selections/mass_selections.py sfr_selections.py elg_mselections.py elg_sselections.py
+
 2. Copy to taurus the resulting ascii table (maybe use rsync?):
    scp [name] vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/gal_files/
 

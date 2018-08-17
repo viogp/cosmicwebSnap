@@ -527,7 +527,7 @@ static Catalog read_hdf5(char *prefix, lint *np) {
 		  break;
 		}
 		else {
-		  printf("Opened %s \n",fname);
+		  printf("%i , Opened %s \n",partind,fname);
 		}
 
 		dataset_id=H5Dopen2(file_id, "/PartType1/Coordinates", H5P_DEFAULT);
@@ -573,7 +573,7 @@ static Catalog read_hdf5(char *prefix, lint *np) {
 			status=H5Aread(attr_id, H5T_NATIVE_DOUBLE, &scalefact);
 		}
 
-		srand(time(0)); // Use current time as a seed
+		//srand(time(0)); // Use current time as a seed
 		for (j=0; j<dims[0]; j++) {
 		  if (partind == cat.np) {
 		    break;

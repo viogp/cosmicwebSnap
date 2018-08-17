@@ -13,7 +13,7 @@ from astropy.io import fits
 plt.style.use(mpl_style.style1)
 
 dir = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/' 
-nvol = 64
+nvol = 1#64
 model = 'gp18/'
 
 #zlist = [61, 44, 42, 40, 37] #z=0, 0.6, 0.75, 0.9, 1.18
@@ -37,7 +37,7 @@ plt.ylabel("$(g-r)_{\\rm DECam}$")
 # Prepare histograms for contours
 dxy = 0.05
 xmin = 0. ; xmax = 2.
-ymin = 0. ; ymax = 1.45
+ymin = -0.3 ; ymax = 1.45
 plt.xlim(xmin,xmax)
 plt.ylim(ymin,ymax)
 
@@ -76,6 +76,12 @@ x = [rz1,rz2,rz3,rz4,rz1]
 y = [gr1,gr2,gr3,gr4,gr1]
 cs, = plt.plot(x,y,'k',linewidth=3.5)
 lines.append(cs)
+
+# Plot model galaxies to check the selection
+plotscatter = True
+if (plotscatter):
+    gr2plot = np.array([])
+    rz2plot = np.array([])
 
 # Model
 for ii,iz in enumerate(zlist):
@@ -126,9 +132,19 @@ for ii,iz in enumerate(zlist):
             f.close()
 
             ycol = gr[ind] ; xcol = rz[ind]
-
             H,xedges,yedges = np.histogram2d(xcol,ycol,bins=[np.append(xbins,xmax),np.append(ybins,ymax)])
             zhist[ii,:,:] = zhist[ii,:,:] + H
+
+            if plotscatter:
+                ins = np.where((gr>0.457-0.068*rz) &\
+                                   (gr<0.112*rz+0.773) &\
+                                   (rz>0.571+0.218*gr) &\
+                                   (rz<1.901-0.555*gr))
+                if (np.shape(ins)[1]>0):
+                    np.random.shuffle(ins)
+                    ntake = int(np.shape(ins)[1]*0.001)
+                    gr2plot = np.append(gr2plot, gr[ins[:ntake]])
+                    rz2plot = np.append(rz2plot, rz[ins[:ntake]])
 
 print 'Start plotting'
 # Plot the model predictions
@@ -145,6 +161,8 @@ for ii in range(len(zlist)):
                              label=zleg[ii])
         lines.append(cs.collections[0])
 
+if plotscatter:
+    plt.scatter(rz2plot,gr2plot,color='grey')
 
 # Legend
 plt.text(0.05,1.35,'eBOSS cuts')
@@ -158,5 +176,5 @@ for color,text in zip(cols,leg.get_texts()):
 
 
 #plt.show()
-print 'Plot: ',plotfile
 fig.savefig(plotfile)
+print 'Plot: ',plotfile

@@ -9,6 +9,7 @@ N_LOGINT = 12
 DEFINEOPTIONS = -D_VERBOSE -D_LONGIDS
 DEFINEOPTIONS += -D_LOGBIN
 #DEFINEOPTIONS = -D_HAVE_OMP
+$(info ${DEFINEOPTIONS})
 ### End of user-definable stuff
 ####################################################
 

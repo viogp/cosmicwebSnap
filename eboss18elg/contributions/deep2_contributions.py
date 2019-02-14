@@ -9,7 +9,7 @@ import matplotlib.ticker as ticker
 import read_jc_obs as jc
 from Cosmology import * 
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 model = str(sys.argv[1])
 
 snap_list = [61, 41, 39] #MillGas #z=0, 0.83, 0.99
@@ -21,7 +21,7 @@ obands = 'R24.2' ; band = 'DEIMOS-R' ; icut = 24.1
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/cosmicweb/contributions/'+model+'/att_'
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/contributions/'+model+'/att_'
 
 plotfile = outdir+line+'_'+obsnom+'.pdf'
 outfile = outdir+obsnom+'.dat'
@@ -32,7 +32,7 @@ outf = open(outfile,'a')
 
 ############################# Obs
 obsh0 = 0.677
-obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/individual_LF/'
+obs_dir = '/cosma5/data/durham/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/individual_LF/'
 #############################
 
 inleg1 = ['Attenuated','Centrals','Quiescent','High sSFR','Big','Spheroid']

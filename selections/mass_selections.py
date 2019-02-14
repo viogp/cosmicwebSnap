@@ -10,21 +10,25 @@ nvol = 64
 
 mval = 8.5
 
-#sn = '41' ; inleg = ['eBOSS']
+sn = '41' ; inleg = ['eBOSS']
 
-sn = '39' ; inleg = ['DEEP2']
+#sn = '41' ; inleg = ['VVDS-DEEP']
+
+#sn = '39' ; inleg = ['DEEP2']
+
+#sn = '39' ; inleg = ['DESI']
 
 #############################
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-model = 'gp18/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+model = 'gp19/'
 
 line = 'OII3727' ; lline = '[OII]'
 ############################################
 ntypes = len(inleg) + 1
 
-outpath = '/gpfs/data/violeta/lines/cosmicweb/selections/'
+outpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
 for ileg in inleg:
-    outm = outpath+'ascii_files/mcut_'+ileg+'_m'+str(mval)+'_sn'+str(sn)+'.dat'
+    outm = outpath+model+'ascii_files/mcut_'+ileg+'_m'+str(mval)+'_sn'+str(sn)+'.dat'
     print('Output: ',outm) 
     outf = open(outm, 'w')
     outf.write('# xgal,ygal,zgal (Mpc/h), vxgal,vygal,vzgal (Km/s), log10(massh),log10(mass/Msun/h), log10(sfr/Msun/h/Gyr), lum,lum_ext (10^40 h^-2 erg/s) \n')
@@ -85,20 +89,20 @@ for ivol in range(nvol):
                 ielg = 0
             elif (seln[0] == 'VVDS-DEEP'):
                 ielg = 1
-            elif (seln[0] == 'VVDS-WIDE'):
-                ielg = 2
             elif (seln[0] == 'eBOSS'):
-                ielg = 3
+                ielg = 2
             elif (seln[0] == 'DESI'):
-                ielg = 4
+                ielg = 3
+            #elif (seln[0] == 'VVDS-WIDE'):
+            #    ielg = 2
 
             # Mass selected
-            filcut = outpath+'mass_cuts_sn'+sn+'.dat'
+            filcut = outpath+model+'mass_cuts_sn'+sn+'.dat'
             if (not os.path.isfile(filcut)):
                 print('STOP: {} not found'.format(filcut)) ; sys.exit()
-            ielgs, mvals, dum, ngals = np.loadtxt(filcut,unpack=True)
+            ielgs, mvals, dum, mcut = np.loadtxt(filcut,unpack=True)
             ind = np.where((ielgs == ielg) & (mvals == mval))
-            val = ngals[ind][0]
+            val = mcut[ind][0]
 
             ind = np.where(mass1>10**val)
 
@@ -115,7 +119,7 @@ for ivol in range(nvol):
                                           massh,mass,sfr,\
                                           lum[ind],lum_ext[ind]))
 
-            outm = outpath+'ascii_files/mcut_'+ileg+'_m'+str(mval)+'_sn'+str(sn)+'.dat'
+            outm = outpath+model+'ascii_files/mcut_'+ileg+'_m'+str(mval)+'_sn'+str(sn)+'.dat'
             with open(outm,'a') as outf:
                 np.savetxt(outf, tofile, fmt ='%.5f')
 

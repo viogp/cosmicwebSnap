@@ -10,21 +10,24 @@ nvol = 64
 
 sval = 3.0
 
-#sn = '41' ; inleg = ['eBOSS_centrals','eBOSS_satellites']
+sn = '41' ; inleg = ['eBOSS_centrals','eBOSS_satellites']
 
-sn = '39' ; inleg = ['DEEP2_centrals','DEEP2_satellites']
+#sn = '41' ; inleg = ['VVDS-DEEP_centrals','VVDS-DEEP_satellites']
 
+#sn = '39' ; inleg = ['DEEP2_centrals','DEEP2_satellites']
+
+#sn = '39' ; inleg = ['DESI_centrals','DESI_satellites']
 
 #############################
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-model = 'gp18/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+model = 'gp19/'
 
 line = 'OII3727' ; lline = '[OII]'
 ############################################
 
-outpath = '/gpfs/data/violeta/lines/cosmicweb/selections/'
+outpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
 for ileg in inleg:
-    outfile = outpath+'ascii_files/'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
+    outfile = outpath+model+'ascii_files/'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
     print('Output: ',outfile)
     outf = open(outfile, 'w')
     outf.write('# xgal,ygal,zgal (Mpc/h), vxgal,vygal,vzgal (Km/s), log10(massh),log10(mass/Msun/h), log10(sfr/Msun/h/Gyr), lum,lum_ext (10^40 h^-2 erg/s) \n')
@@ -128,7 +131,7 @@ for ivol in range(nvol):
                 rz = r-z ; gr = g-r
 
                 sel0 = (r<23.4) & (rz>0.3) & (gr>-0.3) & \
-                    (rz>0.9*gr+0.12) & (rz<1.345-0.85*gr)
+                       (gr<1.1*rz-0.13) & (gr<1.6-1.18*rz)
 
             lcut = emission_line_luminosity(fluxcut,zz)
             if (len(seln)>1):
@@ -158,7 +161,7 @@ for ivol in range(nvol):
                                           massh,mass,sfr,\
                                           lum[ind],lum_ext[ind]))
 
-            outfile = outpath+'ascii_files/'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
+            outfile = outpath+model+'ascii_files/'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
             with open(outfile,'a') as outf:
                 np.savetxt(outf, tofile, fmt ='%.5f')
 

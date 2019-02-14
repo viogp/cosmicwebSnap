@@ -1,22 +1,38 @@
 import sys,os
 from glob import glob
 import numpy as np
+import matplotlib ; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-snap = '41' ; survey = 'eBOSS'
+model = 'gp19'
+
+#cw = 'Vweb'
+cw = 'Pweb'
+
+#snap = '41' ; survey = 'eBOSS'
+#snap = '41' ; survey = 'VVDS-DEEP'
 #snap = '39' ; survey = 'DEEP2'
+snap = '39' ; survey = 'DESI'
 
 endings = ['_m8.5_sn'+snap+'.dat','_s3.0_sn'+snap+'.dat']
 root = ['mcut_','scut_']
 ##########################################
 
-epath = '/gpfs/data/violeta/lines/cosmicweb/env_files/'
+path = '/cosma5/data/durham/violeta/lines/cosmicweb/'
+epath = path+'env_files/'+cw+'/'+model+'/'
+plotfile = path+'plots/'+model+'/environ/'+cw+'_'+survey+'_persatcen.pdf'
 
-inleg = ['Mass cut','SFR cut','eBOSS (mass)','eBOSS (SFR)']
+##########################################
+inleg = ['Mass cut','SFR cut',survey+' (mass)',survey+' (SFR)']
 nfiles = len(inleg)
+
+if(snap == '41'):
+    ztext = 'z = 0.83'
+elif(snap == '39'):
+    ztext = 'z = 0.99'
 
 # Plot histogram: 0 Void; 1 sheet; 2 filament; 3 Knots.
 fig = plt.figure(figsize=(8.5,9.))
@@ -30,6 +46,8 @@ ax.tick_params(axis='x',which='minor',bottom='off')
 ytit = "Fraction"
 ax.set_ylabel(ytit)
 ymin = 0. ; ymax = 1. ; ax.set_ylim(ymin,ymax)
+
+ax.text(-0.5, 0.95, ztext)
 
 cols = get_distinct(nfiles)
 
@@ -49,7 +67,7 @@ for ii,ending in enumerate(endings):
     hist, bins_edges = np.histogram(env, bins=np.append(ebins,emax))
     per = hist/float(len(env))
 
-    print infile, per
+    print(infile, per)
     xenv = ebins + 0.5*dm*(1.-frac) + 0.5*lbar + ii*lbar
     ax.bar(xenv, per, lbar, \
                color=cols[ii], label=inleg[ii])
@@ -86,6 +104,5 @@ leg = plt.legend(loc=1)
 leg.draw_frame(False)
 
 # Save figure
-plotfile = epath + survey + 'per_satcen.pdf'
 fig.savefig(plotfile)
 print 'Output: ',plotfile

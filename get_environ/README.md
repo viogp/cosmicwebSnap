@@ -4,14 +4,14 @@ We get the environment for objects in snapshots 39, z=1, and 41, z=0.83 (MS-W7 s
 
 STEPS:
 
-1. **xyz2ascii.py** Output the x,y,z coordinates of galaxies into an ascii file named: [cut]\_sn[#]\_[all/centrals/satellites].dat 
+1. **../selections/mass_selections.py sfr_selections.py elg_mselections.py elg_sselections.py** Output the x,y,z coordinates of galaxies into an ascii file named: [cut]\_sn[#]\_[all/centrals/satellites].dat 
 
-Plus the output from ../selections/mass_selections.py sfr_selections.py elg_mselections.py elg_sselections.py
+**xyz2ascii.py** Used for producing a halo catalogue, before Weiguang had access to the simulation particles.
 
 2. Copy to taurus the resulting ascii table (maybe use rsync?):
    scp [name] vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/gal_files/
 
-3. Run Wiguang's code with the script for both sn39 and sn41 (note that the path to Vweb should be changed accordingly):
+3. Run Weiguang's code with the script for both sn39 and sn41 (note that the path to Vweb should be changed accordingly):
    vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/get_env.py
 
    > nohup python get_env.py >& out &
@@ -19,7 +19,7 @@ Plus the output from ../selections/mass_selections.py sfr_selections.py elg_msel
    > ps ax | grep get_env
 
 4. Copy into cosma the environment files:
-   scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /gpfs/data/violeta/lines/cosmicweb/env_files
+   scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /cosma5/data/durham/violeta/lines/cosmicweb/env_files
 
 ## 'cosmicweb' folder at taurus ##
 

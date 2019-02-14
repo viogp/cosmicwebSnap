@@ -13,12 +13,12 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-model = 'gp18/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+model = 'gp19/'
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/cosmicweb/plots/'+model+'selections/sfr_cum_'
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'selections/sfr_cum_'
 plotfile = outdir+line+'.pdf'
 #############################
 
@@ -34,6 +34,16 @@ mcuts = [24.1, 24, 22.5]
 fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
 
 inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
+#####
+# No VVDSWIDE
+obsnom = ['DEEP2','VVDSDEEP']
+obands = ['R24.2','I24']
+
+bands = ['DEIMOS-R','MegaCam-i-atmos','eBOSS-SGC','DESI']
+mcuts = [24.1, 24]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 10.**-16.,8.*10.**-17.]
+
+inleg = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
 ##########
 
 ntypes = len(inleg)
@@ -125,30 +135,30 @@ for iz,zsnap in enumerate(snap_list):
 
                         if (inleg[index] == 'eBOSS-SGC'): 
                             ind = np.where((lum_ext>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           (rz>0.218*gr + 0.571) & \
+                                           (rz<-0.555*gr + 1.901))
                             indi = np.where((lum>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
+                                            (g>21.825) & (g<22.825) & \
+                                            (gr>-0.068*rz + 0.457) & \
+                                            (gr<0.112*rz + 0.773) & \
+                                            (rz>0.218*gr + 0.571) & \
+                                            (rz<-0.555*gr + 1.901))
 
                         elif (inleg[index] == 'DESI'): 
                             ind  = np.where((r<23.4) & \
-                                                (rz>0.3) & (gr>-0.3) & \
-                                                (rz>0.9*gr+0.12) & \
-                                                (rz<1.345-0.85*gr) & \
-                                                (lum_ext>lcut))
+                                            (rz>0.3) & (gr>-0.3) & \
+                                            (gr<1.1*rz-0.13) & \
+                                            (gr<1.6-1.18*rz) & \
+                                            (lum_ext>lcut))
 
                             indi  = np.where((r<23.4) & \
-                                                (rz>0.3) & (gr>-0.3) & \
-                                                (rz>0.9*gr+0.12) & \
-                                                (rz<1.345-0.85*gr) & \
-                                                (lum>lcut))
+                                             (rz>0.3) & (gr>-0.3) & \
+                                             (gr<1.1*rz-0.13) & \
+                                             (gr<1.6-1.18*rz) & \
+                                             (lum>lcut))
 
                     else:
                         ib = bands[index-1]
@@ -178,7 +188,7 @@ for iz,zsnap in enumerate(snap_list):
     print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
 
     # Write output
-    outfile = '/gpfs/data/violeta/lines/cosmicweb/selections/sfr_cum_sn'+\
+    outfile = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'+model+'sfr_cum_sn'+\
         str(zsnap)+'.dat'
     with open(outfile,'w') as outf:
         outf.write('# log10(SFR/Msun/h/Gyr) ') 

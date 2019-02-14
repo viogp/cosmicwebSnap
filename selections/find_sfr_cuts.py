@@ -2,16 +2,19 @@ import os.path, sys
 import numpy as np
 from scipy.interpolate import interp1d
 
-inpath = '/gpfs/data/violeta/lines/cosmicweb/selections/'
+inpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
+
+model = 'gp19/'
 
 snap_list = [41,39]
 
 values = [3.,8.]
 
-elgs = ['DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI'] 
+#elgs = ['DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI'] 
+elgs = ['DEEP2','VVDS-DEEP','eBOSS-SGC','DESI'] 
 
 for zsnap in snap_list:
-    infile = inpath+'sfr_cum_sn'+str(zsnap)+'.dat'
+    infile = inpath+model+'sfr_cum_sn'+str(zsnap)+'.dat'
     if (not os.path.isfile(infile)):
         print('STOP: {} not found'.format(infile)) ; sys.exit()
     
@@ -21,7 +24,7 @@ for zsnap in snap_list:
     allg = data[1,:]
 
     # Write output header
-    outfile = inpath+'sfr_cuts_sn'+str(zsnap)+'.dat'
+    outfile = inpath+model+'sfr_cuts_sn'+str(zsnap)+'.dat'
     ff = open(outfile,'w') ; print('Outfile: ',outfile)
     ff.write('# ')
     ff.write('  '.join([str(ii)+'='+elg for ii,elg in enumerate(elgs)]))

@@ -1,14 +1,14 @@
 #! /usr/bin/env python
 
-import os.path, sys
+import os, sys
 import h5py
 import numpy as np
 from Cosmology import *
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-#model = 'gp18'
-model = 'gp18.font'
-#model = 'gp18.starvation'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+#model = 'gp19'
+#model = 'gp19.font'
+#model = 'gp19.starvation'
 
 info_file = model+'_inputs4cute_r.txt' 
 
@@ -17,17 +17,25 @@ info = open( info_file, 'w' )
 line = 'OII3727' ; lline = '[OII]'
 #############################
 
-snap_list = [41, 39] #MillGas
+snap_list = [41]#, 39] #MillGas
 nvol = 64
 
 #inleg = ['DEEP2','VVDSWIDE','VVDSDEEP','eBOSS','DESI']
 
-inleg = ['DEEP2','eBOSS-SGC']
+inleg = ['DEEP2','eBOSS-SGC','VVDSDEEP','DESI']
 
 ############################################
 # Loop over the redshifts of interest
 for iz,zsnap in enumerate(snap_list):
-    outpath = path+model+'/iz'+str(zsnap)+'/'
+    outpath = path+model+'/iz'+str(zsnap)+'/r/'
+    if not os.path.exists(outpath):
+        os.makedirs(outpath)
+
+    # Delete previous files
+    for inlegs in inleg:
+        outfile = outpath+line+'_'+inlegs+'_4cute.dat'
+        if(os.path.isfile(outfile)):             
+            os.remove(outfile)
 
     volume = 0. ; firstpass = True
     ngals = np.zeros(shape=(len(inleg)), dtype=np.int)
@@ -130,7 +138,7 @@ for iz,zsnap in enumerate(snap_list):
                         rz = r-z ; gr = g-r
 
                         sel0 = (r<23.4) & (rz>0.3) & (gr>-0.3) & \
-                            (rz>0.9*gr+0.12) & (rz<1.345-0.85*gr)
+                            (gr<1.1*rz-0.13) & (gr<1.6-1.18*rz)
 
                     lcut = emission_line_luminosity(fluxcut,zz)
 
@@ -153,8 +161,9 @@ for iz,zsnap in enumerate(snap_list):
                                               gtype[ind],burst[ind]))
 
                     with open(outfile,'a') as f_handle:
-                        np.savetxt(f_handle, tofile, \
-                                   fmt=('%.5f %.5f %.5f %.5f %.5f %.5f %.5f %d %d %d %d %d'))
+                        if(np.shape(tofile)[1] == 12):
+                            np.savetxt(f_handle, tofile, \
+                                       fmt=('%.5f %.5f %.5f %.5f %.5f %.5f %.5f %d %d %d %d %d'))
 
                 f.close()
 

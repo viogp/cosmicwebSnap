@@ -10,14 +10,13 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 
-#plotdir = '/gpfs/data/violeta/lines/desi_hod_o2/plots/modelplots/gp18.bh.'
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/nominfrac.'
-models = ['gp18','gp18.e0p01nominfrac','gp18.e0.nominfrac','gp18.e0p1.nominfrac']#,'gp18.font','gp18.starvation','gp17'] 
-#inleg = ['This work']#,'10% stripping ','Starvation','GP18'] 
-inleg = models
+plotdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/modelplots/thiswork.'
+models = ['gp19','gp19.font','gp19.starvation','gp17'] 
+inleg = ['This work','10% stripping ','Starvation','GP18'] 
+#inleg = models
 
 # Bands for LF
 iband = 'Bj' ; iband1 = 'BJ'
@@ -101,7 +100,7 @@ colors = cols #; g = ['grey'] ; colors.extend(g)
 colors[len(colors)-1] = 'grey'
 
 # Observational data
-dobs = '/cosma/home/violeta/Galform2/galform-2.6.0/Obs_Data2/'
+dobs = '/cosma/home/dphlss/violeta/Galform2/galform/Obs_Data2/'
 fobs ='lfBJ_norberg02.data' #'lfk_z0_driver12.data'
 
 # Plot observations

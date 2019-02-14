@@ -3,10 +3,10 @@ import h5py
 import numpy as np
 from Cosmology import *
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-#model = 'gp18'
-#model = 'gp18.font'
-model = 'gp18.starvation'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+#model = 'gp19'
+#model = 'gp19.font'
+model = 'gp19.starvation'
 
 info_file = model+'_inputs4cute_gflux_z.txt' 
 
@@ -26,7 +26,7 @@ ntypes = len(inleg)
 ############################################
 # Loop over the redshifts of interest
 for iz,zsnap in enumerate(snap_list):
-    outpath = path+model+'/iz'+str(zsnap)+'/'
+    outpath = path+model+'/iz'+str(zsnap)+'/z/'
 
     volume = 0. ; firstpass = True
     ngals = np.zeros(shape=(ntypes), dtype=np.int)
@@ -126,5 +126,4 @@ for iz,zsnap in enumerate(snap_list):
         print outfile
         info.write(str(outfile+ '\n') )
 info.close()
-print(' - Info file:',info_file)    
-
+print(' - Info file:',info_file)

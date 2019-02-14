@@ -14,7 +14,7 @@ line = 'OII3727' ; lline = '[OII]'
 #############################
 
 #snap_list = [44, 42, 40, 37, 34] #MillGas
-snap_list = [42, 40] #MillGas
+snap_list = [41, 39] #MillGas
 nvol = 64
 
 fcuts = [10.**-18., 10.**-17., 5.*10.**-17., 10.**-16., 5*10.**-16.]

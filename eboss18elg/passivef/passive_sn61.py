@@ -13,19 +13,19 @@ from stats import *
 import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-nvol = 3 #64
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+nvol = 64
 sn = '61'
 
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/etiny.'
-models = ['gp18.e0p01nominfrac','gp18.e0p000001.nominfrac','gp18.e0p0001.nominfrac','gp18.e0.nominfrac']
+plotdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/modelplots/thiswork.'
+#models = ['gp18.e0p01nominfrac','gp18.e0p000001.nominfrac','gp18.e0p0001.nominfrac','gp18.e0.nominfrac']
 #'gp18.e0p1.nominfrac.0001','gp18.e0p01.nominfrac.0001','gp18.e0.nominfrac.0001']
 #'gp18.e0.nominfrac','gp18.e0.nominfrac.nodst','gp18.e0p01.nominfrac.nodst','gp18.e0p1.nominfrac.nodst']
 #'gp18.e0p1.nominfrac.0001','gp18.e0p01.nominfrac.0001','gp18.e0.nominfrac.0001'] 
-#,'gp18.font','gp18.starvation','gp17']  
+models = ['gp19','gp19.font','gp19.starvation','gp17']  
 # 'gp18.e0p1.nominfrac','gp18.e0p01nominfrac','gp18.e0.nominfrac']  
-#inleg = ['This work']#,'10% stripping ','Starvation','GP18']
-inleg = models
+inleg = ['This work','10% stripping ','Starvation','GP18']
+#inleg = models
 
 # Initialize GSMF
 mmin = 8.5

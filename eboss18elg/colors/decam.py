@@ -12,9 +12,9 @@ import mpl_style
 from astropy.io import fits
 plt.style.use(mpl_style.style1)
 
-dir = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/' 
+dir = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/' 
 nvol = 64
-model = 'gp18/'
+model = 'gp19/'
 
 #zlist = [61, 44, 42, 40, 37] #z=0, 0.6, 0.75, 0.9, 1.18
 zlist = [44, 41, 39, 34] #z=0.6, 0.83, 1., 1.5
@@ -22,7 +22,7 @@ cols = get_distinct(len(zlist))
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/cosmicweb/plots/'+model
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model
 plotfile = outdir+line+'_decam.pdf'
 
 fluxcut = 8.*10.**-17.
@@ -54,7 +54,7 @@ zleg = [] ; lines=[]
 # Observations
 
 # Stars
-obspath = '/gpfs/data/violeta/lines/desi_hod_o2/xi_obs_data/'
+obspath = '/cosma5/data/durham/violeta/lines/desi_hod_o2/xi_obs_data/'
 
 fil = obspath+'lensing14_stars_decam_match.fits' 
 hdulist = fits.open(fil) ; tbdata = hdulist[1].data
@@ -93,7 +93,7 @@ lines.append(cs)
 
 # Model
 for ii,iz in enumerate(zlist):
-    firstpass = True
+    firstpass = True 
     for ivol in range(nvol):
         fil = dir+model+'/iz'+str(iz)+'/ivol'+str(ivol)+'/galaxies.hdf5'
         if (os.path.isfile(fil)):
@@ -118,25 +118,24 @@ for ii,iz in enumerate(zlist):
             set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \
                               h0=h0, universe="Flat",include_radiation=False)
             inleg = 'z='+str(zz)
-        else:
-            print ' Not found: ',fil
 
-        efil = dir+model+'/iz'+str(iz)+'/ivol'+str(ivol)+'/elgs.hdf5'
-        if (os.path.isfile(efil)):
-            f = h5py.File(efil,'r') ; g = f['Output001']
 
-            gr = g['mag_DES-g_o_tot_ext'].value -\
-                g['mag_DES-r_o_tot_ext'].value
-            rz = g['mag_DES-r_o_tot_ext'].value -\
-                g['mag_DES-z_o_tot_ext'].value 
+            efil = dir+model+'/iz'+str(iz)+'/ivol'+str(ivol)+'/elgs.hdf5'
+            if (os.path.isfile(efil)):
+                f = h5py.File(efil,'r') ; g = f['Output001']
 
-            lum_ext = g['L_tot_'+line+'_ext'].value
-            ind = np.where(lum_ext >lcut)
-            #gmag = g['mag_DES-g_o_tot_ext'].value 
-            #ind = np.where((lum_ext >lcut) & \
-            #                   (gmag>21.825) & \
-            #                   (gmag<22.825))            
-            f.close()
+                gr = g['mag_DES-g_o_tot_ext'].value -\
+                     g['mag_DES-r_o_tot_ext'].value
+                rz = g['mag_DES-r_o_tot_ext'].value -\
+                     g['mag_DES-z_o_tot_ext'].value 
+
+                lum_ext = g['L_tot_'+line+'_ext'].value
+                ind = np.where(lum_ext >lcut)
+                #gmag = g['mag_DES-g_o_tot_ext'].value 
+                #ind = np.where((lum_ext >lcut) & \
+                    #                   (gmag>21.825) & \
+                    #                   (gmag<22.825))            
+                f.close()
 
             ycol = gr[ind] ; xcol = rz[ind]
 
@@ -153,8 +152,7 @@ for ii in range(len(zlist)):
         ind = np.where(zzhist >0.)
         Z[ind] = np.log10(zzhist[ind]/vols[ii]/dxy/dxy)  # In Mpc^3/h^3
         cs = plt.contour(X, Y, Z.T, levels=al, \
-                            linestyles='-',colors=cols[ii],\
-                             label=zleg[ii])
+                         linestyles='-',colors=cols[ii])
         lines.append(cs.collections[0])
 
 # Legend
@@ -165,7 +163,6 @@ for color,text in zip(cols,leg.get_texts()):
     #print text
     text.set_color(color)
     leg.draw_frame(False)        
-
 
 #plt.show()
 fig.savefig(plotfile)

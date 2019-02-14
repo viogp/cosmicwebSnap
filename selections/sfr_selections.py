@@ -10,21 +10,25 @@ nvol = 64
 
 sval = 3.0
 
-# sn = '41' ; inleg = ['eBOSS']
+sn = '41' ; inleg = ['eBOSS']
 
-sn = '39' ; inleg = ['DEEP2']
+#sn = '41' ; inleg = ['VVDS-DEEP']
+
+#sn = '39' ; inleg = ['DEEP2']
+
+#sn = '39' ; inleg = ['DESI']
 
 #############################
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-model = 'gp18/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+model = 'gp19/'
 
 line = 'OII3727' ; lline = '[OII]'
 ############################################
 ntypes = len(inleg) + 1
 
-outpath = '/gpfs/data/violeta/lines/cosmicweb/selections/'
+outpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
 for ileg in inleg:
-    outm = outpath+'ascii_files/scut_'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
+    outm = outpath+model+'ascii_files/scut_'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
     print('Output: ',outm)
     outf = open(outm, 'w')
     outf.write('# xgal,ygal,zgal (Mpc/h), vxgal,vygal,vzgal (Km/s), log10(massh),log10(mass/Msun/h), log10(sfr/Msun/h/Gyr), lum,lum_ext (10^40 h^-2 erg/s) \n')
@@ -85,15 +89,15 @@ for ivol in range(nvol):
                 ielg = 0
             elif (seln[0] == 'VVDS-DEEP'):
                 ielg = 1
-            elif (seln[0] == 'VVDS-WIDE'):
-                ielg = 2
             elif (seln[0] == 'eBOSS'):
-                ielg = 3
+                ielg = 2
             elif (seln[0] == 'DESI'):
-                ielg = 4
+                ielg = 3
+            #elif (seln[0] == 'VVDS-WIDE'):
+            #    ielg = 2
 
             # Mass selected
-            filcut = outpath+'sfr_cuts_sn'+sn+'.dat'
+            filcut = outpath+model+'sfr_cuts_sn'+sn+'.dat'
             if (not os.path.isfile(filcut)):
                 print('STOP: {} not found'.format(filcut)) ; sys.exit()
             ielgs, svals, dum, ngals = np.loadtxt(filcut,unpack=True)
@@ -115,7 +119,7 @@ for ivol in range(nvol):
                                           massh,mass,sfr,\
                                           lum[ind],lum_ext[ind]))
 
-    outm = outpath+'ascii_files/scut_'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
+            outm = outpath+model+'ascii_files/scut_'+ileg+'_s'+str(sval)+'_sn'+str(sn)+'.dat'
             with open(outm,'a') as outf:
                 np.savetxt(outf, tofile, fmt ='%.5f')
 

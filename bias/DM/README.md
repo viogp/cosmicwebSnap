@@ -19,6 +19,6 @@ currently I have NB_R=84, R_MAX = 65, N_LOGINT = 12. I have run one snapshot wit
 DEFINEOPTIONS += -D_LOGBIN uncommented (log binning for the correlation functions)
 ats
 -----------------------
-~/lines/cosmic_web/bias/DM/nuala_cute_box/paramfiles/millgas
+~/lines/cosmic_web/bias/DM/hdf5_cute_box/paramfiles/millgas
 params_sn39.txt
 params_sn41.txt

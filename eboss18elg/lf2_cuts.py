@@ -12,16 +12,16 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-model = 'gp18/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+model = 'gp19/'
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/cosmicweb/plots/'+model+'lfs/compared2_'
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'lfs/compared2_'
 plotfile = outdir+line+'.pdf'
 ############################# Obs
 obsh0 = 0.677
-obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/'
+obs_dir = '/cosma5/data/durham/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/'
 #############################
 
 snap_list = [41,39] #MillGas

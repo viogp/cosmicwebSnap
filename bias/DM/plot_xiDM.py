@@ -8,7 +8,7 @@ plt.style.use(mpl_style.style1)
 rmin = 0.02
 
 sn =['41','39']
-path ='/gpfs/data/violeta/mr7corr/'
+path ='/cosma5/data/durham/violeta/mr7corr/'
 froot=path+'xi_real_sn0'
 
 #Plot
@@ -33,13 +33,17 @@ for s in sn:
 
 
 # Plot Test
-#ff='/cosma/home/violeta/lines/cosmic_web/bias/DM/hdf5_cute_box/test/corr128.dat'
-#ff='/gpfs/data/violeta/CUTE/CUTE_box/test/corr128.dat'
-ff='/cosma/home/violeta/lines/cosmic_web/bias/DM/CUTE/CUTE_box/test/corr128.dat'
+ff='/cosma/home/dphlss/violeta/lines/cosmic_web/bias/DM/CUTE/CUTE_box/test/corr128.dat'
 r,xi,error,dd = np.loadtxt(ff,unpack=True)
 ind=np.where((r>rmin) & (xi>0.))
 lerr = error[ind]*np.log10(np.exp(1))/r[ind]
-ax.errorbar(np.log10(r[ind]),np.log10(xi[ind]),label=s)
+ax.errorbar(np.log10(r[ind]),np.log10(xi[ind]),label='Test')
+
+
+# Legends
+leg = ax.legend(loc=1)
+leg.draw_frame(False)
+
 
 # Save figure
 plotfile = path+'xiDM.pdf'

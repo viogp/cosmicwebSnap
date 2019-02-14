@@ -2,9 +2,9 @@
 
 set testing = true
 
-set logdir = /gpfs/data/$user/Junk/
+set logdir = /cosma5/data/durham/$user/Junk/
 
-set path = /cosma/home/violeta/lines/cosmic_web/bias/DM/
+set path = /cosma/home/dphlss/violeta/lines/cosmic_web/bias/DM/
 set p2p = ${path}hdf5_cute_box/paramfiles/millgas/
 #set exec = ${path}hdf5_cute_box/CUTE_box
 set exec = ${path}CUTE/CUTE_box/CUTE_box

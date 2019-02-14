@@ -25,11 +25,15 @@ obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/'
 #############################
 
 snap_list = [41,39] #MillGas
-nvol = 1#64
+nvol = 64
 
 gaea = '/gpfs/data/violeta/gaea/'
 gaea_root = gaea+'NebCat-H17_FIRE-H16_z' 
-zlist = ['0.83','1.0'] #Gaea
+zlist = [0.83,1.0] #Gaea
+# Cosmology
+h0_g=0.73 ; omega0_g=0.25 ; omegab_g=0.045 ; lambda0_g=0.75
+#(log10L+lsun2lgal) erg/s h-2, Lsun taken from the IAU
+lsun2lgal = np.log10(3.8275) + 33. + 2*np.log10(h0_g) 
 
 #####
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
@@ -37,7 +41,7 @@ obands = ['R24.2','I24','I22.5']
 
 bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
 mcuts = [24.1, 24, 22.5]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.] #erg/s/cm2
 
 inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
 ##########
@@ -95,9 +99,9 @@ for iz,zsnap in enumerate(snap_list):
                               h0=h0, universe="Flat",include_radiation=False)
             tomag = band_corrected_distance_modulus(zz) 
 
-            efile = path+model+'/iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
+            efile = path+model+'iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
             if (os.path.isfile(efile)):
-                f = h5py.File(efile,'r')
+                f = h5py.File(efile,'r') #; print (efile)
                 lum_ext = f['Output001/L_tot_'+line+'_ext'].value
                 lum = f['Output001/L_tot_'+line].value
 
@@ -164,18 +168,99 @@ for iz,zsnap in enumerate(snap_list):
                         lf[index,:] = lf[index,:] + H
                 f.close()
 
-
-    lf = lf/dl/volume
-    lf_ext = lf_ext/dl/volume
-    print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
+    if (volume>0.):
+        lf = lf/dl/volume
+        lf_ext = lf_ext/dl/volume
+        print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
+    else:
+        print('STOP: Nothing read, last file= ',gfile) ; sys.exit()
 
     #GAEA
+    lf_gaea = np.zeros(shape=(ntypes,len(lhist)))
+    volume_g = 0.
     for ii in range(5):
+        zz = zlist[iz]
         ivol = str(ii+1)
-        gfile = gaea_root+zlist[iz]+'_'+ivol+'.dat'
-        print gfile
+        volume_g = volume_g + (500.**3.)/5.
+        gfile = gaea_root+str(zz)+'_'+ivol+'.dat'
         if(not os.path.isfile(gfile)):
             print ('STOP: GAEA file not found ',gfile) ; sys.exit()
+
+        # Read file
+        ff = open(gfile, 'r') 
+        for iline, ffline in enumerate(ff):
+            gmag = float(ffline.split()[12]) #Intrinsic
+            rmag = float(ffline.split()[13])
+            imag = float(ffline.split()[14])
+            zmag = float(ffline.split()[15])
+            rz = rmag-zmag ; gr = gmag-rmag
+
+            l02 = float(ffline.split()[22]) + lsun2lgal
+            iflux = logL2flux(l02,zz) #erg/s/cm^2
+
+            for index in range(ntypes):
+                if index==0:
+                    if(l02>-9.):
+                        jb = np.digitize(l02, np.append(lbins,lmax))
+                        if (jb>0 and jb<len(lbins)+1):
+                            jbin = jb-1
+                            lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
+                else:
+                    fluxcut = fcuts[index-1]
+
+                    if (inleg[index] == 'eBOSS-SGC'): 
+                        if((iflux>fluxcut) & \
+                               (gmag>21.825) & (gmag<22.825) & \
+                               (gr>-0.068*rz + 0.457) & \
+                               (gr<0.112*rz + 0.773) & \
+                               (rz>0.218*gr + 0.571) & \
+                               (rz<-0.555*gr + 1.901)):
+                            jb = np.digitize(l02, np.append(lbins,lmax))
+                            if (jb>0 and jb<len(lbins)+1):
+                                jbin = jb-1
+                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
+
+                    elif (inleg[index] == 'DESI'): 
+                        if((iflux>fluxcut) & \
+                               (rz>0.3) & (gr>-0.3) & \
+                               (gr<1.1*rz-0.13) & \
+                               (gr<-1.18*rz+1.6)):
+                            jb = np.digitize(l02, np.append(lbins,lmax))
+                            if (jb>0 and jb<len(lbins)+1):
+                                jbin = jb-1
+                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
+                    elif (inleg[index] == 'DEEP2'):
+                        if((iflux>fluxcut) & \
+                               (rmag<24.1)):
+                            jb = np.digitize(l02, np.append(lbins,lmax))
+                            if (jb>0 and jb<len(lbins)+1):
+                                jbin = jb-1
+                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
+                    elif (inleg[index] == 'VVDS-DEEP'):
+                        if((iflux>fluxcut) & \
+                               (imag<24.)):
+                            jb = np.digitize(l02, np.append(lbins,lmax))
+                            if (jb>0 and jb<len(lbins)+1):
+                                jbin = jb-1
+                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
+                    elif (inleg[index] == 'VVDS-Wide'):
+                        if((iflux>fluxcut) & \
+                               (imag<22.5)):
+                            jb = np.digitize(l02, np.append(lbins,lmax))
+                            if (jb>0 and jb<len(lbins)+1):
+                                jbin = jb-1
+                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
+                        
+        
+            ##Testing-----------
+            #if (iline > 10000):
+            #    break
+            #------------------        
+        ff.close()
+    if (volume_g >0.):
+        lf_gaea = lf_gaea/dl/volume_g
+    else:
+        print('STOP: Nothing read, last file= ',gfile) ; sys.exit()
 
     # Plot
     if (iz == 0):
@@ -256,6 +341,17 @@ for iz,zsnap in enumerate(snap_list):
                 ax1.plot(x[ind],y[ind],color=cols[index],linestyle=':')
             else:
                 ax.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+
+        # Intrinsic GAEA
+        py = 0. ; py = lf_gaea[index,:]
+        ind = np.where(py > 0)
+        x = lhist[ind]
+        y = np.log10(py[ind])
+        ind = np.where(y < 0.)
+        if (iz == 0):
+            ax1.plot(x[ind],y[ind],color=cols[index],linestyle='--')
+        else:
+            ax.plot(x[ind],y[ind],color=cols[index],linestyle='--')
 
         # Legend
         if (iz == len(snap_list)-1):

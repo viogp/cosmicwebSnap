@@ -2,7 +2,7 @@
 data_filename= /cosma5/data/GRID/jch/millgas/snapdir_041/500_dm_041
 num_lines= all
 input_format= 5
-output_filename= /gpfs/data/violeta/mr7corr/xi_real_sn041.txt
+output_filename= /cosma5/data/durham/violeta/mr7corr/xi_real_sn041.txt
 box_size= 500.000000
 #tree stuff
 use_tree= 0

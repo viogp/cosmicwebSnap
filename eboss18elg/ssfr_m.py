@@ -13,14 +13,15 @@ from stats import *
 import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 
-#plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/thiswork.' 
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/nominfrac.' 
-models = ['gp18','gp18.e0p01nominfrac','gp18.e0.nominfrac','gp18.e0p1.nominfrac']#,'gp18.font','gp18.starvation','gp17']  
-#inleg = ['This work']#,'10% stripping ','Starvation','GP18'] 
-inleg = models
+plotdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/modelplots/thiswork.' 
+#plotdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/modelplots/nominfrac.' 
+#models = ['gp18','gp18.e0p01nominfrac','gp18.e0.nominfrac','gp18.e0p1.nominfrac']
+models = ['gp19','gp19.font','gp19.starvation','gp17'] 
+inleg = ['This work','10% stripping ','Starvation','GP18'] 
+#inleg = models
 
 # Initialize GSMF
 mmin = 8.5
@@ -169,7 +170,7 @@ axm.set_ylim(-5.5,-1.)
 plt.setp(axm.get_xticklabels(), visible=False)
 
 # Plot observations from Baldry+2012
-dobs = '/cosma/home/violeta/Galform2/galform-2.6.0/Obs_Data2/'
+dobs = '/cosma/home/dphlss/violeta/Galform2/galform/Obs_Data2/'
 file = dobs+'mf/mf_baldry_2012.txt'
 oh = 0.7 
 lm,p3,dp3 = np.loadtxt(file,usecols=[0,1,2],unpack=True)            

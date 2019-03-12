@@ -17,7 +17,7 @@ model = 'gp19/'
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'lfs/f17_rz85h_compared2_'
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'lfs/lf2_ebossmod'
 plotfile = outdir+line+'.pdf'
 ############################# Obs
 obsh0 = 0.677
@@ -31,17 +31,16 @@ nvol = 64
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
 obands = ['R24.2','I24','I22.5']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
+bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos']
 mcuts = [24.1, 24, 22.5]
-#fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-17.,8.*10.**-17.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,8.*10.**-17.,10.**-16.,10.**-16.]
 
-inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
+inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','DESI','eBOSS-SGC','eBOSSmod']
 ##########
 
 ntypes = len(inleg)
 zleg = []
-cols = get_distinct(ntypes-1)
+cols = get_distinct(ntypes-2)
 cols.insert(0,'grey')
 
 # Initialize histogram
@@ -104,7 +103,7 @@ for iz,zsnap in enumerate(snap_list):
                         indi = np.where(lum>0.)
                     elif ((inleg[index] == 'eBOSS-SGC') or
                           (inleg[index] == 'DESI') or
-                          (inleg[index] == 'eBOSS-nocol')):
+                          (inleg[index] == 'eBOSSmod')):
                         fluxcut = fcuts[index-1]
                         lcut = emission_line_luminosity(fluxcut,zz)
 
@@ -113,22 +112,7 @@ for iz,zsnap in enumerate(snap_list):
                         z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
                         rz = r-z ; gr = g-r
 
-                        if (inleg[index] == 'eBOSS-SGC'): 
-                            ind = np.where((lum_ext>lcut) & \
-                                           (g>21.825) & (g<22.825) & \
-                                           (gr>-0.068*rz + 0.457) & \
-                                           (gr<0.112*rz + 0.773) & \
-                                           #(rz>0.218*gr + 0.571) & \
-                                           (rz>0.218*gr + 0.85) & \
-                                           (rz<-0.555*gr + 1.901))
-                            indi = np.where((lum>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
-
-                        elif (inleg[index] == 'DESI'): 
+                        if (inleg[index] == 'DESI'): 
                             ind  = np.where((r<23.4) & \
                                                 (rz>0.3) & (gr>-0.3) & \
                                                 (rz>0.9*gr+0.12) & \
@@ -141,6 +125,36 @@ for iz,zsnap in enumerate(snap_list):
                                                 (rz<1.345-0.85*gr) & \
                                                 (lum>lcut))
 
+                        elif (inleg[index] == 'eBOSS-SGC'): 
+                            ind = np.where((lum_ext>lcut) & \
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           (rz>0.218*gr + 0.571) & \
+                                           (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                               (g>21.825) & (g<22.825) & \
+                                               (gr>-0.068*rz + 0.457) & \
+                                               (gr<0.112*rz + 0.773) & \
+                                               (rz>0.218*gr + 0.571) & \
+                                               (rz<-0.555*gr + 1.901))
+
+                        elif (inleg[index] == 'eBOSSmod'): 
+                            ind = np.where((lum_ext>lcut) & \
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           #(rz>0.218*gr + 0.571) & \
+                                           (rz>0.218*gr + 0.85) & \
+                                           (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                            (g>21.825) & (g<22.825) & \
+                                            (gr>-0.068*rz + 0.457) & \
+                                            (gr<0.112*rz + 0.773) & \
+                                            #(rz>0.218*gr + 0.571) & \
+                                            (rz>0.218*gr + 0.85) & \
+                                            (rz<-0.555*gr + 1.901))
+
                     else:
                         ib = bands[index-1]
                         mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
@@ -151,7 +165,6 @@ for iz,zsnap in enumerate(snap_list):
 
                         ind  = np.where((mag<icut) & (lum_ext>lcut))
                         indi = np.where((mag<icut) & (lum>lcut))
-
                         
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -224,7 +237,7 @@ for iz,zsnap in enumerate(snap_list):
         oy = oyh + 3*np.log10(obsh0) - 3*np.log10(h0)
         oe = oeh + 3*np.log10(obsh0) - 3*np.log10(h0)
 
-        i = 1 + bands.index('eBOSS-SGC') 
+        i = inleg.index('eBOSS-SGC') 
 
         if (iz == 0):
             ax1.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
@@ -242,11 +255,17 @@ for iz,zsnap in enumerate(snap_list):
         y = np.log10(py[ind])
         ind = np.where(y < 0.)       
         if (iz == 0):
-            ax1.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
+            if (index<ntypes-1):
+                ax1.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
                          label=inleg[index])
+            else:
+                ax1.plot(x[ind],y[ind],color=cols[index-1],linestyle='--')
         else:
-            ax.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
+            if (index<ntypes-1):
+                ax.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
                         label=inleg[index])
+            else:
+                ax.plot(x[ind],y[ind],color=cols[index-1],linestyle='--')
 
         # Ratios
         if (index == 0):
@@ -266,6 +285,30 @@ for iz,zsnap in enumerate(snap_list):
                 ax1.plot(x[ind],y[ind],color=cols[index],linestyle=':')
             else:
                 ax.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+
+        # Intrinsic eBOSS
+        if (index == 5):
+            py = 0. ; py = lf[index,:]
+            ind = np.where(py > 0)
+            x = lhist[ind]
+            y = np.log10(py[ind])
+            ind = np.where(y < 0.)
+            if (iz == 0):
+                ax1.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+            else:
+                ax.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+
+        # Intrinsic eBOSSmod
+        if (index == 6):
+            py = 0. ; py = lf[index,:]
+            ind = np.where(py > 0)
+            x = lhist[ind]
+            y = np.log10(py[ind])
+            ind = np.where(y < 0.)
+            if (iz == 0):
+                ax1.plot(x[ind],y[ind],color=cols[index-1],linestyle='-.')
+            else:
+                ax.plot(x[ind],y[ind],color=cols[index-1],linestyle='-.')
 
         # Legend
         if (iz == len(snap_list)-1):

@@ -6,7 +6,7 @@ import numpy as np
 from Cosmology import *
 
 path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-#model = 'gp19'
+model = 'gp19'
 #model = 'gp19.font'
 #model = 'gp19.starvation'
 
@@ -17,12 +17,12 @@ info = open( info_file, 'w' )
 line = 'OII3727' ; lline = '[OII]'
 #############################
 
-snap_list = [41]#, 39] #MillGas
+snap_list = [41, 39] #MillGas
 nvol = 64
 
-#inleg = ['DEEP2','VVDSWIDE','VVDSDEEP','eBOSS','DESI']
+#inleg = ['DEEP2','VVDS-WIDE','VVDS-DEEP','eBOSS','DESI']
 
-inleg = ['DEEP2','eBOSS-SGC','VVDSDEEP','DESI']
+inleg = ['DEEP2','eBOSS-SGC','VVDS-DEEP','DESI']
 
 ############################################
 # Loop over the redshifts of interest
@@ -115,7 +115,7 @@ for iz,zsnap in enumerate(snap_list):
                         mag = group['mag_'+band+'_o_tot_ext'].value + tomag
                         sel0 = (mag < mcut)
 
-                    elif (ileg == 'eBOSS'):
+                    elif (ileg == 'eBOSS-SGC'):
                         fluxcut = 10.**-16. #erg/s/cm^2
 
                         g = group['mag_DES-g_o_tot_ext'].value + tomag 
@@ -143,7 +143,8 @@ for iz,zsnap in enumerate(snap_list):
                     lcut = emission_line_luminosity(fluxcut,zz)
 
                     sel = sel0 & (lum_ext>lcut)
-                    ind = np.where(sel)
+                    #ind = np.where(sel)
+                    ind = np.where(lum_ext>lcut)
 
                     sel = sel0 & (lum>lcut)
                     indi = np.where(sel)
@@ -152,18 +153,19 @@ for iz,zsnap in enumerate(snap_list):
                     if firstpass:
                         slim = 0.3/tHubble(zz) # Franx+08
 
-                    ngals[index] = ngals[index] + np.size(ind)
-                    vols = np.zeros(shape=(np.size(ind))) ; vols.fill(ivol)
-                    tofile = np.column_stack((xgal[ind],ygal[ind],zgal[ind],\
-                                              vxgal[ind],vygal[ind],vzgal[ind],\
-                                              lssfr[ind],\
-                                              jm[ind],ihhalo[ind],vols,\
-                                              gtype[ind],burst[ind]))
+                    if(np.shape(ind)[1] > 0): #####
+                        ngals[index] = ngals[index] + np.size(ind)
+                        vols = np.zeros(shape=(np.size(ind))) ; vols.fill(ivol)
+                        tofile = np.column_stack((xgal[ind],ygal[ind],zgal[ind],\
+                                                  vxgal[ind],vygal[ind],vzgal[ind],\
+                                                  lssfr[ind],\
+                                                  jm[ind],ihhalo[ind],vols,\
+                                                  gtype[ind],burst[ind]))
 
-                    with open(outfile,'a') as f_handle:
-                        if(np.shape(tofile)[1] == 12):
-                            np.savetxt(f_handle, tofile, \
-                                       fmt=('%.5f %.5f %.5f %.5f %.5f %.5f %.5f %d %d %d %d %d'))
+                        with open(outfile,'a') as f_handle:
+                            if(np.shape(tofile)[1] == 12):
+                                np.savetxt(f_handle, tofile, \
+                                           fmt=('%.5f %.5f %.5f %.5f %.5f %.5f %.5f %d %d %d %d %d'))
 
                 f.close()
 

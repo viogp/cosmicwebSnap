@@ -1,5 +1,21 @@
 ### e-mails ###
 
+*15th February 2019, from Michaela*
+> > I didn't understand the description you sent about the dust attenuation. 
+> > Firstable, the tables al*dat: do they have wavelength(nanometers), Al(wavelength) ?  
+
+They are in Angstroem. 
+
+> > If the tables contain that (A(wavelength)=Al and wavelength), why I cannot simply do: F_obs = F_int*10^(-0.4 Al) ? I guess, the Al referes to the extinction curve, which I've usually seen referred as kl. Just to double check with you then, what I have in the tables is an extinction curve normalised  in such a way that what I need to do is: 
+> > F_obs = F_int*10^(-0.4 * Av * c2(interpolated at leff)/c2(interpolated at 550nm)) 
+> > with c2 being the second column in the file and leff= the wavelenght of the line.  
+
+Exactly, that’s how I would do it!! 
+
+> > In at  Galform, the Av is computed from the properties of the galaxy, through a combination of the properties of its cold gas. In this case, do you think assuming Av=1 is ok? I could play with the fixed value, but my concern here is more the fact that we are fixing Av. I had a look to De Lucia+04, but I didn't find what values of Av are assumed. Could you let me know what do you usually assume?  
+
+I would say that Av=1 is completely fine. That’s what we normally assume in GAEA as well…
+
 *7th August 2018, from Michaela*
 I finally generated a SAM-based galaxy catalogue with nebular emission lines from ionised gas due to young stars at z=0.99. The catalogue is based on the FIRE model from my 2016 paper, using, as a start, 1/5 of the Millennium volume (i.e., 100 tree-files out of 500). 
 

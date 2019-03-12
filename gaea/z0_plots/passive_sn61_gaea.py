@@ -13,14 +13,15 @@ from stats import *
 import mpl_style
 plt.style.use(mpl_style.style1) ; ptmap=pault_cmap(1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 sn = '61'
 
-plotdir = '/gpfs/data/violeta/lines/cosmicweb/plots/modelplots/gaea.'
-models = ['gp18']
-gaea = '/gpfs/data/violeta/gaea/' 
-inleg = ['This work','GAEA']#,'10% stripping ','Starvation','GP18']
+gaea = '/cosma5/data/durham/violeta/gaea/NebCat-H17_FIRE-H16_z0.0_5.dat'
+
+plotdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/modelplots/gaea.'
+models = ['gp19','gp19.font','gp19.starvation','gp17']  
+inleg = ['This work','10% stripping ','Starvation','GP18','GAEA']
 
 # Initialize GSMF
 mmin = 8.5
@@ -29,11 +30,10 @@ dm = 0.1
 mbins = np.arange(mmin,mmax,dm)
 mhist = mbins + dm*0.5
 
-ntot  = np.zeros(shape=(len(models)+1,len(mbins)))
-npas = np.zeros(shape=(len(models)+1,len(mbins)))
-
-nsat  = np.zeros(shape=(len(models)+1,len(mbins)))
-nsp = np.zeros(shape=(len(models)+1,len(mbins)))
+ntot  = np.zeros(shape=(len(inleg),len(mbins)))
+npas = np.zeros(shape=(len(inleg),len(mbins)))
+nsat = np.zeros(shape=(len(inleg),len(mbins)))
+nsp = np.zeros(shape=(len(inleg),len(mbins)))
 
 ###########################################
 # Define a class that forces representation of float to look a certain way
@@ -47,13 +47,13 @@ class nf(float):
             return '%.1f' % self.__float__()
 
 
-# Loop over subvolumes for Galform
+# Loop over redshifts
 for index,model in enumerate(models):
     volume = 0. ; first = True
     for ivol in range(nvol):
         gfile = path+model+'/iz'+sn+\
             '/ivol'+str(ivol)+'/galaxies.hdf5'
-        print gfile
+        #print gfile
         if(os.path.isfile(gfile)):
             # Read the relevant information from galaxies.hdf5
             f = h5py.File(gfile,'r') #; print gfile
@@ -93,6 +93,7 @@ for index,model in enumerate(models):
             else:
                 print 'STOP: No ',efile ; sys.exit()
 
+
             # All
             ind = np.where((mass1>0.) & (sfr1>0.))
             ssfr = np.zeros(shape=(len(sfr1)))
@@ -122,6 +123,7 @@ for index,model in enumerate(models):
             H, bins_edges =\
                 np.histogram(mass,bins=np.append(mbins,mmax))
             nsp[index,:] = nsp[index,:] +H
+
         else:
             print 'NOT found:',gfile
             
@@ -130,27 +132,24 @@ for index,model in enumerate(models):
         for i in range(len(mbins)):
             if ntot[index,i]>0.:
                 npas[index,i] = npas[index,i]/ntot[index,i]
-                nsp[index,i] = nsp[index,i]/ntot[index,i]
                 nsat[index,i] = nsat[index,i]/ntot[index,i]
+                nsp[index,i] = nsp[index,i]/ntot[index,i]
             else:
                 npas[index,i] = -999.
-                nsp[index,i] = -999.
                 nsat[index,i] = -999.
+                nsp[index,i] = -999.
 
+############
 # Read GAEA
-gfile = gaea+'NebCat-H17_FIRE-H16_z0.0_5.dat' ; print(gfile)
-if(not os.path.isfile(gfile)):
-    print ('STOP: GAEA file not found ',gfile) ; sys.exit()
+if(not os.path.isfile(gaea)):
+    print ('STOP: GAEA file not found ',gaea) ; sys.exit()
 
 zz = 0.05
 # Cosmology
-h0 = 0.73
-omega0 = 0.25
-omegab = 0.045 
-lambda0 =0.75
-
-set_cosmology(omega0=omega0,omegab=omegab, \
-                  lambda0=lambda0,h0=h0, \
+h0_g = 0.73 ; lambda0_g = 0.75
+omega0_g = 0.25 ; omegab_g = 0.045
+set_cosmology(omega0=omega0_g,omegab=omegab_g, \
+                  lambda0=lambda0_g,h0=h0_g, \
                   universe="Flat",include_radiation=False)
 slim = 1./tHubble(zz) # SFR cut
 
@@ -158,10 +157,10 @@ slim = 1./tHubble(zz) # SFR cut
 lmass, ssfr, sat = [np.array([]) for i in range(3)]
 
 # Read file
-ff = open(gfile, 'r') 
+ff = open(gaea, 'r') #####HERE 
 for iline, line in enumerate(ff):
     sat1 = float(line.split()[4])
-    lmass1 =float(line.split()[6]) + np.log10(h0)
+    lmass1 =float(line.split()[6]) + np.log10(h0_g)
     ssfr1 = float(line.split()[7])*(10.**9.)/(10.**float(line.split()[6]))
 
     if (lmass1 > 0.):
@@ -169,12 +168,12 @@ for iline, line in enumerate(ff):
         ssfr = np.append(ssfr, ssfr1)
         sat =  np.append(sat, sat1)
 
-    #Testing-----------
+    ##Testing-----------
     #if (iline > 10000):
     #    break
-    #------------------
+    ##------------------
 
-index = len(models)
+index = len(inleg)-1
 # All
 H, bins_edges = np.histogram(lmass,bins=np.append(mbins,mmax))
 ntot[index,:] = ntot[index,:] +H
@@ -204,10 +203,12 @@ for i in range(len(mbins)):
         nsp[index,i] = -999.
         nsat[index,i] = -999.
 
+############
+
 # Figure http://matplotlib.org/users/gridspec.html
 fig = plt.figure(figsize=(8.5,9.))
 ax = plt.subplot()
-cols = get_distinct(len(models)+2)  
+cols = get_distinct(len(inleg)+1) 
 colors = cols ; g = ['grey'] #; colors.extend(g) ; colors.extend(g)
 colors[len(colors)-1] = 'grey' ; colors.extend(g)
 
@@ -235,11 +236,11 @@ erro = lm*0.
 ax.errorbar(xo,p, yerr=erro, color=col, ecolor=col,\
                 label ='Bauer+10', fmt = '^')
 
-lsty = ['-','--',':','-'] 
-lwdt = [3.,1.5,1.5,1.5] 
+lsty = ['-','--',':','-','-'] 
+lwdt = [3.,1.5,1.5,1.5,2.] 
 
 # Models
-for im in range(len(models)+1):
+for im in range(len(inleg)):
     py = npas[im,:] ; ind = np.where(py>0.)
     x = mhist[ind] ; y = py[ind]
     ax.plot(x,y,color=colors[im],label=inleg[im],\
@@ -261,4 +262,3 @@ for color,text in zip(colors,leg.get_texts()):
 plotfile = plotdir + 'passive_sn'+sn+'.pdf'
 fig.savefig(plotfile)
 print 'Output: ',plotfile
-

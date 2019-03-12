@@ -2,8 +2,8 @@
 
 set zspace  = true
 #set model   = gp19
-set model   = gp19.font
-#set model   = gp19.starvation
+#set model   = gp19.font
+set model   = gp19.starvation
 
 echo "Running " $model ", with z-space=" $zspace
 

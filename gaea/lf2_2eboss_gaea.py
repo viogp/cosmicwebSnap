@@ -12,43 +12,40 @@ from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-path = '/gpfs/data/violeta/Galform_Out/v2.7.0/stable/MillGas/'
-model = 'gp18/'
-#gaea_calzetti_lum(llum,leff,av)
+model = 'gaea/'
+snap_g = ['0.83','1.0'] 
+nvol_g = 1#5
+gaea = '/cosma5/data/durham/violeta/gaea/NebCat-H17_FIRE-H16_z'
+
+# Gaea cosmology
+h0_g = 0.73 ; lambda0_g = 0.75
+omega0_g = 0.25 ; omegab_g = 0.045
+set_cosmology(omega0=omega0_g,omegab=omegab_g, \
+                  lambda0=lambda0_g,h0=h0_g, \
+                  universe="Flat",include_radiation=False)
+
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/gpfs/data/violeta/lines/cosmicweb/plots/'+model+'lfs/compared2_'
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'lfs/lf2_ebossmod'
 plotfile = outdir+line+'.pdf'
 ############################# Obs
 obsh0 = 0.677
-obs_dir = '/gpfs/data/violeta/lines/desi_hod_o2/lf_obs_data/lf_may16_comparat/'
+obs_dir = '/cosma5/data/durham/violeta/lines/desi_hod_o2/lf_obs_data/'
 #############################
 
-snap_list = [41,39] #MillGas
-nvol = 64
-
-gaea = '/gpfs/data/violeta/gaea/'
-gaea_root = gaea+'NebCat-H17_FIRE-H16_z' 
-zlist = [0.83,1.0] #Gaea
-# Cosmology
-h0_g=0.73 ; omega0_g=0.25 ; omegab_g=0.045 ; lambda0_g=0.75
-#(log10L+lsun2lgal) erg/s h-2, Lsun taken from the IAU
-lsun2lgal = np.log10(3.8275) + 33. + 2*np.log10(h0_g) 
-
-#####
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
 obands = ['R24.2','I24','I22.5']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
+bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos']
 mcuts = [24.1, 24, 22.5]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.] #erg/s/cm2
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,8.*10.**-17.,10.**-16.,10.**-16.]
 
-inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
+inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','DESI','eBOSS-SGC','eBOSSmod']
 ##########
 
 ntypes = len(inleg)
 zleg = []
-cols = get_distinct(ntypes-1)
+cols = get_distinct(ntypes-2)
 cols.insert(0,'grey')
 
 # Initialize histogram
@@ -70,15 +67,16 @@ ymin = -5.9 ; ymax = -1.
 
 # Loop over the redshifts of interest
 jj = 410
-for iz,zsnap in enumerate(snap_list):
+for iz,zsnap in enumerate(zs_g):
     jj = jj + 1
 
     lf = np.zeros(shape=(ntypes,len(lhist)))
     lf_ext = np.zeros(shape=(ntypes,len(lhist)))
 
     volume = 0. ; firstpass = True
-    for ivol in range(nvol):
-        gfile = path+model+'/iz'+str(zsnap)+'/ivol'+str(ivol)+'/galaxies.hdf5'
+    for ivol in range(nvol_g):
+        gfile = gaea+zsnap+'_'+str(ivol)+'.dat'
+        print(gfile);sys.exit() 
         if (os.path.isfile(gfile)):
             # Get some of the model constants
             f = h5py.File(gfile,'r')
@@ -99,9 +97,9 @@ for iz,zsnap in enumerate(snap_list):
                               h0=h0, universe="Flat",include_radiation=False)
             tomag = band_corrected_distance_modulus(zz) 
 
-            efile = path+model+'iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
+            efile = path+model+'/iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
             if (os.path.isfile(efile)):
-                f = h5py.File(efile,'r') #; print (efile)
+                f = h5py.File(efile,'r')
                 lum_ext = f['Output001/L_tot_'+line+'_ext'].value
                 lum = f['Output001/L_tot_'+line].value
 
@@ -109,7 +107,9 @@ for iz,zsnap in enumerate(snap_list):
                     if index==0:
                         ind  = np.where(lum_ext>0.)
                         indi = np.where(lum>0.)
-                    elif ((inleg[index] == 'eBOSS-SGC') or (inleg[index] == 'DESI')):
+                    elif ((inleg[index] == 'eBOSS-SGC') or
+                          (inleg[index] == 'DESI') or
+                          (inleg[index] == 'eBOSSmod')):
                         fluxcut = fcuts[index-1]
                         lcut = emission_line_luminosity(fluxcut,zz)
 
@@ -118,21 +118,7 @@ for iz,zsnap in enumerate(snap_list):
                         z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
                         rz = r-z ; gr = g-r
 
-                        if (inleg[index] == 'eBOSS-SGC'): 
-                            ind = np.where((lum_ext>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
-                            indi = np.where((lum>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
-
-                        elif (inleg[index] == 'DESI'): 
+                        if (inleg[index] == 'DESI'): 
                             ind  = np.where((r<23.4) & \
                                                 (rz>0.3) & (gr>-0.3) & \
                                                 (rz>0.9*gr+0.12) & \
@@ -145,6 +131,36 @@ for iz,zsnap in enumerate(snap_list):
                                                 (rz<1.345-0.85*gr) & \
                                                 (lum>lcut))
 
+                        elif (inleg[index] == 'eBOSS-SGC'): 
+                            ind = np.where((lum_ext>lcut) & \
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           (rz>0.218*gr + 0.571) & \
+                                           (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                               (g>21.825) & (g<22.825) & \
+                                               (gr>-0.068*rz + 0.457) & \
+                                               (gr<0.112*rz + 0.773) & \
+                                               (rz>0.218*gr + 0.571) & \
+                                               (rz<-0.555*gr + 1.901))
+
+                        elif (inleg[index] == 'eBOSSmod'): 
+                            ind = np.where((lum_ext>lcut) & \
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           #(rz>0.218*gr + 0.571) & \
+                                           (rz>0.218*gr + 0.85) & \
+                                           (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                            (g>21.825) & (g<22.825) & \
+                                            (gr>-0.068*rz + 0.457) & \
+                                            (gr<0.112*rz + 0.773) & \
+                                            #(rz>0.218*gr + 0.571) & \
+                                            (rz>0.218*gr + 0.85) & \
+                                            (rz<-0.555*gr + 1.901))
+
                     else:
                         ib = bands[index-1]
                         mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
@@ -155,7 +171,6 @@ for iz,zsnap in enumerate(snap_list):
 
                         ind  = np.where((mag<icut) & (lum_ext>lcut))
                         indi = np.where((mag<icut) & (lum>lcut))
-
                         
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -168,99 +183,10 @@ for iz,zsnap in enumerate(snap_list):
                         lf[index,:] = lf[index,:] + H
                 f.close()
 
-    if (volume>0.):
-        lf = lf/dl/volume
-        lf_ext = lf_ext/dl/volume
-        print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
-    else:
-        print('STOP: Nothing read, last file= ',gfile) ; sys.exit()
 
-    #GAEA
-    lf_gaea = np.zeros(shape=(ntypes,len(lhist)))
-    volume_g = 0.
-    for ii in range(5):
-        zz = zlist[iz]
-        ivol = str(ii+1)
-        volume_g = volume_g + (500.**3.)/5.
-        gfile = gaea_root+str(zz)+'_'+ivol+'.dat'
-        if(not os.path.isfile(gfile)):
-            print ('STOP: GAEA file not found ',gfile) ; sys.exit()
-
-        # Read file
-        ff = open(gfile, 'r') 
-        for iline, ffline in enumerate(ff):
-            gmag = float(ffline.split()[12]) #Intrinsic
-            rmag = float(ffline.split()[13])
-            imag = float(ffline.split()[14])
-            zmag = float(ffline.split()[15])
-            rz = rmag-zmag ; gr = gmag-rmag
-
-            l02 = float(ffline.split()[22]) + lsun2lgal
-            iflux = logL2flux(l02,zz) #erg/s/cm^2
-
-            for index in range(ntypes):
-                if index==0:
-                    if(l02>-9.):
-                        jb = np.digitize(l02, np.append(lbins,lmax))
-                        if (jb>0 and jb<len(lbins)+1):
-                            jbin = jb-1
-                            lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
-                else:
-                    fluxcut = fcuts[index-1]
-
-                    if (inleg[index] == 'eBOSS-SGC'): 
-                        if((iflux>fluxcut) & \
-                               (gmag>21.825) & (gmag<22.825) & \
-                               (gr>-0.068*rz + 0.457) & \
-                               (gr<0.112*rz + 0.773) & \
-                               (rz>0.218*gr + 0.571) & \
-                               (rz<-0.555*gr + 1.901)):
-                            jb = np.digitize(l02, np.append(lbins,lmax))
-                            if (jb>0 and jb<len(lbins)+1):
-                                jbin = jb-1
-                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
-
-                    elif (inleg[index] == 'DESI'): 
-                        if((iflux>fluxcut) & \
-                               (rz>0.3) & (gr>-0.3) & \
-                               (gr<1.1*rz-0.13) & \
-                               (gr<-1.18*rz+1.6)):
-                            jb = np.digitize(l02, np.append(lbins,lmax))
-                            if (jb>0 and jb<len(lbins)+1):
-                                jbin = jb-1
-                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
-                    elif (inleg[index] == 'DEEP2'):
-                        if((iflux>fluxcut) & \
-                               (rmag<24.1)):
-                            jb = np.digitize(l02, np.append(lbins,lmax))
-                            if (jb>0 and jb<len(lbins)+1):
-                                jbin = jb-1
-                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
-                    elif (inleg[index] == 'VVDS-DEEP'):
-                        if((iflux>fluxcut) & \
-                               (imag<24.)):
-                            jb = np.digitize(l02, np.append(lbins,lmax))
-                            if (jb>0 and jb<len(lbins)+1):
-                                jbin = jb-1
-                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
-                    elif (inleg[index] == 'VVDS-Wide'):
-                        if((iflux>fluxcut) & \
-                               (imag<22.5)):
-                            jb = np.digitize(l02, np.append(lbins,lmax))
-                            if (jb>0 and jb<len(lbins)+1):
-                                jbin = jb-1
-                                lf_gaea[index,jbin] = lf_gaea[index,jbin]+1 
-                        
-        
-            ##Testing-----------
-            #if (iline > 10000):
-            #    break
-            #------------------        
-        ff.close()
-    if (volume_g >0.):
-        lf_gaea = lf_gaea/dl/volume_g
-    else:
-        print('STOP: Nothing read, last file= ',gfile) ; sys.exit()
+    lf = lf/dl/volume
+    lf_ext = lf_ext/dl/volume
+    print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
 
     # Plot
     if (iz == 0):
@@ -277,7 +203,7 @@ for iz,zsnap in enumerate(snap_list):
         ax.text(42.5, -1.7, zleg[iz])
 
     # Plot all observations
-    ox, oy, el, eh = jc.read_jc_lf(obs_dir,zz,h0=obsh0,\
+    ox, oy, el, eh = jc.read_jc_lf(obs_dir+'lf_may16_comparat/',zz,h0=obsh0,\
                                        infile=\
                                        'O2_3728-data-summary-Planck15.txt')
     ind = np.where(oy>-5) 
@@ -295,7 +221,7 @@ for iz,zsnap in enumerate(snap_list):
                             ecolor='grey',color='grey',mec='grey')
     # Plot the observations  O2_3728-*-z*.txt
     for i,isurvey in enumerate(obsnom):        
-        ox, oy, el, eh = jc.read_jc_indlf(obs_dir+'individual_LF/',\
+        ox, oy, el, eh = jc.read_jc_indlf(obs_dir+'lf_may16_comparat/individual_LF/',\
                                               zz,h0=obsh0,\
                                               line='O2_3728',\
                                               survey=isurvey,band=obands[i])
@@ -308,6 +234,24 @@ for iz,zsnap in enumerate(snap_list):
                 ax.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
                                 ecolor=col,color=col,mec=col)
 
+    # Plot Prabhakar Tiwari's LF
+    if (zsnap == 41):
+        oxh, oyh, oeh = np.loadtxt(obs_dir+'tiwari/OII_3728_LF_v11.dat',
+                                 usecols=(0,1,2),unpack=True,skiprows=1)
+
+        ox = oxh + 2*np.log10(h0)
+        oy = oyh + 3*np.log10(obsh0) - 3*np.log10(h0)
+        oe = oeh + 3*np.log10(obsh0) - 3*np.log10(h0)
+
+        i = inleg.index('eBOSS-SGC') 
+
+        if (iz == 0):
+            ax1.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
+                             ecolor=cols[i],color=cols[i],mec=cols[i])
+        else:
+            ax.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
+                            ecolor=cols[i],color=cols[i],mec=cols[i])
+
     # Plot the model predictions
     for index in range(ntypes):
         # Attenuated
@@ -317,11 +261,17 @@ for iz,zsnap in enumerate(snap_list):
         y = np.log10(py[ind])
         ind = np.where(y < 0.)       
         if (iz == 0):
-            ax1.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
+            if (index<ntypes-1):
+                ax1.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
                          label=inleg[index])
+            else:
+                ax1.plot(x[ind],y[ind],color=cols[index-1],linestyle='--')
         else:
-            ax.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
+            if (index<ntypes-1):
+                ax.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
                         label=inleg[index])
+            else:
+                ax.plot(x[ind],y[ind],color=cols[index-1],linestyle='--')
 
         # Ratios
         if (index == 0):
@@ -342,16 +292,29 @@ for iz,zsnap in enumerate(snap_list):
             else:
                 ax.plot(x[ind],y[ind],color=cols[index],linestyle=':')
 
-        # Intrinsic GAEA
-        py = 0. ; py = lf_gaea[index,:]
-        ind = np.where(py > 0)
-        x = lhist[ind]
-        y = np.log10(py[ind])
-        ind = np.where(y < 0.)
-        if (iz == 0):
-            ax1.plot(x[ind],y[ind],color=cols[index],linestyle='--')
-        else:
-            ax.plot(x[ind],y[ind],color=cols[index],linestyle='--')
+        # Intrinsic eBOSS
+        if (index == 5):
+            py = 0. ; py = lf[index,:]
+            ind = np.where(py > 0)
+            x = lhist[ind]
+            y = np.log10(py[ind])
+            ind = np.where(y < 0.)
+            if (iz == 0):
+                ax1.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+            else:
+                ax.plot(x[ind],y[ind],color=cols[index],linestyle=':')
+
+        # Intrinsic eBOSSmod
+        if (index == 6):
+            py = 0. ; py = lf[index,:]
+            ind = np.where(py > 0)
+            x = lhist[ind]
+            y = np.log10(py[ind])
+            ind = np.where(y < 0.)
+            if (iz == 0):
+                ax1.plot(x[ind],y[ind],color=cols[index-1],linestyle='-.')
+            else:
+                ax.plot(x[ind],y[ind],color=cols[index-1],linestyle='-.')
 
         # Legend
         if (iz == len(snap_list)-1):

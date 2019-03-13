@@ -71,3 +71,35 @@ R(Deimos), i(CFHT), g,r,z (decam)
 If you don't have the Deimos and CFHT filters, I think SDSS, would be good enough.
 
 I'll need the tables until the paper is published. Afterwards, it might be good to make them publicly available somehow.
+Michaela Hirschman 13/1/2019
+
+Regarding your paper, I would love to still contribute to the project, and my last teaching will be done in two weeks so that I am also more free for science again! Let me go through your questions below:
+>
+>
+>
+>     * L[OII] is this the doublet or a single line? I'm actually using the OII3727 line.
+
+Yes, I have been giving you the same line OII 3727!
+>
+>
+>     * Could you send me the Lsolar that you assumed, so I can express things in the same units?
+
+As Lsolar I considered 0.02.
+>
+>
+>     I send attached a comparison of the passive fractions at z=0. I hope I can use your model, because it seems to nail the observed passive fraction! 
+This is don’t understand, why should it be a problem, when Gaea is matching the observed passive fraction?
+
+>     The problem at the moment is that I do the selections on L[OII] for only the attenuated OII3727 line, so I'll need to access this information. 
+So I have the dust attenuation curve from calzetti et al. I attach you below the files, and a pages-file with the description of how to use them. Please let me know if you cannot open the pages-file, then I’ll convert it into a pdf..
+
+Let me know if you have any questions, we can also Skype this week, if you want, just let me know which day/time works best for you.
+
+Hope this helps!
+
+Cheers,
+Michaela
+
+al_avcalz == Calzetti Rv = 4.05
+
+al_av31 == MW Rv=3.1

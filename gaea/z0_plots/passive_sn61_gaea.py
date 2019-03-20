@@ -157,7 +157,7 @@ slim = 1./tHubble(zz) # SFR cut
 lmass, ssfr, sat = [np.array([]) for i in range(3)]
 
 # Read file
-ff = open(gaea, 'r') #####HERE 
+ff = open(gaea, 'r') 
 for iline, line in enumerate(ff):
     sat1 = float(line.split()[4])
     lmass1 =float(line.split()[6]) + np.log10(h0_g)

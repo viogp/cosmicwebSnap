@@ -13,7 +13,7 @@ cat << EOF - ${script} | sbatch
 #SBATCH -o ${logname}
 #SBATCH -p cordelia
 #SBATCH -A durham
-#SBATCH -t 3:00:00
+#SBATCH -t 72:00:00
 #
 
 # Run script follows

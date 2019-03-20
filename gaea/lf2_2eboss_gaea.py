@@ -2,20 +2,26 @@
 
 import numpy as np
 import os.path, sys
-import h5py
 import matplotlib ; matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 import read_jc_obs as jc
 from Cosmology import * 
+from dust import *
 from distinct_colours import get_distinct
 import mpl_style
 plt.style.use(mpl_style.style1)
 
 model = 'gaea/'
-snap_g = ['0.83','1.0'] 
-nvol_g = 1#5
+snap_g = [0.83,1.0] 
+nvol_g = 5
 gaea = '/cosma5/data/durham/violeta/gaea/NebCat-H17_FIRE-H16_z'
+nlines = 70000
+
+## Testing -----------------------------------------------------------------
+#snap_g = [0.83] ; nvol_g = 2 ; nlines = 100.
+#gaea = '/cosma5/data/durham/violeta/gaea/test' 
+## -------------------------------------------------------------------------
 
 # Gaea cosmology
 h0_g = 0.73 ; lambda0_g = 0.75
@@ -23,6 +29,11 @@ omega0_g = 0.25 ; omegab_g = 0.045
 set_cosmology(omega0=omega0_g,omegab=omegab_g, \
                   lambda0=lambda0_g,h0=h0_g, \
                   universe="Flat",include_radiation=False)
+
+vol1 = (500.**3)/5.
+av = 1
+
+llsun = np.log10(3.839) + 33.
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
@@ -36,14 +47,10 @@ obs_dir = '/cosma5/data/durham/violeta/lines/desi_hod_o2/lf_obs_data/'
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
 obands = ['R24.2','I24','I22.5']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos']
-mcuts = [24.1, 24, 22.5]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,8.*10.**-17.,10.**-16.,10.**-16.]
-
-inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','DESI','eBOSS-SGC','eBOSSmod']
 ##########
 
-ntypes = len(inleg)
+surveys = ['All','DEEP2','VVDS-DEEP','VVDS-WIDE','DESI','eBOSS-SGC','eBOSSmod']
+ntypes = len(surveys)
 zleg = []
 cols = get_distinct(ntypes-2)
 cols.insert(0,'grey')
@@ -67,121 +74,283 @@ ymin = -5.9 ; ymax = -1.
 
 # Loop over the redshifts of interest
 jj = 410
-for iz,zsnap in enumerate(zs_g):
+for iz,zz in enumerate(snap_g):
     jj = jj + 1
 
     lf = np.zeros(shape=(ntypes,len(lhist)))
     lf_ext = np.zeros(shape=(ntypes,len(lhist)))
 
+    zleg.append('z='+str(zz))
+
     volume = 0. ; firstpass = True
     for ivol in range(nvol_g):
-        gfile = gaea+zsnap+'_'+str(ivol)+'.dat'
-        print(gfile);sys.exit() 
-        if (os.path.isfile(gfile)):
-            # Get some of the model constants
-            f = h5py.File(gfile,'r')
-            zz   = f['Output001/redshift'].value
-            group = f['Parameters']
-            vol1 = group['volume'].value ; volume = volume + vol1
-            h0 = group['h0'].value 
-            omega0 = f['Parameters/omega0'].value
-            omegab = f['Parameters/omegab'].value
-            lambda0 = f['Parameters/lambda0'].value
-            f.close()
+        g,r,i,z,lum,lum_ext=[np.array([]) for i in range(6)]
 
-            if(firstpass):
-                zstring = "{:.2f}".format(zz) 
-                zleg.append('z='+zstring)
-                firstpass = False
-            set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \
-                              h0=h0, universe="Flat",include_radiation=False)
+        gfile = gaea+str(zz)+'_'+str(ivol+1)+'.dat'
+        if (os.path.isfile(gfile)):
             tomag = band_corrected_distance_modulus(zz) 
 
-            efile = path+model+'/iz'+str(zsnap)+'/ivol'+str(ivol)+'/elgs.hdf5'
-            if (os.path.isfile(efile)):
-                f = h5py.File(efile,'r')
-                lum_ext = f['Output001/L_tot_'+line+'_ext'].value
-                lum = f['Output001/L_tot_'+line].value
+            ff = open(gfile, 'r')
+            for iline, line in enumerate(ff):
+                g_nodust = float(line.split()[12])
+                r_nodust = float(line.split()[13])
+                i_nodust = float(line.split()[14])
+                z_nodust = float(line.split()[15])
 
-                for index in range(ntypes):
-                    if index==0:
-                        ind  = np.where(lum_ext>0.)
-                        indi = np.where(lum>0.)
-                    elif ((inleg[index] == 'eBOSS-SGC') or
-                          (inleg[index] == 'DESI') or
-                          (inleg[index] == 'eBOSSmod')):
-                        fluxcut = fcuts[index-1]
-                        lcut = emission_line_luminosity(fluxcut,zz)
+                g1 = gaea_calzetti_mag(g_nodust,4770,av)
+                r1 = gaea_calzetti_mag(r_nodust,6231,av)
+                i1 = gaea_calzetti_mag(i_nodust,7625,av)
+                z1 = gaea_calzetti_mag(z_nodust,9134,av)
 
-                        g = f['Output001/mag_DES-g_o_tot_ext'].value + tomag
-                        r = f['Output001/mag_DES-r_o_tot_ext'].value + tomag
-                        z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
-                        rz = r-z ; gr = g-r
+                g = np.append(g,g1)
+                r = np.append(r,r1)
+                i = np.append(i,i1)
+                z = np.append(z,z1)
 
-                        if (inleg[index] == 'DESI'): 
-                            ind  = np.where((r<23.4) & \
-                                                (rz>0.3) & (gr>-0.3) & \
-                                                (rz>0.9*gr+0.12) & \
-                                                (rz<1.345-0.85*gr) & \
-                                                (lum_ext>lcut))
+                inlum = float(line.split()[22]) # log10(L/Lsolar)
+                lum1 = inlum + llsun + 2*np.log(h0_g)  # log10(L/h^2/erg/s)
+                lum_ext1 = gaea_calzetti_lum(lum1,3727,av)
 
-                            indi  = np.where((r<23.4) & \
-                                                (rz>0.3) & (gr>-0.3) & \
-                                                (rz>0.9*gr+0.12) & \
-                                                (rz<1.345-0.85*gr) & \
-                                                (lum>lcut))
+                lum = np.append(lum,lum1)
+                lum_ext = np.append(lum_ext,lum_ext1)
 
-                        elif (inleg[index] == 'eBOSS-SGC'): 
-                            ind = np.where((lum_ext>lcut) & \
-                                           (g>21.825) & (g<22.825) & \
-                                           (gr>-0.068*rz + 0.457) & \
-                                           (gr<0.112*rz + 0.773) & \
-                                           (rz>0.218*gr + 0.571) & \
-                                           (rz<-0.555*gr + 1.901))
-                            indi = np.where((lum>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
+                if (iline > nlines): # LF
+                    rz = r-z ; gr = g-r
+                
+                    for index,survey in enumerate(surveys):
+                        if (survey == 'All'):
+                            ind  = np.where(lum_ext>0.)
+                            indi = np.where(lum>0.)
 
-                        elif (inleg[index] == 'eBOSSmod'): 
-                            ind = np.where((lum_ext>lcut) & \
-                                           (g>21.825) & (g<22.825) & \
-                                           (gr>-0.068*rz + 0.457) & \
-                                           (gr<0.112*rz + 0.773) & \
-                                           #(rz>0.218*gr + 0.571) & \
-                                           (rz>0.218*gr + 0.85) & \
-                                           (rz<-0.555*gr + 1.901))
-                            indi = np.where((lum>lcut) & \
-                                            (g>21.825) & (g<22.825) & \
-                                            (gr>-0.068*rz + 0.457) & \
-                                            (gr<0.112*rz + 0.773) & \
-                                            #(rz>0.218*gr + 0.571) & \
-                                            (rz>0.218*gr + 0.85) & \
-                                            (rz<-0.555*gr + 1.901))
+                        elif (survey == 'DEEP2'):
+                            fluxcut = 2.7*10.**-17
+                            mcut = 24.1
+                            mag = r + tomag
 
-                    else:
-                        ib = bands[index-1]
-                        mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
-                            + tomag
-                        icut = mcuts[index-1]
-                        fluxcut = fcuts[index-1]
-                        lcut = emission_line_luminosity(fluxcut,zz)
+                            lcut = np.log10(
+                                emission_line_luminosity(fluxcut,zz)) + 40.
 
-                        ind  = np.where((mag<icut) & (lum_ext>lcut))
-                        indi = np.where((mag<icut) & (lum>lcut))
+                            sel = (lum_ext>lcut) & (mag < mcut)
+                            ind = np.where(sel)
+
+                            sel = (lum>lcut) & (mag < mcut)
+                            indi = np.where(sel)
                         
-                    if (np.shape(ind)[1] > 0.):
-                        ll = np.log10(lum_ext[ind]) + 40.
-                        H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
-                        lf_ext[index,:] = lf_ext[index,:] + H
+                        elif (survey == 'VVDS-DEEP'):
+                            fluxcut = 1.9*10.**-17.
+                            mcut = 24.
+                            mag = i +tomag
 
-                    if (np.shape(indi)[1] > 0.):
-                        ll = np.log10(lum[indi]) + 40.
-                        H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
-                        lf[index,:] = lf[index,:] + H
-                f.close()
+                            lcut = np.log10(
+                                emission_line_luminosity(fluxcut,zz)) + 40.
+
+                            sel = (lum_ext>lcut) & (mag < mcut)
+                            ind = np.where(sel)
+
+                            sel = (lum>lcut) & (mag < mcut)
+                            indi = np.where(sel)
+
+                        elif (survey == 'VVDS-WIDE'):
+                            fluxcut = 3.5*10.**-17.
+                            mcut = 22.5
+                            mag = i +tomag
+
+                            lcut = np.log10(
+                                emission_line_luminosity(fluxcut,zz)) + 40.
+
+                            sel = (lum_ext>lcut) & (mag < mcut)
+                            ind = np.where(sel)
+
+                            sel = (lum>lcut) & (mag < mcut)
+                            indi = np.where(sel)
+
+                        elif (survey == 'DESI'):
+                            fluxcut = 8.*10.**-17. #erg/s/cm^2
+                            
+                            lcut = np.log10(
+                                emission_line_luminosity(fluxcut,zz)) + 40.
+
+                            ind = np.where((r<23.4) & \
+                                           (rz>0.3) & (gr>-0.3) & \
+                                           (rz>0.9*gr+0.12) & \
+                                           (rz<1.345-0.85*gr) & \
+                                           (lum_ext>lcut))
+                            indi = np.where((r<23.4) & \
+                                           (rz>0.3) & (gr>-0.3) & \
+                                           (rz>0.9*gr+0.12) & \
+                                           (rz<1.345-0.85*gr) & \
+                                           (lum>lcut))
+
+                        elif (survey == 'eBOSS-SGC'):
+                            fluxcut = 10.**-16. #erg/s/cm^2
+
+                            lcut = np.log10(
+                                emission_line_luminosity(fluxcut,zz)) + 40.
+
+                            ind = np.where((lum_ext>lcut) & \
+                                   (g>21.825) & (g<22.825) & \
+                                   (gr>-0.068*rz + 0.457) & \
+                                   (gr<0.112*rz + 0.773) & \
+                                   (rz>0.218*gr + 0.571) & \
+                                   (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                   (g>21.825) & (g<22.825) & \
+                                   (gr>-0.068*rz + 0.457) & \
+                                   (gr<0.112*rz + 0.773) & \
+                                   (rz>0.218*gr + 0.571) & \
+                                   (rz<-0.555*gr + 1.901))
+
+                        elif (survey == 'eBOSSmod'):
+                            fluxcut = 10.**-16. #erg/s/cm^2
+
+                            lcut = np.log10(
+                                emission_line_luminosity(fluxcut,zz)) + 40.
+
+                            ind = np.where((lum_ext>lcut) & \
+                                   (g>21.825) & (g<22.825) & \
+                                   (gr>-0.068*rz + 0.457) & \
+                                   (gr<0.112*rz + 0.773) & \
+                                   #(rz>0.218*gr + 0.571) & \
+                                   (rz>0.218*gr + 0.85) & \
+                                   (rz<-0.555*gr + 1.901))
+                            indi = np.where((lum>lcut) & \
+                                   (g>21.825) & (g<22.825) & \
+                                   (gr>-0.068*rz + 0.457) & \
+                                   (gr<0.112*rz + 0.773) & \
+                                   #(rz>0.218*gr + 0.571) & \
+                                    (rz>0.218*gr + 0.85) & \
+                                   (rz<-0.555*gr + 1.901))
+
+                        else:
+                            print('STOP: Unknown survey {}'.format(survey)) ; sys.exit()
+
+                        if (np.shape(ind)[1] > 0.):
+                            H, bins_edges = np.histogram(lum_ext,bins=np.append(lbins,lmax))
+                            lf_ext[index,:] = lf_ext[index,:] + H
+
+                        if (np.shape(indi)[1] > 0.):
+                            H, bins_edges = np.histogram(lum,bins=np.append(lbins,lmax))
+                            lf[index,:] = lf[index,:] + H
+
+                    g,r,i,z,lum,lum_ext=[np.array([]) for i in range(6)]
+
+            # Use the last galaxies is this subvolume
+            print('iline={}, ivol={}'.format(iline,ivol))
+            rz = r-z ; gr = g-r
+            
+            for index,survey in enumerate(surveys):
+                if (survey == 'All'):
+                    ind  = np.where(lum_ext>0.)
+                    indi = np.where(lum>0.)
+
+                elif (survey == 'DEEP2'):
+                    fluxcut = 2.7*10.**-17
+                    mcut = 24.1
+                    mag = r + tomag
+                    
+                    lcut = np.log10(
+                        emission_line_luminosity(fluxcut,zz)) + 40.
+                    
+                    sel = (lum_ext>lcut) & (mag < mcut)
+                    ind = np.where(sel)
+                    
+                    sel = (lum>lcut) & (mag < mcut)
+                    indi = np.where(sel)
+                        
+                elif (survey == 'VVDS-DEEP'):
+                    fluxcut = 1.9*10.**-17.
+                    mcut = 24.
+                    mag = i +tomag
+                    
+                    lcut = np.log10(
+                        emission_line_luminosity(fluxcut,zz)) + 40.
+                    
+                    sel = (lum_ext>lcut) & (mag < mcut)
+                    ind = np.where(sel)
+                    
+                    sel = (lum>lcut) & (mag < mcut)
+                    indi = np.where(sel)
+                    
+                elif (survey == 'VVDS-WIDE'):
+                    fluxcut = 3.5*10.**-17.
+                    mcut = 22.5
+                    mag = i +tomag
+                    
+                    lcut = np.log10(
+                        emission_line_luminosity(fluxcut,zz)) + 40.
+                    
+                    sel = (lum_ext>lcut) & (mag < mcut)
+                    ind = np.where(sel)
+                    
+                    sel = (lum>lcut) & (mag < mcut)
+                    indi = np.where(sel)
+                    
+                elif (survey == 'DESI'):
+                    fluxcut = 8.*10.**-17. #erg/s/cm^2
+                    
+                    lcut = np.log10(
+                        emission_line_luminosity(fluxcut,zz)) + 40.
+                    
+                    ind = np.where((r<23.4) & \
+                                   (rz>0.3) & (gr>-0.3) & \
+                                   (rz>0.9*gr+0.12) & \
+                                   (rz<1.345-0.85*gr) & \
+                                   (lum_ext>lcut))
+                    indi = np.where((r<23.4) & \
+                                    (rz>0.3) & (gr>-0.3) & \
+                                    (rz>0.9*gr+0.12) & \
+                                    (rz<1.345-0.85*gr) & \
+                                    (lum>lcut))
+
+                elif (survey == 'eBOSS-SGC'):
+                    fluxcut = 10.**-16. #erg/s/cm^2
+                    
+                    lcut = np.log10(
+                        emission_line_luminosity(fluxcut,zz)) + 40.
+                    
+                    ind = np.where((lum_ext>lcut) & \
+                           (g>21.825) & (g<22.825) & \
+                           (gr>-0.068*rz + 0.457) & \
+                           (gr<0.112*rz + 0.773) & \
+                           (rz>0.218*gr + 0.571) & \
+                           (rz<-0.555*gr + 1.901))
+                    indi = np.where((lum>lcut) & \
+                            (g>21.825) & (g<22.825) & \
+                            (gr>-0.068*rz + 0.457) & \
+                            (gr<0.112*rz + 0.773) & \
+                            (rz>0.218*gr + 0.571) & \
+                            (rz<-0.555*gr + 1.901))
+
+                elif (survey == 'eBOSSmod'):
+                    fluxcut = 10.**-16. #erg/s/cm^2
+                    
+                    lcut = np.log10(
+                        emission_line_luminosity(fluxcut,zz)) + 40.
+                    
+                    ind = np.where((lum_ext>lcut) & \
+                           (g>21.825) & (g<22.825) & \
+                           (gr>-0.068*rz + 0.457) & \
+                           (gr<0.112*rz + 0.773) & \
+                           #(rz>0.218*gr + 0.571) & \
+                           (rz>0.218*gr + 0.85) & \
+                           (rz<-0.555*gr + 1.901))
+                    indi = np.where((lum>lcut) & \
+                            (g>21.825) & (g<22.825) & \
+                            (gr>-0.068*rz + 0.457) & \
+                            (gr<0.112*rz + 0.773) & \
+                            #(rz>0.218*gr + 0.571) & \
+                            (rz>0.218*gr + 0.85) & \
+                            (rz<-0.555*gr + 1.901))
+
+                if (np.shape(ind)[1] > 0.):
+                    H, bins_edges = np.histogram(lum_ext,bins=np.append(lbins,lmax))
+                    lf_ext[index,:] = lf_ext[index,:] + H
+
+                if (np.shape(indi)[1] > 0.):
+                    H, bins_edges = np.histogram(lum,bins=np.append(lbins,lmax))
+                    lf[index,:] = lf[index,:] + H
+
+            g,r,i,z,lum,lum_ext=[np.array([]) for i in range(6)]
 
 
     lf = lf/dl/volume
@@ -235,7 +404,7 @@ for iz,zsnap in enumerate(zs_g):
                                 ecolor=col,color=col,mec=col)
 
     # Plot Prabhakar Tiwari's LF
-    if (zsnap == 41):
+    if (snap_g == 0.83):
         oxh, oyh, oeh = np.loadtxt(obs_dir+'tiwari/OII_3728_LF_v11.dat',
                                  usecols=(0,1,2),unpack=True,skiprows=1)
 
@@ -243,7 +412,7 @@ for iz,zsnap in enumerate(zs_g):
         oy = oyh + 3*np.log10(obsh0) - 3*np.log10(h0)
         oe = oeh + 3*np.log10(obsh0) - 3*np.log10(h0)
 
-        i = inleg.index('eBOSS-SGC') 
+        i = surveys.index('eBOSS-SGC') 
 
         if (iz == 0):
             ax1.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
@@ -263,13 +432,13 @@ for iz,zsnap in enumerate(zs_g):
         if (iz == 0):
             if (index<ntypes-1):
                 ax1.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
-                         label=inleg[index])
+                         label=surveys[index])
             else:
                 ax1.plot(x[ind],y[ind],color=cols[index-1],linestyle='--')
         else:
             if (index<ntypes-1):
                 ax.plot(x[ind],y[ind],color=cols[index],linestyle='-',\
-                        label=inleg[index])
+                        label=surveys[index])
             else:
                 ax.plot(x[ind],y[ind],color=cols[index-1],linestyle='--')
 
@@ -317,7 +486,7 @@ for iz,zsnap in enumerate(zs_g):
                 ax.plot(x[ind],y[ind],color=cols[index-1],linestyle='-.')
 
         # Legend
-        if (iz == len(snap_list)-1):
+        if (iz == len(snap_g)-1):
             leg = plt.legend(loc=1, handlelength=0, handletextpad=0)
             renderer = fig.canvas.get_renderer()
             shift1 = max([t.get_window_extent(renderer).width for t in leg.get_texts()])
@@ -329,19 +498,6 @@ for iz,zsnap in enumerate(zs_g):
                 text.set_ha('right') ; text.set_position((shift1-shift2,0))
                 leg.draw_frame(False)           
 
-
-#On splitting the legend
-#line1, = plt.plot([1,2,3], label="Line 1", linestyle='--')
-#line2, = plt.plot([3,2,1], label="Line 2", linewidth=4)
-#
-## Create a legend for the first line.
-#first_legend = plt.legend(handles=[line1], loc=1)
-#
-## Add the legend manually to the current Axes.
-#ax = plt.gca().add_artist(first_legend)
-#
-## Create another legend for the second line.
-#plt.legend(handles=[line2], loc=4)
     
 # Save figures
 fig.subplots_adjust(hspace=0)

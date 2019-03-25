@@ -93,7 +93,7 @@ for zsnap in snap_list:
                 ind = np.where(lum>0.)
                 if (np.shape(ind)[1] > 0.):
                     ll = np.log10(lum[ind]) + 40.
-                    H, xedges, yedges = np.histogram2d(g[ind],ll,
+                    H, xedges, yedges = np.histogram2d(r[ind],ll,
                                                        bins=[np.append(pbins,pmax),np.append(lbins,lmax)])
                     lo2prop = lo2prop + H
     
@@ -101,7 +101,7 @@ for zsnap in snap_list:
                 ind = np.where(lum_ext>0.)
                 if (np.shape(ind)[1] > 0.):
                     ll = np.log10(lum_ext[ind]) + 40.                    
-                    H, xedges, yedges = np.histogram2d(g_ext[ind],ll,
+                    H, xedges, yedges = np.histogram2d(r_ext[ind],ll,
                                                        bins=[np.append(pbins,pmax),np.append(lbins,lmax)])
                     lo2prop_ext = lo2prop_ext + H
     
@@ -120,7 +120,7 @@ for zsnap in snap_list:
 
     # Prop vs LOII
     xtit="${\\rm log}_{10}(L\\rm{"+lline+"}/h^{-2}erg\, s^{-1})$"
-    ytit="g"
+    ytit="r"
     xmin=lmin ; xmax=43. ; ymin=20 ; ymax=35
     ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax) 
     ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
@@ -151,7 +151,7 @@ for zsnap in snap_list:
     ax.text(xmax-0.2*(xmax-xmin),ymax-0.05*(ymax-ymin),zleg)
 
     # Save figures
-    plotfile = plotdir + 'g_z'+str(zsnap)+'.pdf'
+    plotfile = plotdir + 'r_z'+str(zsnap)+'.pdf'
     fig.savefig(plotfile)
     print 'Output: ',plotfile
 

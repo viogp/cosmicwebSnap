@@ -13,10 +13,10 @@ import mpl_style
 plt.style.use(mpl_style.style1)
 
 model = 'gaea/'
-snap_g = [0.83,1.0] 
-nvol_g = 5
+snap_g = [0.83]#[0.83,1.0] 
+nvol_g = 2#5
 gaea = '/cosma5/data/durham/violeta/gaea/NebCat-H17_FIRE-H16_z'
-nlines = 70000
+nlines = 10000
 
 ## Testing -----------------------------------------------------------------
 #snap_g = [0.83] ; nvol_g = 2 ; nlines = 100.
@@ -75,6 +75,7 @@ ymin = -5.9 ; ymax = -1.
 # Loop over the redshifts of interest
 jj = 410
 for iz,zz in enumerate(snap_g):
+    print('#### snap = {}'.format(zz))
     jj = jj + 1
 
     lf = np.zeros(shape=(ntypes,len(lhist)))
@@ -92,6 +93,8 @@ for iz,zz in enumerate(snap_g):
 
             ff = open(gfile, 'r')
             for iline, line in enumerate(ff):
+                if (not line.strip()): continue
+
                 g_nodust = float(line.split()[12])
                 r_nodust = float(line.split()[13])
                 i_nodust = float(line.split()[14])
@@ -352,10 +355,10 @@ for iz,zz in enumerate(snap_g):
 
             g,r,i,z,lum,lum_ext=[np.array([]) for i in range(6)]
 
-
-    lf = lf/dl/volume
-    lf_ext = lf_ext/dl/volume
-    print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
+    if volume>0.:
+        lf = lf/dl/volume
+        lf_ext = lf_ext/dl/volume
+        print('Side of the explored box (Mpc/h) = {}'.format(pow(volume,1./3.)))
 
     # Plot
     if (iz == 0):
@@ -446,8 +449,8 @@ for iz,zz in enumerate(snap_g):
         if (index == 0):
             my = np.interp(oxr,x,y) 
             diff = abs(my-oyr) ; ratio = 10.**(diff)
-            print max(ratio),' diff(min,max)',min(diff),max(diff)
-            print oxr,ratio
+            print(max(ratio),' diff(min,max)',min(diff),max(diff))
+            print(oxr,ratio)
 
         # Intrinsic
         if (index == 0):
@@ -502,4 +505,4 @@ for iz,zz in enumerate(snap_g):
 # Save figures
 fig.subplots_adjust(hspace=0)
 fig.savefig(plotfile)
-print 'Output: ',plotfile
+print('Output: {}'.format(plotfile))

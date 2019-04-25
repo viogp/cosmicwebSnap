@@ -10,7 +10,8 @@ snap_list = [41,39]
 
 values = [3.,8.]
 
-#elgs = ['DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI'] 
+# The order of this array needs to match that
+# from the files generated with sfr_cum.py
 elgs = ['DEEP2','VVDS-DEEP','eBOSS-SGC','DESI'] 
 
 for zsnap in snap_list:
@@ -25,11 +26,11 @@ for zsnap in snap_list:
 
     # Write output header
     outfile = inpath+model+'sfr_cuts_sn'+str(zsnap)+'.dat'
-    ff = open(outfile,'w') ; print('Outfile: ',outfile)
+    ff = open(outfile,'w') ; print('Outfile: {}'.format(outfile))
     ff.write('# ')
     ff.write('  '.join([str(ii)+'='+elg for ii,elg in enumerate(elgs)]))
     ff.write(' \n')
-    ff.write('# ELG, Value, log(ngal), Sfr cut for all \n' )
+    ff.write('# ELG survey, log10(SFR) cut value, log(ELG ngal), Corresponding log10(SFR) for the whole sample \n' )
 
     # Find sfr cuts
     for value in values:

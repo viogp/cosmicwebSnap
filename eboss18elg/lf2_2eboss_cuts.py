@@ -63,6 +63,7 @@ ymin = -5.9 ; ymax = -1.
 # Loop over the redshifts of interest
 jj = 410
 for iz,zsnap in enumerate(snap_list):
+    print('\n ####### snap={} ####### \n'.format(zsnap))
     jj = jj + 1
 
     lf = np.zeros(shape=(ntypes,len(lhist)))
@@ -86,7 +87,6 @@ for iz,zsnap in enumerate(snap_list):
             if(firstpass):
                 zstring = "{:.2f}".format(zz) 
                 zleg.append('z='+zstring)
-                firstpass = False
             set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \
                               h0=h0, universe="Flat",include_radiation=False)
             tomag = band_corrected_distance_modulus(zz) 
@@ -106,11 +106,19 @@ for iz,zsnap in enumerate(snap_list):
                           (inleg[index] == 'eBOSSmod')):
                         fluxcut = fcuts[index-1]
                         lcut = emission_line_luminosity(fluxcut,zz)
+                        if (firstpass):
+                            print('{}: flux_cut={}, lcut={:.3f}'.format(inleg[index],
+                                                                    fluxcut,np.log10(lcut)+40.))
 
                         g = f['Output001/mag_DES-g_o_tot_ext'].value + tomag
                         r = f['Output001/mag_DES-r_o_tot_ext'].value + tomag
                         z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
                         rz = r-z ; gr = g-r
+
+                        g_int = f['Output001/mag_DES-g_o_tot'].value + tomag
+                        r_int = f['Output001/mag_DES-r_o_tot'].value + tomag
+                        z_int = f['Output001/mag_DES-z_o_tot'].value + tomag
+                        rz_int = r_int-z_int ; gr_int = g_int-r_int
 
                         if (inleg[index] == 'DESI'): 
                             ind  = np.where((r<23.4) & \
@@ -119,10 +127,10 @@ for iz,zsnap in enumerate(snap_list):
                                                 (rz<1.345-0.85*gr) & \
                                                 (lum_ext>lcut))
 
-                            indi  = np.where((r<23.4) & \
-                                                (rz>0.3) & (gr>-0.3) & \
-                                                (rz>0.9*gr+0.12) & \
-                                                (rz<1.345-0.85*gr) & \
+                            indi  = np.where((r_int<23.4) & \
+                                                (rz_int>0.3) & (gr_int>-0.3) & \
+                                                (rz_int>0.9*gr_int+0.12) & \
+                                                (rz_int<1.345-0.85*gr_int) & \
                                                 (lum>lcut))
 
                         elif (inleg[index] == 'eBOSS-SGC'): 
@@ -132,40 +140,60 @@ for iz,zsnap in enumerate(snap_list):
                                            (gr<0.112*rz + 0.773) & \
                                            (rz>0.218*gr + 0.571) & \
                                            (rz<-0.555*gr + 1.901))
-                            indi = np.where((lum>lcut) & \
-                                               (g>21.825) & (g<22.825) & \
-                                               (gr>-0.068*rz + 0.457) & \
-                                               (gr<0.112*rz + 0.773) & \
-                                               (rz>0.218*gr + 0.571) & \
-                                               (rz<-0.555*gr + 1.901))
 
+                            indi = np.where((lum>lcut) & \
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           (rz>0.218*gr + 0.571) & \
+                                           (rz<-0.555*gr + 1.901))
+
+#                            indi = np.where((lum>lcut) & \
+#                                            (g_int>21.825) & (g_int<22.825) & \
+#                                            (gr_int>-0.068*rz_int + 0.457) & \
+#                                            (gr_int<0.112*rz_int + 0.773) & \
+#                                            (rz_int>0.218*gr_int + 0.571) & \
+#                                            (rz_int<-0.555*gr_int + 1.901))
+#
                         elif (inleg[index] == 'eBOSSmod'): 
                             ind = np.where((lum_ext>lcut) & \
                                            (g>21.825) & (g<22.825) & \
                                            (gr>-0.068*rz + 0.457) & \
                                            (gr<0.112*rz + 0.773) & \
-                                           #(rz>0.218*gr + 0.571) & \
                                            (rz>0.218*gr + 0.85) & \
                                            (rz<-0.555*gr + 1.901))
                             indi = np.where((lum>lcut) & \
-                                            (g>21.825) & (g<22.825) & \
-                                            (gr>-0.068*rz + 0.457) & \
-                                            (gr<0.112*rz + 0.773) & \
-                                            #(rz>0.218*gr + 0.571) & \
-                                            (rz>0.218*gr + 0.85) & \
-                                            (rz<-0.555*gr + 1.901))
+                                           (g>21.825) & (g<22.825) & \
+                                           (gr>-0.068*rz + 0.457) & \
+                                           (gr<0.112*rz + 0.773) & \
+                                           (rz>0.218*gr + 0.85) & \
+                                           (rz<-0.555*gr + 1.901))
+
+#                            indi = np.where((lum>lcut) & \
+#                                            (g_int>21.825) & (g_int<22.825) & \
+#                                            (gr_int>-0.068*rz_int + 0.457) & \
+#                                            (gr_int<0.112*rz_int + 0.773) & \
+#                                            (rz_int>0.218*gr_int + 0.85) & \
+#                                            (rz_int<-0.555*gr_int + 1.901))
 
                     else:
-                        ib = bands[index-1]
-                        mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
-                            + tomag
-                        icut = mcuts[index-1]
                         fluxcut = fcuts[index-1]
                         lcut = emission_line_luminosity(fluxcut,zz)
+                        if (firstpass):
+                            print('{}: flux_cut={}, lcut={:.3f}'.format(inleg[index],
+                                                                    fluxcut,np.log10(lcut)+40.))
 
+                        icut = mcuts[index-1]
+                        ib = bands[index-1]
+
+                        mag = f['Output001/mag_'+ib+'_o_tot_ext'].value\
+                            + tomag
                         ind  = np.where((mag<icut) & (lum_ext>lcut))
-                        indi = np.where((mag<icut) & (lum>lcut))
-                        
+
+                        mag_int = f['Output001/mag_'+ib+'_o_tot'].value\
+                            + tomag
+                        indi = np.where((mag_int<icut) & (lum>lcut))
+
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
                         H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
@@ -176,11 +204,17 @@ for iz,zsnap in enumerate(snap_list):
                         H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
                         lf[index,:] = lf[index,:] + H
                 f.close()
+                firstpass = False
 
+    for index in range(ntypes):        
+        n_lf = sum(lf[index,:])
+        n_lf_ext = sum(lf_ext[index,:])
+        print('    {}: n_int={}, n_ext={}, n_int/n_ext={:.2f}'.format(inleg[index],
+              n_lf,n_lf_ext,n_lf/n_lf_ext))
 
     lf = lf/dl/volume
     lf_ext = lf_ext/dl/volume
-    print 'Side of the explored box (Mpc/h) = ',pow(volume,1./3.)
+    print('\n Side of the explored box (Mpc/h) = {} \n'.format(pow(volume,1./3.)))
 
     # Plot
     if (iz == 0):
@@ -271,8 +305,9 @@ for iz,zsnap in enumerate(snap_list):
         if (index == 0):
             my = np.interp(oxr,x,y) 
             diff = abs(my-oyr) ; ratio = 10.**(diff)
-            print max(ratio),' diff(min,max)',min(diff),max(diff)
-            print oxr,ratio
+            print('Max. LF ratio = {}, Min(diff)={}, Max(diff)={}'.format(max(ratio),
+                                                                       min(diff),max(diff)))
+            print('x_lf={}, ratios={}'.format(oxr,ratio))
 
         # Intrinsic
         if (index == 0):

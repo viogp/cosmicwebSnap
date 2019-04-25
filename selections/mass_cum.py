@@ -29,21 +29,21 @@ nvol = 64
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
 obands = ['R24.2','I24','I22.5']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
+bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','DESI','eBOSS-SGC']
 mcuts = [24.1, 24, 22.5]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,8.*10.**-17.,10.**-16.]
 
-inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
+inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','DESI','eBOSS-SGC']
 ##########
 # No VVDSWIDE
 obsnom = ['DEEP2','VVDSDEEP']
 obands = ['R24.2','I24']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','eBOSS-SGC','DESI']
+bands = ['DEIMOS-R','MegaCam-i-atmos','DESI','eBOSS-SGC']
 mcuts = [24.1, 24]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 10.**-16.,8.*10.**-17.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17.,8.*10.**-17., 10.**-16.]
 
-inleg = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+inleg = ['All','DEEP2','VVDS-DEEP','DESI','eBOSS-SGC']
 ##########
 
 ntypes = len(inleg)
@@ -70,7 +70,7 @@ ax.set_xlabel('${\\rm log}_{10}({\\rm M}/M_{\odot}h^{-1})$')
 ax.set_ylabel('${\\rm log}_{10}(n_{\\rm gal}(>X)/Mpc^{-3}h^3)$')
 
 xmin = 8.5 ; xmax = 12.
-ymin = -5.9 ; ymax = 0.
+ymin = -5.9 ; ymax = 0.5
 
 # Loop over the redshifts of interest
 jj = 210
@@ -252,7 +252,19 @@ for iz,zsnap in enumerate(snap_list):
                 text.set_color(color)
                 text.set_ha('right') ; text.set_position((shift1-shift2,0))
                 leg.draw_frame(False)           
+
+# Plot number densities
+x = [xmin-xmin*0.5,xmax+xmax*0.5]
+for nd in [-2.,-3.,-4.2]:
+    y = [nd,nd]
+    ndtext = '$10^{'+str(nd)+'}$'
+
+    ax1.plot(x,y,color='grey',linestyle=':')
+    ax1.text(xmin+0.1, nd-0.3, ndtext, color='grey',fontsize=11)
     
+    ax2.plot(x,y,color='grey',linestyle=':')
+    ax2.text(xmin+0.1, nd-0.3, ndtext, color='grey',fontsize=11)
+
 # Save figures
 fig.subplots_adjust(hspace=0)
 fig.savefig(plotfile)

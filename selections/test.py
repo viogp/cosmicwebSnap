@@ -6,7 +6,7 @@ import h5py
 import numpy as np
 from Cosmology import *
 
-nvol = 64
+nvol = 2#64
 
 sn_list = ['41','39']
 surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
@@ -30,9 +30,10 @@ for sn in sn_list:
     ndsurveys = np.genfromtxt(ndfile, usecols=(2,), unpack=True, dtype='str')
 
     # Generate output files with a header
+    outpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
     for survey in surveys:
         for nd in nds:
-            outm = ndpath+model+'ascii_files/sfrcut_'+survey+'_nd'+str(nd)+'_sn'+sn+'.dat'
+            outm = outpath+model+'ascii_files/sfrcut_'+survey+'_nd'+str(nd)+'_sn'+sn+'.dat'
             print('Output: {}'.format(outm)) 
             outf = open(outm, 'w')
             outf.write('# xgal,ygal,zgal (Mpc/h), vxgal,vygal,vzgal (Km/s), log10(massh),log10(mass/Msun/h), log10(sfr/Msun/h/Gyr), lum,lum_ext (10^40 h^-2 erg/s), type (0= Centrals; 1,2= Satellites) \n')
@@ -114,7 +115,7 @@ for sn in sn_list:
                                               massh,mass,sfr,\
                                               lum[ind],lum_ext[ind], gtype[ind]))
 
-                    outm = ndpath+model+'ascii_files/sfrcut_'+\
+                    outm = outpath+model+'ascii_files/sfrcut_'+\
                            survey+'_nd'+str(nd)+'_sn'+sn+'.dat'
     
                     with open(outm,'a') as outf:

@@ -11,7 +11,8 @@ snap_list = [41,39]
 
 values = [8.5,10.]
 
-#elgs = ['DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI'] 
+# The order of this array needs to match that 
+# from the files generated with mass_cum.py
 elgs = ['DEEP2','VVDS-DEEP','eBOSS-SGC','DESI'] 
 
 for zsnap in snap_list:
@@ -26,11 +27,11 @@ for zsnap in snap_list:
 
     # Write output header
     outfile = inpath+model+'mass_cuts_sn'+str(zsnap)+'.dat'
-    ff = open(outfile,'w') ; print('Outfile: ',outfile)
+    ff = open(outfile,'w') ; print('Outfile: {}'.format(outfile))
     ff.write('# ')
     ff.write('  '.join([str(ii)+'='+elg for ii,elg in enumerate(elgs)]))
     ff.write(' \n')
-    ff.write('# ELG, Value, log(ngal), Mass cut for all \n' )
+    ff.write('# ELG survey, log10(M*) cut value, log(ELG ngal), Corresponding log10(M*) for the whole sample \n' )
 
     # Find mass cuts
     for value in values:

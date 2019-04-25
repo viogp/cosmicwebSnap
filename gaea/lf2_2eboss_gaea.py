@@ -13,14 +13,17 @@ import mpl_style
 plt.style.use(mpl_style.style1)
 
 model = 'gaea/'
-snap_g = [0.83]#[0.83,1.0] 
-nvol_g = 2#5
+snap_g = [0.83,1.0] 
+nvol_g = 1#5
 gaea = '/cosma5/data/durham/violeta/gaea/NebCat-H17_FIRE-H16_z'
 nlines = 10000
 
 ## Testing -----------------------------------------------------------------
-#snap_g = [0.83] ; nvol_g = 2 ; nlines = 100.
-#gaea = '/cosma5/data/durham/violeta/gaea/test' 
+testing = True
+if testing:
+    #snap_g = [0.83] ; nvol_g = 2 ; nlines = 100
+    #gaea = '/cosma5/data/durham/violeta/gaea/test' 
+    stoplines = 1000000
 ## -------------------------------------------------------------------------
 
 # Gaea cosmology
@@ -80,7 +83,6 @@ for iz,zz in enumerate(snap_g):
 
     lf = np.zeros(shape=(ntypes,len(lhist)))
     lf_ext = np.zeros(shape=(ntypes,len(lhist)))
-
     zleg.append('z='+str(zz))
 
     volume = 0. ; firstpass = True
@@ -89,11 +91,13 @@ for iz,zz in enumerate(snap_g):
 
         gfile = gaea+str(zz)+'_'+str(ivol+1)+'.dat'
         if (os.path.isfile(gfile)):
+            volume = volume + vol1
             tomag = band_corrected_distance_modulus(zz) 
 
-            ff = open(gfile, 'r')
-            for iline, line in enumerate(ff):
+            ff = open(gfile, 'r') ; iline = 0 ; istopl = 0 
+            for line in ff:
                 if (not line.strip()): continue
+                iline += 1 ; istopl += 1
 
                 g_nodust = float(line.split()[12])
                 r_nodust = float(line.split()[13])
@@ -117,9 +121,15 @@ for iz,zz in enumerate(snap_g):
                 lum = np.append(lum,lum1)
                 lum_ext = np.append(lum_ext,lum_ext1)
 
-                if (iline > nlines): # LF
+                if testing: 
+                    if (istopl>=stoplines): break
+
+                # Calculate the LF in batches of nlines
+                if (divmod(iline,nlines)[1] == 0.): # LF
+                    print('ivol={}, iline={}'.format(ivol,iline))
+
                     rz = r-z ; gr = g-r
-                
+
                     for index,survey in enumerate(surveys):
                         if (survey == 'All'):
                             ind  = np.where(lum_ext>0.)
@@ -228,17 +238,20 @@ for iz,zz in enumerate(snap_g):
                             print('STOP: Unknown survey {}'.format(survey)) ; sys.exit()
 
                         if (np.shape(ind)[1] > 0.):
-                            H, bins_edges = np.histogram(lum_ext,bins=np.append(lbins,lmax))
+                            ll = lum_ext[ind]
+                            H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
                             lf_ext[index,:] = lf_ext[index,:] + H
 
                         if (np.shape(indi)[1] > 0.):
-                            H, bins_edges = np.histogram(lum,bins=np.append(lbins,lmax))
+                            ll = lum[indi]
+                            H, bins_edges = np.histogram(ll,bins=np.append(lbins,lmax))
                             lf[index,:] = lf[index,:] + H
 
                     g,r,i,z,lum,lum_ext=[np.array([]) for i in range(6)]
 
-            # Use the last galaxies is this subvolume
-            print('iline={}, ivol={}'.format(iline,ivol))
+            # Use the last galaxies in this subvolume
+            print('ivol={}, iline={}, remaining gals.={}'.format(iline,ivol,
+                                                                 np.shape(lum_ext)))
             rz = r-z ; gr = g-r
             
             for index,survey in enumerate(surveys):
@@ -358,7 +371,7 @@ for iz,zz in enumerate(snap_g):
     if volume>0.:
         lf = lf/dl/volume
         lf_ext = lf_ext/dl/volume
-        print('Side of the explored box (Mpc/h) = {}'.format(pow(volume,1./3.)))
+        print('Side of the explored box (Mpc/h) = {} \n'.format(pow(volume,1./3.)))
 
     # Plot
     if (iz == 0):
@@ -449,8 +462,9 @@ for iz,zz in enumerate(snap_g):
         if (index == 0):
             my = np.interp(oxr,x,y) 
             diff = abs(my-oyr) ; ratio = 10.**(diff)
-            print(max(ratio),' diff(min,max)',min(diff),max(diff))
-            print(oxr,ratio)
+            print('Max. LF ratio = {}, Min(diff)={}, Max(diff)={}'.format(max(ratio),
+                                                                          min(diff),max(diff))) 
+            print('x_lf={}, ratios={}'.format(oxr,ratio))  
 
         # Intrinsic
         if (index == 0):

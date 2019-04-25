@@ -69,7 +69,7 @@ ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
 ax.set_xlabel('${\\rm log}_{10}({\\rm SFR}/M_{\odot}h^{-1}Gyr^{-1})$')
 ax.set_ylabel('${\\rm log}_{10}(n_{\\rm gal}(>X)/Mpc^{-3}h^3)$')
 
-xmin = 3. ; xmax = 12.
+xmin = 6. ; xmax = 12.
 ymin = -5.9 ; ymax = 0.5
 
 # Loop over the redshifts of interest
@@ -191,7 +191,7 @@ for iz,zsnap in enumerate(snap_list):
     outfile = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'+model+'sfr_cum_sn'+\
         str(zsnap)+'.dat'
     with open(outfile,'w') as outf:
-        outf.write('# log10(SFR/Msun/h/Gyr) ') 
+        outf.write('# log10(SFR/Msun/h/Gyr) log10(ngal for ') 
         outf.write(' '.join(str(i) for i in inleg))
         outf.write(' \n')
         
@@ -255,6 +255,18 @@ for iz,zsnap in enumerate(snap_list):
                 text.set_color(color)
                 text.set_ha('right') ; text.set_position((shift1-shift2,0))
                 leg.draw_frame(False)           
+
+# Plot number densities
+x = [xmin-xmin*0.5,xmax+xmax*0.5]
+for nd in [-2.,-3.,-4.2]:
+    y = [nd,nd]
+    ndtext = '$10^{'+str(nd)+'}$'
+
+    ax1.plot(x,y,color='grey',linestyle=':')
+    ax1.text(xmin+0.1, nd-0.3, ndtext, color='grey',fontsize=11)
+
+    ax2.plot(x,y,color='grey',linestyle=':')
+    ax2.text(xmin+0.1, nd-0.3, ndtext, color='grey',fontsize=11)
     
 # Save figures
 fig.subplots_adjust(hspace=0)

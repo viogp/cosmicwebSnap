@@ -2,6 +2,8 @@ import numpy as np
 import os.path, sys
 import h5py
 from Cosmology import * 
+import matplotlib ; matplotlib.use('Agg') 
+from matplotlib import pyplot as plt
 
 path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 
@@ -27,6 +29,21 @@ allb_low = allbins[:-1]
 allb_high = allbins[1:]
 
 ############################################
+
+# Initialize the parameters for the figure ------------------ 
+plt.rcParams['legend.numpoints'] = 1 
+plt.rcParams['axes.labelsize'] = 10.0 ; fs = 20 
+plt.rcParams['lines.linewidth'] = 2 
+fig = plt.figure(figsize=(8.5,9.))  
+xtit = "${\\rm log}_{10}(\\rm{M/M_{\odot}}h^{-1})$" 
+ytit = "${\\rm log}_{10}(\Phi/ Mpc^{-3}h^3 {\\rm dlog}_{10}M)$"  
+xmin = 10. ; xmax = 16. 
+ymin = -6.5 ; ymax = 0.  
+jj = 111 
+ax = fig.add_subplot(jj) 
+ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax) 
+ax.set_xlabel(xtit,fontsize = fs) ; ax.set_ylabel(ytit,fontsize = fs) #-------------------------------------------------------------
+
 # Loop over the redshifts of interest
 for iz,zsnap in enumerate(snap_list):
     # Initialize output file
@@ -79,4 +96,5 @@ for iz,zsnap in enumerate(snap_list):
             np.savetxt(outf,tofile,fmt=('%.5f'))
         outf.closed
 
+        # Plot ##HERE
 print('Output: {}'.format(outfil))

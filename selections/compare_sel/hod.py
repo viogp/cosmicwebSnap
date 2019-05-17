@@ -7,7 +7,8 @@ model = 'gp19/'
 sn_list = ['41','39']
 surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['test'] #cuts = ['m','sfr']
+cuts = ['m','sfr']
+#cuts = ['test'] 
 
 verbose = False
 
@@ -19,15 +20,15 @@ hodpath = inpath+'hod/'
 # Read the information from the different surveys
 for sn in sn_list: 
     # Read the number of haloes
-#    hmffile = hodpath+model+'hmf_sn'+sn+'.txt'
-    hmffile = hodpath+model+'hmf_sn'+sn+'_2vols.txt'
+    hmffile = hodpath+model+'hmf_sn'+sn+'.txt'
     mhist,mlow,mhigh,nhs = np.loadtxt(hmffile,unpack='True')
 
-    for nd in nds:
+    for cut in cuts:
         for survey in surveys:
-            for cut in cuts:
+            for nd in nds:
                 infile = ndpath+model+'ascii_files/'+cut+\
                          'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'
+
                 # Check the existance of the files
                 if (not os.path.isfile(infile)):
                     if verbose:
@@ -41,20 +42,46 @@ for sn in sn_list:
                         print('WARNING: {} has too few lines'.format(infile))
                     continue
 
-                massh,mass,sfr,lum_ext,gtype = np.loadtxt(infile,usecols=(6,7,8,10,11),unpack=True)
+                massh,mass,x = np.loadtxt(infile,usecols=(6,7,11),unpack=True)
+                gtype = x.astype(int)
 
                 # Initialize array for hod
-                hod = np.zeros(shape=len(nhs))
+                hod = np.zeros(shape=(3,len(nhs))) ; hod.fill(-999.)
 
                 for ii,nh in enumerate(nhs):
+                    # All
                     ind = np.where((massh>=mlow[ii]) & (massh<mhigh[ii]))
-                    num = np.shape(ind)[1] 
-                    if (num > 1):
-                        hod[ii] = float(num)/nh 
+                    numa = np.shape(ind)[1]
+                    if (numa >= 1 and nh > 0):
+                        hod[0,ii] = float(numa)/nh 
+
+                    # Centrals
+                    ind = np.where((massh>=mlow[ii]) & (massh<mhigh[ii]) &
+                                   (gtype == 0))
+                    numc = np.shape(ind)[1]
+                    if (numc >= 1 and nh > 0):
+                        hod[1,ii] = float(numc)/nh
+
+                    # Satellites
+                    ind = np.where((massh>=mlow[ii]) & (massh<mhigh[ii]) &
+                                   (gtype > 0))
+                    nums = np.shape(ind)[1] 
+                    if (nums >= 1 and nh > 0):
+                        hod[2,ii] = float(nums)/nh 
+
+                # Take the log of the HODs:
+                ind = np.where(hod>0.)
+                hod[ind] = np.log10(hod[ind])
 
                 # Output file
                 hfile = hodpath+model+cut+\
                          'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'
-                print(hfile)
+                tofile = zip(mhist,hod[0,:],hod[1,:],hod[2,:])
+                with open(hfile, 'w') as outf:
+                    outf.write('# log10(Mh/Msun/h)_midpoint, log10<Nall>, log10<Ncentrals>, log10<Nsatellites>')
+                    np.savetxt(outf,tofile,fmt=('%.5f'))
+
+                print('Output: {}'.format(hfile))
 
 
+                

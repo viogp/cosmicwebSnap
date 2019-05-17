@@ -180,5 +180,5 @@ for iiz,sn in enumerate(sn_list):
 
             # Save figures
             fig.savefig(plt_file)
-            print 'Output: ',plt_file
+            print('Output: ',plt_file)
 

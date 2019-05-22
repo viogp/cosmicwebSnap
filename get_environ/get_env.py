@@ -20,21 +20,28 @@ def return_env(Pos, threshold=0.1, webf="../VPweb_data/VP_039_DM_MHD.000256.Vweb
 '''
 #----LSE parameters---------------
 boxsize = 500.  # Side of the simulation box (Mpc/h)
-threshold = 0.1  # For classifying environments
+
+# sn = 39:
 pathVweb = '/data1/users/weiguang/Violeta/VPweb_data/VP_039_DM_MHD_512.000512.Vweb'
+# sn = 41:
 #pathVweb = '/data1/users/weiguang/Violeta/VPweb_data/VP_041_DM_MHD_512.000512.Vweb'
-Vweb = True 
+
+# Vweb for classifying environments
+threshold = 0.1 ; Vweb = True
+#Pweb
+#threshold = 0.01 ; Vweb = False
 #---------------------------------
 
 # Read files from gal_files
 # The name should be: *.dat
 files = glob.glob('gal_files/'+'*.dat')
 for infile in files:
+    print('### START with {}'.format(infile))
     time0 = time.clock()
     
     pos = np.loadtxt(infile, usecols=(0,1,2), unpack= True)
     pos = np.transpose(pos)
-    print 'Spent time w loadtxt = ',time.clock()-time0, np.shape(pos)
+    print('Spent time w loadtxt = {}, {}'.format(time.clock()-time0, np.shape(pos)))
     time0 = time.clock()
 
     count = -1
@@ -52,7 +59,7 @@ for infile in files:
                     pos = newpos
                 else:
                     pos = np.vstack((pos, newpos))
-    print 'Spent time line by line = ',time.clock()-time0, np.shape(pos)
+    print('Spent time line by line = {}, {}'.format(time.clock()-time0, np.shape(pos)))
 
     env = return_env(pos, boxsize, threshold = threshold, \
                      webf = pathVweb, Vweb = Vweb)
@@ -62,7 +69,12 @@ for infile in files:
     tofile = np.concatenate((pos,env2f),axis=1)
     
     nom = infile.split('/')[-1:] # File name
-    outfile = 'env_files/'+nom[0]
+
+    if Vweb:
+        outfile = 'env_files/Vweb/'+nom[0]
+    else:
+        outfile = 'env_files/Pweb/'+nom[0]
+        
     if os.path.exists(outfile):
         os.remove(outfile)
 
@@ -72,4 +84,4 @@ filament; 3 Knots \n')
     np.savetxt(outf, tofile, fmt='%.5f %.5f %.5f %1i')
     outf.close()
     
-    print('Output: ',outfile)
+    print('Output: {} \n'.format(outfile))

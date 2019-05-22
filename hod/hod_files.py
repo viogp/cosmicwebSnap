@@ -120,7 +120,7 @@ for iz,zsnap in enumerate(snap_list):
                         band = 'MegaCam-i-atmos'
                         
                         mag = group['mag_'+band+'_o_tot_ext'].value + tomag
-                        sel0 = (mag < mcut)
+                        sel0 = (mag <= mcut)
                         
                     elif (survey == 'VVDS-WIDE'):
                         fluxcut = 3.5*10.**-17.
@@ -128,7 +128,7 @@ for iz,zsnap in enumerate(snap_list):
                         band = 'MegaCam-i-atmos'
                         
                         mag = group['mag_'+band+'_o_tot_ext'].value + tomag
-                        sel0 = (mag < mcut)
+                        sel0 = (mag <= mcut)
                         
                     elif (survey == 'eBOSS'):
                         fluxcut = 10.**-16. #erg/s/cm^2
@@ -153,7 +153,7 @@ for iz,zsnap in enumerate(snap_list):
                         rz = r-z ; gr = g-r
                         
                         sel0 = (r<23.4) & (rz>0.3) & (gr>-0.3) & \
-                            (rz>0.9*gr+0.12) & (rz<1.345-0.85*gr)
+                               (gr<1.1*rz-0.13) & (gr<1.6-1.18*rz)
 
                     lcut = emission_line_luminosity(fluxcut,zz)
 

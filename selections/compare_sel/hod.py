@@ -20,7 +20,8 @@ hodpath = inpath+'hod/'
 # Read the information from the different surveys
 for sn in sn_list: 
     # Read the number of haloes
-    hmffile = hodpath+model+'hmf_sn'+sn+'.txt'
+    #hmffile = hodpath+model+'hmf_sn'+sn+'_2vols.txt'
+    hmffile = hodpath+model+'hmf_sn'+sn+'.txt' # Full volume
     mhist,mlow,mhigh,nhs = np.loadtxt(hmffile,unpack='True')
 
     for cut in cuts:

@@ -98,9 +98,66 @@ for sn in sn_list:
     
                     if (cut<0.): continue
 
-                    ind = np.where((sfr1>10**cut) &
-                                   (mhhalo>0.) & (mass1>0.))
-    
+                    if (survey == 'DEEP2'):
+                        fluxcut = 2.7*10.**-17
+                        mcut = 24.1
+                        band = 'DEIMOS-R'
+                        
+                        mag = group['mag_'+band+'_o_tot_ext'].value + tomag
+                        sel0 = (mag < mcut)
+                        
+                    elif (survey == 'VVDS-DEEP'):
+                        fluxcut = 1.9*10.**-17.
+                        mcut = 24.
+                        band = 'MegaCam-i-atmos'
+                        
+                        mag = group['mag_'+band+'_o_tot_ext'].value + tomag
+                        sel0 = (mag <= mcut)
+                        
+                    elif (survey == 'VVDS-WIDE'):
+                        fluxcut = 3.5*10.**-17.
+                        mcut = 22.5
+                        band = 'MegaCam-i-atmos'
+                        
+                        mag = group['mag_'+band+'_o_tot_ext'].value + tomag
+                        sel0 = (mag <= mcut)
+                        
+                    elif (survey == 'eBOSS'):
+                        fluxcut = 10.**-16. #erg/s/cm^2
+                        
+                        g = group['mag_DES-g_o_tot_ext'].value + tomag 
+                        r = group['mag_DES-r_o_tot_ext'].value + tomag 
+                        z = group['mag_DES-z_o_tot_ext'].value + tomag 
+                        rz = r-z ; gr = g-r
+                        
+                        sel0 = (g>21.825) & (g<22.825) & \
+                            (gr>-0.068*rz + 0.457) & \
+                            (gr< 0.112*rz + 0.773) & \
+                            (rz> 0.218*gr + 0.571) & \
+                            (rz<-0.555*gr + 1.901)
+                        
+                    elif (survey == 'DESI'):
+                        fluxcut = 8.*10.**-17. #erg/s/cm^2
+                        
+                        g = group['mag_DES-g_o_tot_ext'].value + tomag 
+                        r = group['mag_DES-r_o_tot_ext'].value + tomag 
+                        z = group['mag_DES-z_o_tot_ext'].value + tomag 
+                        rz = r-z ; gr = g-r
+                        
+                        sel0 = (r<23.4) & (rz>0.3) & (gr>-0.3) & \
+                               (gr<1.1*rz-0.13) & (gr<1.6-1.18*rz)
+
+                    if (survey == 'All'):
+                        ind = np.where((sfr1>10**cut) &
+                                       (mhhalo>0.) & (mass1>0.) )
+                    else:
+                        lcut = emission_line_luminosity(fluxcut,zz)
+                        ind = np.where((sfr1>10**cut) &
+                                       (mhhalo>0.) & (mass1>0.) &
+                                       sel0 & (lum_ext>lcut))
+
+                    if (np.shape(ind)[1]<1): continue
+
                     massh = np.log10(mhhalo[ind])
                     mass = np.log10(mass1[ind])
                     sfr = np.log10(sfr1[ind])

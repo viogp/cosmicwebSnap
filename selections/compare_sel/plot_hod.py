@@ -12,6 +12,7 @@ sn_list = ['41','39'] ; zz_list = ['0.83','0.99']
 surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
 nds = ['-2.0','-3.0','-4.2']
 cuts = ['m','sfr']
+#cuts = ['test']
 
 verbose = False
 

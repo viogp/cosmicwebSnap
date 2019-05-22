@@ -1,7 +1,8 @@
 #!/bin/tcsh -ef
 
-#set exec = medians.py
-set exec = sfr_m.py
+#set exec = hod.py
+set exec = medians.py
+#set exec = sfr_m.py
 
 python $exec
 

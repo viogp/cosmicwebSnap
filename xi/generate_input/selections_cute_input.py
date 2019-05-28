@@ -20,8 +20,8 @@ cuts = ['m','sfr']
 verbose = False
 
 # Paths
-inpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
-outpath = '/cosma5/data/durham/violeta/Junk/'
+inpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'+\
+         model
 
 # File with all the file names to input CUTE
 info_file = model+'_inputs4cute_sel_'+space+'.txt'
@@ -34,7 +34,7 @@ for iis,sn in enumerate(sn_list):
     for cut in cuts:
         for survey in surveys:
             for nd in nds:
-                infile = inpath+model+'/ascii_files/'+\
+                infile = inpath+'/ascii_files/'+\
                          cut+'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'
 
                 # Check if the file exists
@@ -60,8 +60,10 @@ for iis,sn in enumerate(sn_list):
                     x  = x1 + vx*(1.+zz)/H(zz)
 
                 # Write the input file for CUTE
-                outfile = outpath+\
-                         cut+'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'
+                outfile = inpath+'/iz'+sn+'/'+space+'/'+\
+                         cut+'cut_'+survey+'_nd'+nd+'_sn'+sn+\
+                         '_4cute_'+space+'.dat'
+
                 tofile = zip(x,y,z) #np.column_stack((x,y,z))
                 with open(outfile,'w') as ff:
                     np.savetxt(ff, tofile, fmt=('%.5f'))

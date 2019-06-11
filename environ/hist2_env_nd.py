@@ -26,7 +26,10 @@ ytit = 'Fraction'
 ymin = 0. ; ymax = 1.
 
 cols = ['darkred','dodgerblue']
-hatching = ['/','//'] 
+hatching = [' ','/','o',' ','//','O'] 
+
+surveys1 = ['DEEP2','VVDS-DEEP']
+surveys2 = ['DESI','eBOSS-SGC']
 ##########################################
 # Output fraction summary
 envsumfile = path+'env_files/'+model+'env_fractions.txt'
@@ -39,8 +42,9 @@ sumfile = open(envsumfile,'a')
 for cw in ['Vweb','Pweb']:
     epath = path+'env_files/'+model+cw+'/'
     
-    for survey in ['DEEP2','DESI','eBOSS-SGC','VVDS-DEEP']:
-        inleg = ['Mass cut',survey+' (mass)','SFR cut',survey+' (SFR)']
+    for iis,survey in enumerate(surveys1):
+        inleg = ['Mass cut, All','Mass cut, '+survey,'Mass cut, '+surveys2[iis],
+                 'SFR cut, All','SFR cut, '+survey,'SFR cut, '+surveys2[iis]]
         numinleg = len(inleg)
         lbar = dm*sep/numinleg
 
@@ -57,14 +61,16 @@ for cw in ['Vweb','Pweb']:
                     ztext = 'z = 0.83; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
                 elif(iz == '39'):
                     ztext = 'z = 0.99; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
-                ax.text(1.8, 0.95, ztext)
+                ax.text(1.7, 0.95, ztext)
 
                 ii = -1
                 for ic, cut in enumerate(['m','sfr']):
                     allfile = epath+cut+'cut_All_nd'+nd+'_sn'+iz+'.dat'
-                    elgfile = epath+cut+'cut_'+survey+\
+                    elgfile1 = epath+cut+'cut_'+survey+\
                              '_nd'+nd+'_sn'+iz+'.dat'
-                    files = [allfile,elgfile]
+                    elgfile2 = epath+cut+'cut_'+surveys2[iis]+\
+                             '_nd'+nd+'_sn'+iz+'.dat'
+                    files = [allfile,elgfile1,elgfile2]
 
                     for efile in files:
                         ii += 1
@@ -97,11 +103,11 @@ for cw in ['Vweb','Pweb']:
                         else:
                             ax.bar(xenv, frac, lbar, \
                                    color=cols[ic], label=inleg[ii],\
-                                   hatch=hatching[ic],fill=False,edgecolor=cols[ic])
+                                   hatch=hatching[ii],fill=False,edgecolor=cols[ic])
 
                 newnd = nd.replace('.','p')
                 plotfile = path+'plots/'+model+'environ/'+cw+\
-                           '_'+survey+'_nd'+newnd+'_sn'+iz+'_env.pdf'
+                           '_'+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
 
                 # Legend
                 leg = plt.legend(loc=2)

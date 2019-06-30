@@ -39,12 +39,12 @@ sumfile = open(envsumfile,'a')
 for cw in ['Vweb','Pweb']:
     epath = path+'env_files/'+model+cw+'/'
     
-    for survey in ['DEEP2','DESI','eBOSS-SGC','VVDS-DEEP']:
+    for survey in ['DEEP2']:#,'DESI','eBOSS-SGC','VVDS-DEEP']:
         inleg = ['Mass cut',survey+' (mass)','SFR cut',survey+' (SFR)']
         numinleg = len(inleg)
         lbar = dm*sep/numinleg
 
-        for iz in ['39','41']:
+        for iz in ['39']:#,'41']:
             for nd in ['-2.0','-3.0','-4.2']:
                 # Initialize the parameters for the figures
                 fig = plt.figure(figsize=(8.5,9.))

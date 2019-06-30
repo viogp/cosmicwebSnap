@@ -17,7 +17,7 @@ model = 'gp19/'
 
 #############################
 line = 'OII3727' ; lline = '[OII]'
-outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'lfs/f17_rz85h_compared2_'
+outdir = '/cosma5/data/durham/violeta/lines/cosmicweb/plots/'+model+'lfs/compared2_'
 plotfile = outdir+line+'.pdf'
 ############################# Obs
 obsh0 = 0.677
@@ -33,8 +33,8 @@ obands = ['R24.2','I24','I22.5']
 
 bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
 mcuts = [24.1, 24, 22.5]
-#fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-17.,8.*10.**-17.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
+#fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-17.,8.*10.**-17.]
 
 inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
 ##########
@@ -118,8 +118,8 @@ for iz,zsnap in enumerate(snap_list):
                                            (g>21.825) & (g<22.825) & \
                                            (gr>-0.068*rz + 0.457) & \
                                            (gr<0.112*rz + 0.773) & \
-                                           #(rz>0.218*gr + 0.571) & \
-                                           (rz>0.218*gr + 0.85) & \
+                                           (rz>0.218*gr + 0.571) & \
+                                           #(rz>0.218*gr + 0.85) & \
                                            (rz<-0.555*gr + 1.901))
                             indi = np.where((lum>lcut) & \
                                                (g>21.825) & (g<22.825) & \
@@ -215,23 +215,23 @@ for iz,zsnap in enumerate(snap_list):
                 ax.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
                                 ecolor=col,color=col,mec=col)
 
-    # Plot Prabhakar Tiwari's LF
-    if (zsnap == 41):
-        oxh, oyh, oeh = np.loadtxt(obs_dir+'tiwari/OII_3728_LF_v11.dat',
-                                 usecols=(0,1,2),unpack=True,skiprows=1)
-
-        ox = oxh + 2*np.log10(h0)
-        oy = oyh + 3*np.log10(obsh0) - 3*np.log10(h0)
-        oe = oeh + 3*np.log10(obsh0) - 3*np.log10(h0)
-
-        i = 1 + bands.index('eBOSS-SGC') 
-
-        if (iz == 0):
-            ax1.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
-                             ecolor=cols[i],color=cols[i],mec=cols[i])
-        else:
-            ax.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
-                            ecolor=cols[i],color=cols[i],mec=cols[i])
+    ## Plot Prabhakar Tiwari's LF
+    #if (zsnap == 41):
+    #    oxh, oyh, oeh = np.loadtxt(obs_dir+'tiwari/OII_3728_LF_v11.dat',
+    #                             usecols=(0,1,2),unpack=True,skiprows=1)
+    #
+    #    ox = oxh + 2*np.log10(h0)
+    #    oy = oyh + 3*np.log10(obsh0) - 3*np.log10(h0)
+    #    oe = oeh + 3*np.log10(obsh0) - 3*np.log10(h0)
+    #
+    #    i = 1 + bands.index('eBOSS-SGC') 
+    #
+    #    if (iz == 0):
+    #        ax1.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
+    #                         ecolor=cols[i],color=cols[i],mec=cols[i])
+    #    else:
+    #        ax.errorbar(ox,oy,yerr=[oe,oe],fmt='o',\
+    #                        ecolor=cols[i],color=cols[i],mec=cols[i])
 
     # Plot the model predictions
     for index in range(ntypes):

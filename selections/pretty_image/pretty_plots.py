@@ -8,6 +8,29 @@ import matplotlib ; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from distinct_colours import get_distinct
 
+#------------------------------------------
+model = 'gp19/'
+
+path = '/cosma5/data/durham/violeta/lines/cosmicweb/'
+plotdir =  path+'plots/'+model+'/pretty/'
+
+snap = 39 # 0.988
+
+zlow = 10.
+zup  = 20.
+
+
+model = 'MillGas/gp15newmg/' #'MillGas/gp14/'
+line = 'OII3727' ; lline = '[OII]'
+
+# Plot only a section
+#lmin = 400. ; lmax= 450. ; shift=400.
+#lmin = 200. ; lmax= 250. ; shift=200.
+#lmin = 300. ; lmax= 350. ; shift=300.
+lmin = 0. ; lmax= 50. ; shift=0.
+
+#------------------------------------------
+
 #### John's scripts###########
 def density_image(x, y, min_count, max_count, shape, log=True, range=None):    
     """
@@ -51,7 +74,7 @@ def extract_particles(isnap, zlow, zup, lmin, lmax, shift, cm):
     # Read in particle data in a 10Mpc/h slice
     # First loop over snapshot files.
     x = [] ; y = []
-    vols = 1 #512 
+    vols = 1 #512 #############################
     for ifile in range(vols):
 
         # Read coordinates from one file
@@ -81,27 +104,6 @@ def extract_particles(isnap, zlow, zup, lmin, lmax, shift, cm):
                           interpolation="nearest", origin="lower")
 
 ##############################
-plotdir =  '/gpfs/data/violeta/lines/desi_hod_o2/plots/pretty_images/'
-sn =['44','42','40','37']
-zz = ['0.6','0.75','0.9','1.2']
-
-snap = 39 # 0.988
-zlow = 10.
-zup  = 20.
-
-path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/'
-model = 'MillGas/gp15newmg/' #'MillGas/gp14/'
-line = 'OII3727' ; lline = '[OII]'
-
-
-# Plot only a section
-#lmin = 400. ; lmax= 450. ; shift=400.
-#lmin = 200. ; lmax= 250. ; shift=200.
-#lmin = 300. ; lmax= 350. ; shift=300.
-lmin = 0. ; lmax= 50. ; shift=0.
-
-##############################
-
 # DM
 extract_particles(snap, zlow, zup, lmin, lmax, shift, plt.cm.Greys)
 plt.xlabel("x(Mpc $h^{-1})$") ; plt.ylabel("y(Mpc $h^{-1})$")
@@ -109,6 +111,9 @@ plt.xlim((lmin-shift,lmax-shift)) ;plt.ylim((lmin-shift,lmax-shift))
 
 ##############################
 
+# Loop over different files
+
+###HERE
 # Look for OII emitters
 bands = ['RK','m2','m2']
 mcuts = [24.1,22.5,24]

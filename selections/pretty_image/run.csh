@@ -1,6 +1,7 @@
-#!/bin/tcsh -f
+#!/bin/tcsh -ef
 
-set exec = millgas_o2.py
+set exec = pretty_plots.py
+#set exec = pretty41.py
 
 python $exec
 

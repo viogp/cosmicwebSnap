@@ -10,5 +10,5 @@
 
 **sfr_m.py** Plot the SFR vs M (and GSMF, SFR function) for each of the number density samples.
 
-**xi_env_nd** Compare the 2PCFs for the number density environmental samples.
+**xi_bias_nd.py** Compare the 2PCFs for the number density environmental samples.
 

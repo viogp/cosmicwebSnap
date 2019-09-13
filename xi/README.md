@@ -1,6 +1,8 @@
 1. Generate input files for CUTE in *generate_input*, using the adequate model:
   - **cute_input_r.py** 
   - **cute_input_gflux_z.py**
+  - **cute_input_Lcuts_z.py**
+  - **selections_cute_input.py** For the mass/sfr number density selections.
 
 2. Copy the input file to the *run_cute* directory:
    '''> cp [file] ../run_cute/in.txt'''

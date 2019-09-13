@@ -1,39 +1,60 @@
 #!/bin/env python
 
 import os.path, sys
-from numpy import *
+import numpy as np
 import h5py
+import subprocess
 from Cosmology import *
 import matplotlib ; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from distinct_colours import get_distinct
 
+testing = False
 #------------------------------------------
 model = 'gp19/'
 
 path = '/cosma5/data/durham/violeta/lines/cosmicweb/'
-plotdir =  path+'plots/'+model+'/pretty/'
+plotdir =  path+'plots/'+model+'pretty/'
+ndpath = path+'selections/'
 
-snap = 39 # 0.988
+surveys = ['DEEP2','DESI'] ; sn = 39 # 0.988
+#surveys = ['VVDS-DEEP','eBOSS-SGC'] ; sn = 41 # 0.83
 
-zlow = 10.
-zup  = 20.
+surveys = ['eBOSS-SGC'] ; sn = 41 # 0.83
+nds = ['-4.2','-2.0'] 
 
+#nds = ['-2.0','-3.0','-4.2']
+cuts = ['m','sfr']
+marks = ['o','*'] ; cols = ['darkred','dodgerblue']
 
-model = 'MillGas/gp15newmg/' #'MillGas/gp14/'
-line = 'OII3727' ; lline = '[OII]'
+# Plot only a section of the box
+vols = 512
+zlow = 10. ; zup  = 20.
 
-# Plot only a section
 #lmin = 400. ; lmax= 450. ; shift=400.
-#lmin = 200. ; lmax= 250. ; shift=200.
 #lmin = 300. ; lmax= 350. ; shift=300.
-lmin = 0. ; lmax= 50. ; shift=0.
+#lmin = 350. ; lmax= 400. ; shift=350.
+#lmin = 0. ; lmax= 50. ; shift=0.
+lmin = 420. ; lmax= 470. ; shift=420.
 
+verbose = True #False
+#------------------------------------------
+if testing:
+    verbose = True
+    vols = 3
+
+    #surveys = ['DEEP2'] ; nds = ['-4.2'] ; sn = 39
+    #lmin = 300. ; lmax= 400. ; shift=300.    
+
+    surveys = ['eBOSS-SGC'] ; nds = ['-2.0'] ; sn = 41
+    #lmin = 200. ; lmax= 300. ; shift=200.    
 #------------------------------------------
 
-#### John's scripts###########
-def density_image(x, y, min_count, max_count, shape, log=True, range=None):    
+def density_image(x, y, min_count, max_count, shape, log=True, xyrange=None):    
     """
+    Author: John Helly
+    Contributions: Violeta Gonzalez-Perez
+
     Generate a floating point image of a 2D particle distribution
 
     x, y                 - particle coordinates
@@ -47,36 +68,39 @@ def density_image(x, y, min_count, max_count, shape, log=True, range=None):
 
     2D image array with values in range 0-1
     """
-    if range is None:
-        range = ((amin(x), amax(x)), (amin(y), amax(y)))
 
-    image,xedge,yedge = histogram2d(x, y, range=range, bins=shape)
-    image = asarray(image, dtype=float)
+    if xyrange is None:
+        xyrange = ((np.amin(x), np.amax(x)), (np.amin(y), np.amax(y)))
+
+    image,xedge,yedge = np.histogram2d(x, y, range=xyrange, bins=shape)
+    image = np.asarray(image, dtype=float)
+
     if log:
         # Log scaling - negative values get set to zero in output
         ind = image > 0
-        image[logical_not(ind)] = 0.0        
-        lgmin = log10(min_count)
-        lgmax = log10(max_count)
-        image[ind] = (log10(image[ind]) - lgmin) / (lgmax-lgmin)
+        image[np.logical_not(ind)] = 0.0 
+        lgmin = np.log10(min_count)
+        lgmax = np.log10(max_count)
+        image[ind] = (np.log10(image[ind]) - lgmin) / (lgmax-lgmin)
     else:
         # Linear scaling - clamp to range 0-1
         image = (image-min_count)-(max_count-min_count)
         image[image<0.0] = 0.0
         image[image>1.0] = 1.0
-        
-    return image.transpose()
+
+    return np.transpose(image)
 
 def extract_particles(isnap, zlow, zup, lmin, lmax, shift, cm):
-
+    """
+    Author: John Helly
+    Contributions: Violeta Gonzalez-Perez
+    """
     basename = "/cosma5/data/jch/MillGas/dm/500/snapdir_%03d/500_dm_%03d" % (isnap, isnap)
 
     # Read in particle data in a 10Mpc/h slice
     # First loop over snapshot files.
     x = [] ; y = []
-    vols = 1 #512 #############################
     for ifile in range(vols):
-
         # Read coordinates from one file
         fname = "%s.%d.hdf5" % (basename,ifile)
         print "Reading: %s" % fname
@@ -86,13 +110,19 @@ def extract_particles(isnap, zlow, zup, lmin, lmax, shift, cm):
         pos_z = f["PartType1/Coordinates"].value[:,2]
         f.close()
 
-        # Discard particles not in 0<z<10 slice and outside lmin,lmac
-        ind = where((pos_z>zlow) & (pos_z<zup)  & \
+        # Discard particles not in z slice and outside lmin,lmac
+        ind = np.where((pos_z>zlow) & (pos_z<zup)  & \
                         (pos_x>lmin) & (pos_x<lmax) & \
                         (pos_y>lmin) & (pos_y<lmax) )
-        x = append(x,pos_x[ind]) 
-        y = append(y,pos_y[ind])
-           
+
+        if (np.shape(ind)[1]>1):
+            x = np.append(x,pos_x[ind]) 
+            y = np.append(y,pos_y[ind])
+
+    if (len(x) < 2):
+        print('STOP: No dark matter particles selected')
+        sys.exit()
+
     # Make image as 2D float array
     img = density_image(x-shift,y-shift,min_count=0.1, max_count=10000, 
                         shape=(1024,1024), log=True)    
@@ -103,140 +133,96 @@ def extract_particles(isnap, zlow, zup, lmin, lmax, shift, cm):
                           cmap=cm, vmin=0.0, vmax=1.0, \
                           interpolation="nearest", origin="lower")
 
+def check_jump(infile,verbose=False):
+    # Check the existance of the file
+    if (not os.path.isfile(infile)):
+        if verbose:
+            print('WARNING: {} not found'.format(infile))
+            return True
+    # Jump files with only a one line header
+    wcl_line = subprocess.check_output(["wc", "-l",infile])
+    wcl = int(wcl_line.split()[0])
+    if (wcl <= 1):
+        if verbose:
+            print('WARNING: {} has too few lines'.format(infile))
+            return True
+    return False
+
+
 ##############################
 # DM
-extract_particles(snap, zlow, zup, lmin, lmax, shift, plt.cm.Greys)
+extract_particles(sn, zlow, zup, lmin, lmax, shift, plt.cm.Greys)
 plt.xlabel("x(Mpc $h^{-1})$") ; plt.ylabel("y(Mpc $h^{-1})$")
 plt.xlim((lmin-shift,lmax-shift)) ;plt.ylim((lmin-shift,lmax-shift))
-
 ##############################
 
+val = 1./8.
+
 # Loop over different files
+for survey in surveys:
+    for nd in nds:
+        doplot = False
 
-###HERE
-# Look for OII emitters
-bands = ['RK','m2','m2']
-mcuts = [24.1,22.5,24]
-fcuts = [2.7*10.**-17., 3.5*10.**-17., 1.9*10.**-17.]
+        for ic,cut in enumerate(cuts):
+            # ELG
+            infile = ndpath+model+'ascii_files/'+cut+\
+                     'cut_'+survey+'_nd'+nd+'_sn'+str(sn)+'.dat'
+            jump = check_jump(infile,verbose=verbose)
+            if not jump:
+                print('   File: {}'.format(infile))
+                xgal,ygal,zgal,lo2 = np.loadtxt(
+                    infile,usecols=(0,1,2,10),unpack=True)
+                ind = np.where((lo2>0.) &
+                               (xgal>lmin) & (xgal<lmax) & 
+                               (ygal>lmin) & (ygal<lmax) & 
+                               (zgal>zlow) & (zgal<zup))
 
-inleg = ['Halo cut','DEEP2','VVDS-WIDE','VVDS-DEEP']
-ntypes = len(inleg)
-cols = get_distinct(5)
+                if (np.shape(ind)[1]>0):
+                    doplot = True
+            
+                    x = xgal[ind] - shift
+                    y = ygal[ind] - shift
+                    m = np.zeros(shape=len(x)) ; m.fill(30.)
+                    nlo2 = lo2[ind]
+                    jnd = np.where(nlo2>0.)
+                    m[jnd] = np.log10(nlo2[jnd]) + 40. 
+            
+                    for i in range(len(m)):
+                        plt.plot(x[i],y[i],marks[ic],
+                                 c=cols[1],markeredgecolor=cols[1],
+                                 markersize=m[i]*val,alpha=0.8)
 
-# Loop over volumes
-firstpass = True 
-xh =[] ; yh =[] ; lh =[]
-xd2=[] ; yd2=[] ; ld2=[]
-xvw=[] ; yvw=[] ; lvw=[]
-xvd=[] ; yvd=[] ; lvd=[]
-for ivol in range(64): #(64):
-    # OII emitters 
-    pfile = path+model+'iz'+str(snap)+'/ivol'+str(ivol)+'/galaxies.hdf5'
-    if (os.path.isfile(pfile)):
-        #print pfile
-        # Get some of the model constants
-        f = h5py.File(pfile,'r')
-        zz   = f['Output001/redshift'].value
-        xgal = f['Output001/xgal'].value
-        ygal = f['Output001/ygal'].value
-        zgal = f['Output001/zgal'].value
-        group = f['Parameters']
-        h0 = group['h0'].value 
-        omega0 = group['omega0'].value
-        omegab = group['omegab'].value
-        lambda0 =group['lambda0'].value
-        mhhalo = np.log10(f['Output001/mhhalo'].value)
-        cen = f['Output001/type'].value 
-        f.close()
+            # All
+            infile = ndpath+model+'ascii_files/'+cut+\
+                     'cut_All_nd'+nd+'_sn'+str(sn)+'.dat'
+            jump = check_jump(infile,verbose=verbose)
+            if jump:
+                continue
+            print('   File: {}'.format(infile))
+            xgal,ygal,zgal,lo2 = np.loadtxt(
+                infile,usecols=(0,1,2,10),unpack=True)
 
-        set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \
-                          h0=h0, universe="Flat",include_radiation=False)
-        tomag = band_corrected_distance_modulus(zz)
-        
-        efile = path+model+'/iz'+str(snap)+'/ivol'+str(ivol)+'/elgs.hdf5'
-        if (os.path.isfile(efile)):
-            f = h5py.File(efile,'r')            
+            ind = np.where((xgal>lmin) & (xgal<lmax) & 
+                           (ygal>lmin) & (ygal<lmax) & 
+                           (zgal>zlow) & (zgal<zup))
+            if (np.shape(ind)[1]>0):
+                doplot = True
+                x = xgal[ind] - shift
+                y = ygal[ind] - shift
+                m = np.zeros(shape=len(x)) ; m.fill(30.)
+                nlo2 = lo2[ind]
+                jnd = np.where(nlo2>0.)
+                m[jnd] = np.log10(nlo2[jnd]) + 40. 
 
-            # Haloes
-            ind = where((cen<1) & (mhhalo>11.80) & \
-                            (xgal>lmin) & (xgal<lmax) & \
-                            (ygal>lmin) & (ygal<lmax) & \
-                            (zgal>zlow) & (zgal<zup))
+                for i in range(len(m)):
+                    plt.plot(x[i],y[i],marks[ic],
+                             c='none',markeredgecolor=cols[0],
+                             markersize=m[i]*val,alpha=0.8)
 
-            xh = append(xh,xgal[ind])
-            yh = append(yh,ygal[ind])
-            lh = append(lh,mhhalo[ind])
-
-            for index,ib in enumerate(bands):
-                mag = f['Output001/mag'+ib+'o_tot_ext'].value + tomag
-                lum_ext = f['Output001/L_tot_'+line+'_ext'].value
-                icut = mcuts[index] ; fluxcut = fcuts[index]
-                lcut = emission_line_luminosity(fluxcut,zz)
-                if(len(mag) == len(zgal)): 
-                    ind = where((mag<icut) & (lum_ext>lcut)  & \
-                                    (xgal>lmin) & (xgal<lmax) &\
-                                    (ygal>lmin) & (ygal<lmax) &\
-                                    (zgal>zlow) & (zgal<zup))
-
-                    if (index ==0): 
-                        xd2 = append(xd2,xgal[ind])
-                        yd2 = append(yd2,ygal[ind])
-                        ll = np.log10(lum_ext[ind])
-                        ld2 = append(ld2,ll)
-                    elif (index ==1): 
-                        xvw = append(xvw,xgal[ind])
-                        yvw = append(yvw,ygal[ind])
-                        ll = np.log10(lum_ext[ind])
-                        lvw = append(lvw,ll)
-                    else: 
-                        xvd = append(xvd,xgal[ind])
-                        yvd = append(yvd,ygal[ind])
-                        ll = np.log10(lum_ext[ind])
-                        lvd = append(lvd,ll)
-                else:
-                    if(index==0):
-                        print 'Different lengths in elgs.hdf5 and galaxies.hdf5'
-                        print len(mag),len(zgal)
-                        print efile
-
-            f.close()
-    else:
-        print pfile,' not found'
-
-volume = 500.*500.*(zup-zlow)
-
-
-# DEEP2
-print 'DEEP2 density=',len(xd2)/volume
-for i in range(len(xd2)):
-    x = xd2[i]-shift
-    y = yd2[i]-shift
-    plt.plot(x,y,"o",c=cols[0],markeredgecolor=cols[0],\
-                 markersize=ld2[i]*4.,alpha=0.8)
-
-# VVDSWIDE
-print 'VVDSWIDE density=',len(xvw)/volume
-for i in range(len(xvw)):
-    x = xvw[i]-shift
-    y = yvw[i]-shift
-    #plt.plot(x,y,"^",c=cols[1],markeredgecolor=cols[1],\
-    #             markersize=lvw[i]*5.,alpha=0.8)
-
-# Haloes
-print 'Haloes density=',len(xh)/volume, min(lh),max(lh)
-for i in range(len(xh)):
-    x = xh[i]-shift
-    y = yh[i]-shift
-    plt.plot(x,y,"o",c='none',markeredgecolor='r',\
-                 markersize=lh[i]/1.5,linewidth=3)
-
-
-# Save figures
-plotfile = plotdir+model+'deep2z0.9.pdf'
-plt.savefig(plotfile)
-print 'Output: ',plotfile
-
-#DEEP2 density= 5.2e-05
-#VVDSWIDE density= 8e-07
-#Haloes density= 5.92e-05 11.7510652542 13.5263109207
-#Haloes density= 4.24e-05 11.9084920883 13.5263109207
+        if doplot:
+            # Save figures
+            plotfile = plotdir+'pretty_'+survey+\
+                       '_nd'+nd+'_sn'+str(sn)+'.pdf'
+            
+            plt.savefig(plotfile)
+            print '* Output: ',plotfile

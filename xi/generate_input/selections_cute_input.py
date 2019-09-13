@@ -15,9 +15,18 @@ sn_list = ['41','39'] ; zz_list = [0.83,0.99]
 surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
 nds = ['-2.0','-3.0','-4.2']
 cuts = ['m','sfr']
-#cuts = ['test']
 
 verbose = False
+
+# Testing
+testing = False
+if testing:
+    verbose = True
+    sn_list = ['39'] ; zz_list = [0.99]
+    surveys = ['DEEP2'] ; nds = ['-2.0']
+    cuts = ['m','sfr']
+    #cuts = ['test']
+#------------------
 
 # Paths
 inpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'+\
@@ -53,10 +62,10 @@ for iis,sn in enumerate(sn_list):
 
                 # Read the ascii files with the number density selections
                 if (space == 'r'): # r-space
-                    x,y,z = np.loadtxt(infile,usecols=(1,2,3),unpack=True)
+                    x,y,z = np.loadtxt(infile,usecols=(0,1,2),unpack=True)
                 else: # z-space
                     x1,y,z,vx = np.loadtxt(infile,
-                                           usecols=(1,2,3,4),unpack=True)
+                                           usecols=(0,1,2,3),unpack=True)
                     x  = x1 + vx*(1.+zz)/H(zz)
 
                 # Write the input file for CUTE

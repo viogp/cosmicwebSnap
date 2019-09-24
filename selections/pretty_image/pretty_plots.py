@@ -9,7 +9,7 @@ import matplotlib ; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from distinct_colours import get_distinct
 
-testing = False
+testing = True 
 #------------------------------------------
 model = 'gp19/'
 
@@ -20,10 +20,7 @@ ndpath = path+'selections/'
 surveys = ['DEEP2','DESI'] ; sn = 39 # 0.988
 #surveys = ['VVDS-DEEP','eBOSS-SGC'] ; sn = 41 # 0.83
 
-surveys = ['eBOSS-SGC'] ; sn = 41 # 0.83
-nds = ['-4.2','-2.0'] 
-
-#nds = ['-2.0','-3.0','-4.2']
+nds = ['-2.0','-3.0','-4.2']
 cuts = ['m','sfr']
 marks = ['o','*'] ; cols = ['darkred','dodgerblue']
 
@@ -31,23 +28,21 @@ marks = ['o','*'] ; cols = ['darkred','dodgerblue']
 vols = 512
 zlow = 10. ; zup  = 20.
 
-#lmin = 400. ; lmax= 450. ; shift=400.
-#lmin = 300. ; lmax= 350. ; shift=300.
-#lmin = 350. ; lmax= 400. ; shift=350.
-#lmin = 0. ; lmax= 50. ; shift=0.
-lmin = 420. ; lmax= 470. ; shift=420.
 
-verbose = True #False
+lmin = 0. ; lmax= 500.
+#lmin = 420. ; lmax= 470.
+
+verbose = True ; dm = False
 #------------------------------------------
 if testing:
     verbose = True
     vols = 3
 
-    #surveys = ['DEEP2'] ; nds = ['-4.2'] ; sn = 39
-    #lmin = 300. ; lmax= 400. ; shift=300.    
+    surveys = ['DEEP2'] ; nds = ['-4.2','-2.0'] ; sn = 39
+    lmin = 0. ; lmax= 500.
 
-    surveys = ['eBOSS-SGC'] ; nds = ['-2.0'] ; sn = 41
-    #lmin = 200. ; lmax= 300. ; shift=200.    
+    #surveys = ['eBOSS-SGC'] ; nds = ['-2.0'] ; sn = 41
+    #lmin = 200. ; lmax= 300.   
 #------------------------------------------
 
 def density_image(x, y, min_count, max_count, shape, log=True, xyrange=None):    
@@ -90,12 +85,14 @@ def density_image(x, y, min_count, max_count, shape, log=True, xyrange=None):
 
     return np.transpose(image)
 
-def extract_particles(isnap, zlow, zup, lmin, lmax, shift, cm):
+def extract_particles(isnap, zlow, zup, lmin, lmax, cm):
     """
     Author: John Helly
     Contributions: Violeta Gonzalez-Perez
     """
     basename = "/cosma5/data/jch/MillGas/dm/500/snapdir_%03d/500_dm_%03d" % (isnap, isnap)
+
+    shift = lmin
 
     # Read in particle data in a 10Mpc/h slice
     # First loop over snapshot files.
@@ -149,12 +146,13 @@ def check_jump(infile,verbose=False):
     return False
 
 
-##############################
+###############################
 # DM
-extract_particles(sn, zlow, zup, lmin, lmax, shift, plt.cm.Greys)
-plt.xlabel("x(Mpc $h^{-1})$") ; plt.ylabel("y(Mpc $h^{-1})$")
-plt.xlim((lmin-shift,lmax-shift)) ;plt.ylim((lmin-shift,lmax-shift))
-##############################
+if dm:
+    extract_particles(sn, zlow, zup, lmin, lmax, plt.cm.Greys)
+    plt.xlabel("x(Mpc $h^{-1})$") ; plt.ylabel("y(Mpc $h^{-1})$")
+    plt.xlim((0.,lmax-lmin)) ;plt.ylim((0.,lmax-lmin))
+###############################
 
 val = 1./8.
 
@@ -163,61 +161,66 @@ for survey in surveys:
     for nd in nds:
         doplot = False
 
+        # ELG
         for ic,cut in enumerate(cuts):
-            # ELG
             infile = ndpath+model+'ascii_files/'+cut+\
                      'cut_'+survey+'_nd'+nd+'_sn'+str(sn)+'.dat'
             jump = check_jump(infile,verbose=verbose)
             if not jump:
-                print('   File: {}'.format(infile))
+                #print('   File: {}'.format(infile))
                 xgal,ygal,zgal,lo2 = np.loadtxt(
                     infile,usecols=(0,1,2,10),unpack=True)
-                ind = np.where((lo2>0.) &
-                               (xgal>lmin) & (xgal<lmax) & 
+                # xgal,ygal,zgal (Mpc/h)
+                # lo2: L_tot_OII_ext (10^40 h^-2 erg/s)
+                ind = np.where((xgal>lmin) & (xgal<lmax) & 
                                (ygal>lmin) & (ygal<lmax) & 
                                (zgal>zlow) & (zgal<zup))
-
-                if (np.shape(ind)[1]>0):
+                if (np.shape(ind)[1]<1):
+                    print('No gal. in plot range for {}'.format(infile))
+                else:
                     doplot = True
-            
-                    x = xgal[ind] - shift
-                    y = ygal[ind] - shift
-                    m = np.zeros(shape=len(x)) ; m.fill(30.)
+                    # Shifted positions
+                    x = xgal[ind] - lmin
+                    y = ygal[ind] - lmin
+                    # Luminosity for the size of the marker
+                    size = np.zeros(shape=len(x)) ; size.fill(1./val)
                     nlo2 = lo2[ind]
                     jnd = np.where(nlo2>0.)
-                    m[jnd] = np.log10(nlo2[jnd]) + 40. 
-            
-                    for i in range(len(m)):
+                    size[jnd] = (np.log10(nlo2[jnd]) + 40.)*val 
+                    # Plot
+                    for i in range(len(size)):
                         plt.plot(x[i],y[i],marks[ic],
                                  c=cols[1],markeredgecolor=cols[1],
-                                 markersize=m[i]*val,alpha=0.8)
+                                 markersize=1,alpha=0.8)
+                                 #markersize=size[i],alpha=0.8)
 
-            # All
+        # All
+        for ic,cut in enumerate(cuts):
             infile = ndpath+model+'ascii_files/'+cut+\
                      'cut_All_nd'+nd+'_sn'+str(sn)+'.dat'
             jump = check_jump(infile,verbose=verbose)
-            if jump:
-                continue
-            print('   File: {}'.format(infile))
-            xgal,ygal,zgal,lo2 = np.loadtxt(
-                infile,usecols=(0,1,2,10),unpack=True)
-
-            ind = np.where((xgal>lmin) & (xgal<lmax) & 
-                           (ygal>lmin) & (ygal<lmax) & 
-                           (zgal>zlow) & (zgal<zup))
-            if (np.shape(ind)[1]>0):
-                doplot = True
-                x = xgal[ind] - shift
-                y = ygal[ind] - shift
-                m = np.zeros(shape=len(x)) ; m.fill(30.)
-                nlo2 = lo2[ind]
-                jnd = np.where(nlo2>0.)
-                m[jnd] = np.log10(nlo2[jnd]) + 40. 
-
-                for i in range(len(m)):
-                    plt.plot(x[i],y[i],marks[ic],
-                             c='none',markeredgecolor=cols[0],
-                             markersize=m[i]*val,alpha=0.8)
+            if not jump:
+                xgal,ygal,zgal,lo2 = np.loadtxt(
+                    infile,usecols=(0,1,2,10),unpack=True)
+                ind = np.where((xgal>lmin) & (xgal<lmax) & 
+                               (ygal>lmin) & (ygal<lmax) & 
+                               (zgal>zlow) & (zgal<zup))
+                if (np.shape(ind)[1]<1):
+                    print('No gal. in plot range for {}'.format(infile))
+                else:
+                    doplot = True
+                    x = xgal[ind] - lmin
+                    y = ygal[ind] - lmin
+                    size = np.zeros(shape=len(x)) ; size.fill(1./val)
+                    nlo2 = lo2[ind]
+                    jnd = np.where(nlo2>0.)
+                    size[jnd] = (np.log10(nlo2[jnd]) + 40.)*val 
+                    # Plot
+                    for i in range(len(size)):
+                        plt.plot(x[i],y[i],marks[ic],
+                                 c='none',markeredgecolor=cols[0],
+                                 markersize=1,alpha=0.8)
+                                 #markersize=size[i],alpha=0.8)
 
         if doplot:
             # Save figures

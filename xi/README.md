@@ -14,4 +14,4 @@
 
    This calls run_cute.csh and generates the adequate inpute parameter file within the *params* directory.
 
-4. Plots in **r_space_plots** and **z_space_plots**.
+4. Code for plots in **r_space_plots** and **z_space_plots**.

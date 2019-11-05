@@ -84,8 +84,11 @@ for cw in ['Vweb','Pweb']:
                             continue
 
                         # Read the file
-                        xx,yy,zz,fenv = np.loadtxt(efile,unpack=True)
+                        xx, yy, zz, fenv = np.loadtxt(efile,unpack=True)
                         env = fenv.astype(int)
+
+                        # Match property from ASCII file (they should be ordered in the same way)
+###here
 
                         # Histograms with the fraction of galaxies
                         hist, bins_edges = np.histogram(env, bins=np.append(ebins,emax))

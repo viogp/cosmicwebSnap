@@ -100,6 +100,7 @@ for iz,zsnap in enumerate(snap_list):
 
             set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \
                               h0=h0, universe="Flat",include_radiation=False)
+            tomag = band_corrected_distance_modulus(zz)
             slim = 0.3/tHubble(zz) # Franx+08
 
             ind  = np.where((sfr>0.) & (mass>0.) & (10.**lssfr>slim))
@@ -115,14 +116,19 @@ for iz,zsnap in enumerate(snap_list):
                 lum = f['Output001/L_tot_'+line].value
 
                 if(len(lum_ext) ==len(sfr)):
+                    g = f['Output001/mag_DES-g_o_tot_ext'].value + tomag
+                    r = f['Output001/mag_DES-r_o_tot_ext'].value + tomag  
+                    z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
+                    rz = r-z ; gr = g-r
+
                     lcut = emission_line_luminosity(fluxcut,zz)
 
                     index =0
                     # All
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -144,8 +150,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Ext
                     indi = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum>lcut))
                     if (np.shape(indi)[1] > 0.):
                         ll = np.log10(lum[indi]) + 40.
@@ -158,8 +164,8 @@ for iz,zsnap in enumerate(snap_list):
                     cen = f['Output001/type'].value
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (cen<1))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -171,8 +177,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Satellites
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (cen>0))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -185,8 +191,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Quiescent
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (tburst>tsf))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -198,8 +204,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Bursty
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (tburst<tsf))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -212,8 +218,7 @@ for iz,zsnap in enumerate(snap_list):
                     # High sSFR
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+
                                     (lum_ext>lcut) & (10.**lssfr>slim))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -228,8 +233,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Low sSFR
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (10.**lssfr<slim))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -242,8 +247,7 @@ for iz,zsnap in enumerate(snap_list):
                     # Big.
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+
                                     (lum_ext>lcut) & (r50>0.5))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -255,8 +259,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Small.
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (r50<=0.5))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -269,8 +273,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Spheroid.
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (BoT>0.5))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.
@@ -282,8 +286,8 @@ for iz,zsnap in enumerate(snap_list):
                     # Disk.
                     ind  = np.where((r<23.4) & \
                                     (rz>0.3) & (gr>-0.3) & \
-                                    (rz>0.9*gr+0.12) & \
-                                    (rz<1.345-0.85*gr) & \
+                                    (gr<1.1*rz-0.13) & \
+                                    (gr<1.6-1.18*rz) & \
                                     (lum_ext>lcut) & (BoT<=0.5))
                     if (np.shape(ind)[1] > 0.):
                         ll = np.log10(lum_ext[ind]) + 40.

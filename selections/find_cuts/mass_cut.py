@@ -15,25 +15,25 @@ ngal_vals = [-2.,-3.,-4.2]
 surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI'] 
 
 for zsnap in snap_list:
-    # Read the cumulative abundance for the SFR 
+    # Read the cumulative abundance for the stllar mass
     infile = inpath+model+'mass_cum_sn'+str(zsnap)+'.dat'
     if (not os.path.isfile(infile)):
         print('STOP: {} not found'.format(infile)) ; sys.exit()
     data = np.loadtxt(infile, unpack=True)
-    sfr = data[0,:] #; print( sfr)
+    mass = data[0,:] #; print( mass)
 
     # Write output header
     outfile = inpath+model+'ngal_mass_cuts_sn'+str(zsnap)+'.dat'
     ff = open(outfile,'w') ; print('Outfile: {}'.format(outfile))
     ff.write('# log(ngal), log(M*), Survey \n' )
 
-    # Find sfr cuts
+    # Find mass cuts
     for ngal_val in ngal_vals:
         for ii, survey in enumerate(surveys):
             y = data[ii+1,:]
 
             if (max(y) >= ngal_val):
-                f = interp1d(y,sfr)
+                f = interp1d(y,mass)
                 cut = f(ngal_val)
             else:
                 cut = -999.

@@ -29,21 +29,21 @@ nvol = 64
 obsnom = ['DEEP2','VVDSDEEP','VVDSWIDE']
 obands = ['R24.2','I24','I22.5']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','DESI','eBOSS-SGC']
+bands = ['DEIMOS-R','MegaCam-i-atmos','MegaCam-i-atmos','eBOSS-SGC','DESI']
 mcuts = [24.1, 24, 22.5]
-fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,8.*10.**-17.,10.**-16.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 3.5*10.**-17.,10.**-16.,8.*10.**-17.]
 
-inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','DESI','eBOSS-SGC']
+inleg = ['All','DEEP2','VVDS-DEEP','VVDS-Wide','eBOSS-SGC','DESI']
 ##########
 # No VVDSWIDE
 obsnom = ['DEEP2','VVDSDEEP']
 obands = ['R24.2','I24']
 
-bands = ['DEIMOS-R','MegaCam-i-atmos','DESI','eBOSS-SGC']
+bands = ['DEIMOS-R','MegaCam-i-atmos','eBOSS-SGC','DESI']
 mcuts = [24.1, 24]
-fcuts = [2.7*10.**-17., 1.9*10.**-17.,8.*10.**-17., 10.**-16.]
+fcuts = [2.7*10.**-17., 1.9*10.**-17., 10.**-16.,8.*10.**-17.]
 
-inleg = ['All','DEEP2','VVDS-DEEP','DESI','eBOSS-SGC']
+inleg = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
 ##########
 
 ntypes = len(inleg)
@@ -66,7 +66,7 @@ ax.spines['bottom'].set_color('none')
 ax.spines['left'].set_color('none')
 ax.spines['right'].set_color('none')
 ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
-ax.set_xlabel('${\\rm log}_{10}({\\rm M}/M_{\odot}h^{-1})$')
+ax.set_xlabel('${\\rm log}_{10}({\\rm M_*}/M_{\odot}h^{-1})$')
 ax.set_ylabel('${\\rm log}_{10}(n_{\\rm gal}(>X)/Mpc^{-3}h^3)$')
 
 xmin = 8.5 ; xmax = 12.

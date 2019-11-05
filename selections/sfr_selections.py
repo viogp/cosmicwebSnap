@@ -9,7 +9,8 @@ from Cosmology import *
 nvol = 64
 
 sn_list = ['41','39']
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+#surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+surveys = ['eBOSS-SGC']
 
 #############################
 path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
@@ -122,7 +123,7 @@ for sn in sn_list:
                         mag = group['mag_'+band+'_o_tot_ext'].value + tomag
                         sel0 = (mag <= mcut)
                         
-                    elif (survey == 'eBOSS'):
+                    elif (survey == 'eBOSS-SGC'):
                         fluxcut = 10.**-16. #erg/s/cm^2
                         
                         g = group['mag_DES-g_o_tot_ext'].value + tomag 

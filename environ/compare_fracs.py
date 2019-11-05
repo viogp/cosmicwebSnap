@@ -3,7 +3,7 @@ import numpy as np
 
 model = 'gp19'
 
-infile = 'env_fractions.txt'
+infile = '/cosma5/data/durham/violeta/lines/cosmicweb/env_files/gp19/env_fractions.txt'
 
 sns = ['39','41']
 nds = ['-2.0','-3.0','-4.2']
@@ -21,8 +21,9 @@ elgs.fill(dum)
 
 with open(infile) as ff:
     for line in ff:
-        if (line[0]=='#'):
+        if (not line.rstrip() or line[0]=='#'):
             continue
+
         # Data
         array1 = line.split(':')[1]
         array2 = array1.split('[')[1]

@@ -9,7 +9,8 @@ from Cosmology import *
 nvol = 64
 
 sn_list = ['41','39']
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+#surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+surveys = ['eBOSS-SGC']
 
 #############################
 path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
@@ -70,7 +71,7 @@ for sn in sn_list:
             mdisk = group['mstars_disk'].value # Msun/h
             mbulge = group['mstars_bulge'].value
             mass1 = mdisk + mbulge
-    
+
             sdisk = group['mstardot'].value # Msolar/h/Gyr
             sbulge = group['mstardot_burst'].value
             sfr1 = sdisk + sbulge
@@ -95,7 +96,7 @@ for sn in sn_list:
                         cut = cuts[ind]
                     else:
                         print('STOP: More or none one cut value, index_shape= {}, sn={}, survey={}, ns={}'.format(np.shape(ind)[1],sn,survey,nd)) ; sys.exit()
-    
+
                     if (cut<0.): continue
 
                     if (survey == 'DEEP2'):
@@ -122,9 +123,9 @@ for sn in sn_list:
                         mag = group['mag_'+band+'_o_tot_ext'].value + tomag
                         sel0 = (mag <= mcut)
                         
-                    elif (survey == 'eBOSS'):
+                    elif (survey == 'eBOSS-SGC'): 
                         fluxcut = 10.**-16. #erg/s/cm^2
-                        
+
                         g = group['mag_DES-g_o_tot_ext'].value + tomag 
                         r = group['mag_DES-r_o_tot_ext'].value + tomag 
                         z = group['mag_DES-z_o_tot_ext'].value + tomag 
@@ -157,7 +158,7 @@ for sn in sn_list:
                                        sel0 & (lum_ext>lcut))
 
                     if (np.shape(ind)[1]<1): continue
-    
+
                     massh = np.log10(mhhalo[ind])
                     mass = np.log10(mass1[ind])
                     sfr = np.log10(sfr1[ind])

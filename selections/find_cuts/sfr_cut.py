@@ -11,7 +11,7 @@ snap_list = [41,39]
 ngal_vals = [-2.,-3.,-4.2]
 
 # The order of this array needs to match that
-# from the files generated with mass_cum.py
+# from the files generated with sfr_cum.py
 surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI'] 
 
 for zsnap in snap_list:

@@ -9,7 +9,8 @@ plt.style.use(mpl_style.style1)
 model = 'gp19/'
 
 sn_list = ['41','39'] ; zz_list = ['0.83','0.99']
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+#surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+surveys = ['eBOSS-SGC']
 nds = ['-2.0','-3.0','-4.2']
 cuts = ['m','sfr']
 #cuts = ['test']

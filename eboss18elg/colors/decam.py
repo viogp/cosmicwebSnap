@@ -16,8 +16,7 @@ dir = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
 nvol = 64
 model = 'gp19/'
 
-#zlist = [61, 44, 42, 40, 37] #z=0, 0.6, 0.75, 0.9, 1.18
-zlist = [41,39] #[44, 41, 39, 34] #z=0.6, 0.83, 1., 1.5
+zlist = [61, 44, 41, 39, 34] #z=0.6, 0.83, 1., 1.5
 cols = get_distinct(len(zlist)) 
 
 #############################
@@ -96,14 +95,20 @@ for ii,iz in enumerate(zlist):
     firstpass = True 
     for ivol in range(nvol):
         fil = dir+model+'/iz'+str(iz)+'/ivol'+str(ivol)+'/galaxies.hdf5'
-        if (os.path.isfile(fil)):
+        if (not os.path.isfile(fil)):
+            print('Not found {}'.format(fil))
+        else:
             f = h5py.File(fil,'r')
-            zz = f['Output001/redshift'].value
-            h0 = f['Parameters/h0'].value 
-            omega0 = f['Parameters/omega0'].value
-            omegab = f['Parameters/omegab'].value
-            lambda0 = f['Parameters/lambda0'].value 
-            vol1 = f['Parameters/volume'].value 
+            try:
+                zz = f['Output001/redshift'].value
+                h0 = f['Parameters/h0'].value 
+                omega0 = f['Parameters/omega0'].value
+                omegab = f['Parameters/omegab'].value
+                lambda0 = f['Parameters/lambda0'].value 
+                vol1 = f['Parameters/volume'].value 
+            except:
+                print('Problem with {}'.format(fil))
+                continue
             f.close()
 
             set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \

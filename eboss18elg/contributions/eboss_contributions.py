@@ -100,6 +100,7 @@ for iz,zsnap in enumerate(snap_list):
 
             set_cosmology(omega0=omega0,omegab=omegab,lambda0=lambda0, \
                               h0=h0, universe="Flat",include_radiation=False)
+            tomag = band_corrected_distance_modulus(zz)
             slim = 0.3/tHubble(zz) # Franx+08
 
             ind  = np.where((sfr>0.) & (mass>0.) & (10.**lssfr>slim))
@@ -115,6 +116,11 @@ for iz,zsnap in enumerate(snap_list):
                 lum = f['Output001/L_tot_'+line].value
 
                 if(len(lum_ext) ==len(sfr)):
+                    g = f['Output001/mag_DES-g_o_tot_ext'].value + tomag
+                    r = f['Output001/mag_DES-r_o_tot_ext'].value + tomag  
+                    z = f['Output001/mag_DES-z_o_tot_ext'].value + tomag
+                    rz = r-z ; gr = g-r 
+
                     lcut = emission_line_luminosity(fluxcut,zz)
 
                     index =0

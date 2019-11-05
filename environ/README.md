@@ -9,3 +9,8 @@
 **tailoredcuts** Plots the cuts at stellar masses and SFR varying for each survey.
 
 **compare_fracs** Compare the fraction diferences.
+
+## Directories ##
+**propcompare** Properties (stellar mass, etc.) compared by environment for each sample.
+
+**tailoredcuts** Comparisson when density cuts are made to match the model ELG numbers.

@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-propname = 'lmass'
-ytit = ''
-ymin = 8.5 ; ymax = 15.
+propname = 'lmh'
+xtit = "$log_{10}({\\rm M}_{\\rm halo}/M_{\odot}h^{-1})$"
+xmin = 10.5 ; xmax = 15.
 
 ##########################################
 
@@ -18,17 +18,21 @@ proppath = path+'selections/'+model+'ascii_files/'
 ##########################################
 
 # Separation of environments in the plot
+emin = -0.5 ; emax = 3.5 ; dm = 1.
 sep = 0.85 
+ebins = np.arange(emin,emax, dm)  
 
 # Initialize the parameters for the figures
 plt.rcParams['legend.numpoints'] = 1
 plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
 
-xlabels = np.array([0,1,2,3])
+ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
+cuts = ['m','sfr']
+
 cols = ['darkred','dodgerblue']
-hatching = [' ','/','o',' ','//','O'] 
+lstyle = ['-','--',':','-','--',':'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -45,28 +49,27 @@ for cw in ['Vweb','Pweb']:
     epath = path+'env_files/'+model+cw+'/'
 
     for iis,survey in enumerate(surveys1):
-        inleg = ['Mass cut, All','Mass cut, '+survey,'Mass cut, '+surveys2[iis],
-                 'SFR cut, All','SFR cut, '+survey,'SFR cut, '+surveys2[iis]]
-        numinleg = len(inleg)
-        lbar = sep/numinleg
+        inleg = ['All',survey,surveys2[iis]]
+        numinleg = len(inleg)*len(cuts)
+        lbar = dm*sep/numinleg
 
         for iz in ['39','41']:
             for nd in ['-2.0','-3.0','-4.2']:
                 # Initialize the parameters for the figures
                 fig = plt.figure(figsize=(8.5,9.))
                 jj = 111 ; ax = fig.add_subplot(jj)
-                plt.xticks(xlabels,elabels)
-                ax.tick_params(axis='x',which='minor',bottom=False)
-                ax.set_ylabel(ytit,fontsize=fs) ; ax.set_ylim(ymin,ymax)
+                plt.yticks(ylabels,elabels)
+                ax.tick_params(axis='y',which='minor',right=False,left=False)
+                ax.set_xlabel(xtit,fontsize=fs) ; ax.set_xlim(xmin,xmax)
 
                 if(iz == '41'):
                     ztext = 'z = 0.83; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
                 elif(iz == '39'):
                     ztext = 'z = 0.99; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
-                ax.text(1.7, 0.95, ztext)
+                ax.text(xmax-0.45*(xmax-xmin),emax-0.02*(emax-emin), ztext) 
 
                 ii = -1
-                for ic, cut in enumerate(['m','sfr']):
+                for ic, cut in enumerate(cuts):
                     end = cut+'cut_All_nd'+nd+'_sn'+iz+'.dat'
                     allfile = epath+end
                     allprop = proppath+end
@@ -105,7 +108,7 @@ for cw in ['Vweb','Pweb']:
                         # log10(massh) 6, log10(mass/Msun/h) 7, log10(sfr/Msun/h/Gyr) 8, 
                         # lum 9,lum_ext 10 (10^40 h^-2 erg/s),
                         # type 11 (0= Centrals; 1,2= Satellites) 
-                        px, py, pz, lmass = np.loadtxt(pfile, usecols=(0,1,2,7), unpack=True)
+                        px, py, pz, lmh = np.loadtxt(pfile, usecols=(0,1,2,6), unpack=True)
 
                         # Chech that the coordinates have the same size
                         if ((len(xx) != len(px)) or 
@@ -125,26 +128,38 @@ for cw in ['Vweb','Pweb']:
                             ind = np.where(env == ienv)
                             if (np.shape(ind)[1] <= 1):
                                 continue
-                            prop = lmass[ind]
+                            prop = lmh[ind]
+
                             # Plot
-                            xenv = ienv + 0.5*(1.-sep) + 0.5*lbar + ii*lbar
-                            ax.boxplot(prop,positions=[xenv])
-###here
-                            #ax.bar(xenv, frac, lbar, \
-                            #       color=cols[ic], label=inleg[ii])
-                            #ax.bar(xenv, frac, lbar, \
-                            #       color=cols[ic], label=inleg[ii],\
-                            #       hatch=hatching[ii],fill=False,edgecolor=cols[ic])
+                            yenv = ebins[ienv] + 0.5*dm*(1.-sep) + 0.5*lbar + ii*lbar
+                            parts = ax.violinplot(prop, [yenv],vert=False, widths=0.2,
+                                                  showmeans=False, showmedians=False,showextrema=False)
+
+                            # Change colour of the body of the plot
+                            for pc in parts['bodies']:
+                                pc.set_color(cols[ic])
+                            # Change the colour of the lines
+                            quartile1, median, quartile3 = np.percentile(prop, [10, 50, 90])
+                            # Median
+                            ax.scatter(median,yenv,marker='|', color=cols[ic], s=100)
+                            # Quartiles
+                            ax.hlines(yenv, quartile1, quartile3, color=cols[ic], 
+                                      linestyle='-', lw=5)
+                            # Extremes
+                            if ((ic == 0) and (ienv == 0)):
+                                ax.hlines(yenv, np.min(prop), np.max(prop), 
+                                          color=cols[ic], linestyle=lstyle[ii], lw=1,
+                                          label=inleg[ii])
+                            else:
+                                ax.hlines(yenv, np.min(prop), np.max(prop), 
+                                          color=cols[ic], linestyle=lstyle[ii], lw=1)
 
                 newnd = nd.replace('.','p')
                 plotfile = path+'plots/'+model+'environ/props/'+cw+\
-                           '/'+propname+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
-                print(plotfile)
-                sys.exit()
+                           '/'+propname+'_'+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
+
                 # Legend
-                leg = plt.legend(loc=2)
-                #for color,text in zip(zip(cols,cols),leg.get_texts()):
-                #  text.set_color(cols)
+                leg = plt.legend(loc=3)
                 leg.draw_frame(False)
 
                 # Save figure

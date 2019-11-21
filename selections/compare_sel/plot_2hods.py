@@ -29,7 +29,7 @@ fig = plt.figure(figsize=(6.5,14.))
 xtit = "${\\rm log}_{10}(M_{\\rm halo}/M_{\odot}h^{-1})$"
 ytit = "$\\langle N_M\\rangle$"
 
-xmin = 10.5 ; xmax = 15.
+xmin = 11. ; xmax = 15.
 ymin = -2.9 ; ymax = 2.
 
 cols = ['darkred','dodgerblue']
@@ -40,18 +40,19 @@ jj = 410
 for iis, survey in enumerate(surveys):
     jj = jj + 1
     #Plot
+    stext = survey+'; z='+zz+'; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
     if (iis == 0):
         ax1 = fig.add_subplot(jj) ; ax1.set_autoscale_on(False)
         ax1.set_xlim([xmin,xmax]) ; ax1.set_ylim([ymin,ymax])
         ax1.set_autoscale_on(False) ;  ax1.minorticks_on()
         ax1.set_ylabel(ytit) 
         ax1.tick_params(labelbottom=False)
-        ax1.text(14.5, -2.7, survey, fontsize='small')
+        ax1.text(xmin+0.49*(xmax-xmin), ymin+0.04*(ymax-ymin), stext, fontsize='small')
     else:
         ax = fig.add_subplot(jj,sharex=ax1,sharey=ax1)
         ax.set_autoscale_on(False) ;  ax.minorticks_on()
         ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
-        ax.text(14., -2.7, survey,fontsize='small')
+        ax.text(xmin+0.32*(xmax-xmin), ymin+0.04*(ymax-ymin), stext,fontsize='small')
 
     for ic, cut in enumerate(cuts):
         hfile = hodpath+model+cut+'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'

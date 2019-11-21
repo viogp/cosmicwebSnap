@@ -13,7 +13,7 @@ nelgs = ['DEEP2','DESI','VVDS-DEEP','eBOSS-SGC']
 lse = ['Voids','Sheets','Filaments','Knots']
 cw_list = ['Vweb','Pweb']
 ###########################
-dum = -999.
+dum = -999. ; eps = 1e-8
 
 # Initialize the arrays
 alls = np.zeros(shape=(len(cw_list),len(sns),len(nds),len(cuts),len(lse)))
@@ -54,64 +54,60 @@ with open(infile) as ff:
 envsumfile = path+'fracs_compared.txt'
 
 sumfile = open(envsumfile,'w') 
-sumfile.write('#### Comparison of ELG fractions to the whole population #### \n') 
+sumfile.write('#### abs(Difference) (Percentage) ELG compared to the whole population #### \n') 
 sumfile.close()
 sumfile = open(envsumfile,'a') 
 
-# Loop over arrays
+# Loop over arrays, compare mcut with mcut
 for icw in range(len(cw_list)):
-    sumfile.write('{} ############### \n'.format(cw_list[icw]))
+    sumfile.write('{} ###############\n'.format(cw_list[icw]))
     for ind in range(len(nds)):
         for ilse in range(len(lse)):
-            val = alls[icw,isn,ind,1,ilse]
-            sumfile.write('{} ### nd{}, sn{}:  All SFR frac={:.2f} \n '.format(lse[ilse],nds[ind],sns[isn],val))
-
             for  ic in range(len(cuts)):
-                per = np.zeros(shape=(len(nelgs)))
-                per.fill(dum)
-                diffs = np.zeros(shape=(len(nelgs)))
-                diffs.fill(dum)
-    
                 for ielg in range(len(nelgs)):
                     if (nelgs[ielg] == 'DEEP2' or nelgs[ielg] == 'DESI'):
                         sn = '39' ; isn = sns.index(sn)
                     else:
                         sn = '41' ; isn = sns.index(sn)
 
-                    if (elgs[icw,isn,ind,ic,ielg,ilse]>0.):
-                        per[ielg] = abs(val-elgs[icw,isn,ind,ic,ielg,ilse])*100./val
-                        diffs[ielg] = abs(val-elgs[icw,isn,ind,ic,ielg,ilse])
-                        
-                sumfile.write('      {}cut \n'.format(cuts[ic]))
-                
-                iind = np.where(per>dum)
-                if (np.shape(iind)[1] >1):
-                    newper = per[iind]
-                else:
-                    sumfile.write('   (not enough data) \n') ; continue
-    
-                iind = np.where(diffs>dum)
-                if (np.shape(iind)[1] >1):
-                    newdiffs = diffs[iind]
-                else:
-                    sumfile.write('   (not enough data) \n') ; continue
-    
-                iis = np.where(per == np.amin(newper))
-                ii = iis[0][0]
-                jjs = np.where(diffs == np.amin(newdiffs))
-                jj = jjs[0][0]
-                sumfile.write('   Min diff={:.2f} {} ({:.2f} % {}) \n'.
-                      format(np.amin(newdiffs),nelgs[jj],np.amin(newper),nelgs[ii])) 
-                iis = np.where(per == np.amax(newper))
-                ii = iis[0][0]
-                jjs = np.where(diffs == np.amax(newdiffs))
-                jj = jjs[0][0]
-                sumfile.write('   Max diff={:.2f} {} ({:.2f} % {}) \n'.
-                      format(np.amax(newdiffs),nelgs[jj],np.amax(newper),nelgs[ii]))
+                    val = alls[icw,isn,ind,ic,ilse]
 
-sumfile.write('\n ##### Frac(Sheets+filaments) ##### \n')
+                    if (elgs[icw,isn,ind,ic,ielg,ilse]>0. and val>eps):
+                        per = abs(val-elgs[icw,isn,ind,ic,ielg,ilse])*100./val
+                        diffs = abs(val-elgs[icw,isn,ind,ic,ielg,ilse])
+
+                        sumfile.write('{:.2f} ({:.2f}%) {}; All_frac={:.3f} ### {}, {}cut, nd{}, sn{}\n '.format(diffs,per,nelgs[ielg],val,lse[ilse],cuts[ic],nds[ind],sns[isn]))
+                    else:
+                        sumfile.write('   not enough data\n ')
+
+sumfile.write('\n ###################\n'.format(cw_list[icw]))
+
+# Loop over arrays, compare ELGs with sfrcut
 for icw in range(len(cw_list)):
-    sumfile.write('{} ############### \n'.format(cw_list[icw]))
+    sumfile.write('{} ############### ELG vs sfrcut\n'.format(cw_list[icw]))
+    for ind in range(len(nds)):
+        for ilse in range(len(lse)):
+            for  ic in range(len(cuts)):
+                for ielg in range(len(nelgs)):
+                    if (nelgs[ielg] == 'DEEP2' or nelgs[ielg] == 'DESI'):
+                        sn = '39' ; isn = sns.index(sn)
+                    else:
+                        sn = '41' ; isn = sns.index(sn)
+
+                    val = alls[icw,isn,ind,1,ilse]
+
+                    if (elgs[icw,isn,ind,ic,ielg,ilse]>0. and val>eps):
+                        per = abs(val-elgs[icw,isn,ind,ic,ielg,ilse])*100./val
+                        diffs = abs(val-elgs[icw,isn,ind,ic,ielg,ilse])
+
+                        sumfile.write('{:.2f} ({:.2f}%) {}; All_sfr_frac={:.3f} ### {}, {}cut, nd{}, sn{}\n '.format(diffs,per,nelgs[ielg],val,lse[ilse],cuts[ic],nds[ind],sns[isn]))
+                    else:
+                        sumfile.write('   not enough data\n ')
+
+
+sumfile.write('\n ##### Frac(Sheets+filaments) #####\n')
+for icw in range(len(cw_list)):
+    sumfile.write('{} ###############\n'.format(cw_list[icw]))
     for ind in range(len(nds)):
         for ielg in range(len(nelgs)):
             if (nelgs[ielg] == 'DEEP2' or nelgs[ielg] == 'DESI'):
@@ -126,9 +122,7 @@ for icw in range(len(cw_list)):
                         if (elgs[icw,isn,ind,ic,ielg,ilse]>0.):
                             addfs = addfs + elgs[icw,isn,ind,ic,ielg,ilse]
                 sumfile.write('* {}, {}, {}cut, nd{}, sn{} \n'
-                  .format(addfs,nelgs[ielg],cuts[ic],nds[ind],sns[isn]))
-
-                
+                  .format(addfs,nelgs[ielg],cuts[ic],nds[ind],sns[isn]))                
 
 sumfile.close()
 print('Comparison of fractions: {}'.format(envsumfile))

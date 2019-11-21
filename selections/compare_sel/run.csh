@@ -4,7 +4,7 @@
 set exec = medians.py
 #set exec = sfr_m.py
 
-python $exec
+python3 $exec
 
 echo 'The end'
 

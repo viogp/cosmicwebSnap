@@ -38,12 +38,6 @@ surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
 snaps = ['39','41']
 ##########################################
-# Output fraction summary
-envsumfile = path+'env_files/'+model+'env_fractions.txt'
-sumfile = open(envsumfile,'w')
-sumfile.write('File : Fraction in Voids,Sheets,Filaments,Knots \n')
-sumfile.close()
-sumfile = open(envsumfile,'a')
 
 # Loop over the different files
 for cw in ['Vweb','Pweb']:
@@ -171,6 +165,3 @@ for cw in ['Vweb','Pweb']:
             # Save figure
             fig.savefig(plotfile)
             plt.close()
-
-sumfile.close()
-print('Enviroment fractions: {}'.format(envsumfile))

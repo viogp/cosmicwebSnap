@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-Testing = False
+Testing = True
 
-propname = 'lmh'
-xtit = "$log_{10}({\\rm M}_{\\rm halo}/M_{\odot}h^{-1})$"
-xmin = 10.5 ; xmax = 15.
+propname = 'fsat'
+ytit = "Percentage of satellites"
+ymin = 0. ; ymax = 50.
 
 ##########################################
 
@@ -28,26 +28,32 @@ ebins = np.arange(emin,emax, dm)
 plt.rcParams['legend.numpoints'] = 1
 plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
 
-ylabels = np.array([0,1,2,3])
+xlabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
+cw_list = ['Vweb','Pweb'] 
+nd_list = ['-2.0','-3.0','-4.2']
 cuts = ['m','sfr']
 
 cols = ['darkred','dodgerblue']
-lstyle = ['-','--',':','-','--',':'] 
+symbols = ['s','x','+'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
 snaps = ['39','41']
-cw_list = ['Vweb','Pweb']
-nd_list = ['-2.0','-3.0','-4.2']
 
 if Testing:
+    cw_list = ['Vweb']  ; nd_list = ['-2.0']
     surveys1 = ['DEEP2'] ; surveys2 = ['DESI']
     snaps = ['39']
-    cw_list = ['Vweb'] ; nd_list=['-3.0']
 
 ##########################################
+# Output fraction summary
+envsumfile = path+'env_files/'+model+'fsat_env_fractions.txt'
+sumfile = open(envsumfile,'w')
+sumfile.write('# Percentage of satellites, LSE, Selection \n')
+sumfile.close()
+sumfile = open(envsumfile,'a')
 
 # Loop over the different files
 for cw in cw_list:
@@ -65,15 +71,15 @@ for cw in cw_list:
             # Initialize the parameters for the figures
             fig = plt.figure(figsize=(8.5,9.))
             jj = 111 ; ax = fig.add_subplot(jj)
-            plt.yticks(ylabels,elabels)
-            ax.tick_params(axis='y',which='minor',right=False,left=False)
-            ax.set_xlabel(xtit,fontsize=fs) ; ax.set_xlim(xmin,xmax)
+            plt.xticks(xlabels,elabels)
+            ax.tick_params(axis='x',which='minor',right=False,left=False)
+            ax.set_ylabel(ytit,fontsize=fs) ; ax.set_ylim(ymin,ymax)
 
             if(iz == '41'):
                 ztext = 'z = 0.83; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
             elif(iz == '39'):
                 ztext = 'z = 0.99; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
-            ax.text(xmax-0.45*(xmax-xmin),emax-0.02*(emax-emin), ztext) 
+            ax.text(emax-0.43*(emax-emin),ymax-0.04*(ymax-ymin), ztext) 
 
             ii = -1
             for ic, cut in enumerate(cuts):
@@ -89,6 +95,7 @@ for cw in cw_list:
                 elgfile2 = epath+end
                 elg2prop = proppath+end
 
+                inleg = ['All',survey,surveys2[iis]]
                 files = [allfile,elgfile1,elgfile2]
                 fprop = [allprop,elg1prop,elg2prop]
 
@@ -115,17 +122,17 @@ for cw in cw_list:
                     # log10(massh) 6, log10(mass/Msun/h) 7, log10(sfr/Msun/h/Gyr) 8, 
                     # lum 9,lum_ext 10 (10^40 h^-2 erg/s),
                     # type 11 (0= Centrals; 1,2= Satellites) 
-                    px, py, pz, lmh = np.loadtxt(pfile, usecols=(0,1,2,6), unpack=True)
+                    px, py, pz, gtype = np.loadtxt(pfile, usecols=(0,1,2,11), unpack=True)
 
-                    #print(min(lmass)) ; sys.exit()
+                    #print(max(gtype)) ; sys.exit()
 
-                    # Chech that the coordinates have the same size
+                    # Check that the coordinates have the same size
                     if ((len(xx) != len(px)) or 
                         (len(yy) != len(py)) or
                         (len(zz) != len(pz))):
                         print('[PROBLEM] Different lengths coordinates: {}\n {}\n'.
                               format(efile,pfile)) ; continue
-                    # Chech that the coordinates are ordered in the same way
+                    # Check that the coordinates are ordered in the same way
                     if ((not np.allclose(xx,px,atol=1e-08,equal_nan=True)) or 
                         (not np.allclose(yy,py,atol=1e-08,equal_nan=True)) or
                         (not np.allclose(zz,pz,atol=1e-08,equal_nan=True))):
@@ -137,37 +144,30 @@ for cw in cw_list:
                         ind = np.where(env == ienv)
                         if (np.shape(ind)[1] <= 1):
                             continue
-                        prop = lmh[ind]
+                        gtotal = np.shape(ind)[1]
+
+                        ind = np.where((env == ienv) & (gtype>0))                        
+                        fsat = 100.*float(np.shape(ind)[1])/float(gtotal)
 
                         # Plot
-                        yenv = ebins[ienv] + 0.5*dm*(1.-sep) + 0.5*lbar + ii*lbar
-                        parts = ax.violinplot(prop, [yenv],vert=False, widths=0.2,
-                                              showmeans=False, showmedians=False,showextrema=False)
+                        xenv = ebins[ienv] + 0.5*dm*(1.-sep) + 0.5*lbar + ii*lbar
 
-                        # Change colour of the body of the plot
-                        for pc in parts['bodies']:
-                            pc.set_color(cols[ic])
-                        # Change the colour of the lines
-                        quartile1, median, quartile3 = np.percentile(prop, [10, 50, 90])
-                        # Median
-                        ax.scatter(median,yenv,marker='|', color=cols[ic], s=100)
-                        # Quartiles
-                        ax.hlines(yenv, quartile1, quartile3, color=cols[ic], 
-                                  linestyle='-', lw=5)
-                        # Extremes
-                        if ((ic == 0) and (ienv == 0)):
-                            ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[ii], lw=1,
-                                      label=inleg[ii])
+                        if (ienv == 0 and ic == 0):
+                            parts = ax.scatter(xenv, fsat, c=cols[ic], 
+                                               marker=symbols[iif],label=inleg[iif])
                         else:
-                            ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[ii], lw=1)
+                            parts = ax.scatter(xenv, fsat, c=cols[ic], 
+                                               marker=symbols[iif])
+
+                        # Write to summary file
+                        root = efile.split('/')[-1]
+                        sumfile.write('{:.2f} {} {} {}\n'.format(fsat,elabels[ienv], root.split('.dat')[0],cw))
 
             newnd = nd.replace('.','p')
             plotfile = plotroot+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
 
             # Legend
-            leg = plt.legend(loc=3)
+            leg = plt.legend(loc=2)
             for ll in leg.legendHandles:
                 ll.set_color('k')
             leg.draw_frame(False)
@@ -176,3 +176,5 @@ for cw in cw_list:
             fig.savefig(plotfile)
             plt.close()
 
+sumfile.close()
+print('Enviroment fractions: {}'.format(envsumfile))

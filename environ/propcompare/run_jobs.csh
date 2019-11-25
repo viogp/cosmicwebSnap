@@ -3,7 +3,7 @@
 set Testing = False
 
 #set noms = (mass mh sfr ssfr lo2)
-set noms = (lo2)
+set noms = (fsat)
 
 set logpath = /cosma5/data/durham/$user/Junk
 

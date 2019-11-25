@@ -8,9 +8,9 @@ plt.style.use(mpl_style.style1)
 
 Testing = False
 
-propname = 'lmh'
-xtit = "$log_{10}({\\rm M}_{\\rm halo}/M_{\odot}h^{-1})$"
-xmin = 10.5 ; xmax = 15.
+propname = 'lo2'
+xtit = '${\\rm log}_{10}(L\\rm{[OII]}/h^{-2}erg\, s^{-1})$'
+xmin = 38. ; xmax = 43.5
 
 ##########################################
 
@@ -115,9 +115,8 @@ for cw in cw_list:
                     # log10(massh) 6, log10(mass/Msun/h) 7, log10(sfr/Msun/h/Gyr) 8, 
                     # lum 9,lum_ext 10 (10^40 h^-2 erg/s),
                     # type 11 (0= Centrals; 1,2= Satellites) 
-                    px, py, pz, lmh = np.loadtxt(pfile, usecols=(0,1,2,6), unpack=True)
-
-                    #print(min(lmass)) ; sys.exit()
+                    px, py, pz, lum_ext = np.loadtxt(pfile, usecols=(0,1,2,10), unpack=True)
+                    #print(lum_ext) ; sys.exit()
 
                     # Chech that the coordinates have the same size
                     if ((len(xx) != len(px)) or 
@@ -134,10 +133,11 @@ for cw in cw_list:
 
                     # Loop over type of environment
                     for ienv in np.unique(env):
-                        ind = np.where(env == ienv)
+                        ind = np.where((env == ienv) & (lum_ext > 0.))
                         if (np.shape(ind)[1] <= 1):
                             continue
-                        prop = lmh[ind]
+                        prop = np.log10(lum_ext[ind]) + 40.
+                        #print(prop) ; sys.exit()
 
                         # Plot
                         yenv = ebins[ienv] + 0.5*dm*(1.-sep) + 0.5*lbar + ii*lbar
@@ -155,10 +155,10 @@ for cw in cw_list:
                         ax.hlines(yenv, quartile1, quartile3, color=cols[ic], 
                                   linestyle='-', lw=5)
                         # Extremes
-                        if ((ic == 0) and (ienv == 0)):
+                        if ((ic == 1) and (ienv == 0)):
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
                                       color=cols[ic], linestyle=lstyle[ii], lw=1,
-                                      label=inleg[ii])
+                                      label=inleg[ii-3])
                         else:
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
                                       color=cols[ic], linestyle=lstyle[ii], lw=1)
@@ -175,4 +175,3 @@ for cw in cw_list:
             # Save figure
             fig.savefig(plotfile)
             plt.close()
-

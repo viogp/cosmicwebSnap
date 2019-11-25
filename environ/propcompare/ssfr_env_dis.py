@@ -8,9 +8,9 @@ plt.style.use(mpl_style.style1)
 
 Testing = False
 
-propname = 'lmh'
-xtit = "$log_{10}({\\rm M}_{\\rm halo}/M_{\odot}h^{-1})$"
-xmin = 10.5 ; xmax = 15.
+propname = 'ssfr'
+xtit = '${\\rm log}_{10}({\\rm SFR}/M_{*}/Gyr^{-1})$'
+xmin = -6. ; xmax = 0.5
 
 ##########################################
 
@@ -115,7 +115,8 @@ for cw in cw_list:
                     # log10(massh) 6, log10(mass/Msun/h) 7, log10(sfr/Msun/h/Gyr) 8, 
                     # lum 9,lum_ext 10 (10^40 h^-2 erg/s),
                     # type 11 (0= Centrals; 1,2= Satellites) 
-                    px, py, pz, lmh = np.loadtxt(pfile, usecols=(0,1,2,6), unpack=True)
+                    px, py, pz, lmass, lsfr = np.loadtxt(pfile, usecols=(0,1,2,6,8), unpack=True)
+                    lssfr = lsfr - lmass
 
                     #print(min(lmass)) ; sys.exit()
 
@@ -137,7 +138,7 @@ for cw in cw_list:
                         ind = np.where(env == ienv)
                         if (np.shape(ind)[1] <= 1):
                             continue
-                        prop = lmh[ind]
+                        prop = lssfr[ind]
 
                         # Plot
                         yenv = ebins[ienv] + 0.5*dm*(1.-sep) + 0.5*lbar + ii*lbar
@@ -175,4 +176,3 @@ for cw in cw_list:
             # Save figure
             fig.savefig(plotfile)
             plt.close()
-

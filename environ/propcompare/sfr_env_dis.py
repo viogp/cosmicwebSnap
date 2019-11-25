@@ -48,12 +48,6 @@ if Testing:
     cw_list = ['Vweb'] ; nd_list=['-3.0']
 
 ##########################################
-# Output fraction summary
-envsumfile = path+'env_files/'+model+'env_fractions.txt'
-sumfile = open(envsumfile,'w')
-sumfile.write('File : Fraction in Voids,Sheets,Filaments,Knots \n')
-sumfile.close()
-sumfile = open(envsumfile,'a')
 
 # Loop over the different files
 for cw in cw_list:
@@ -182,5 +176,3 @@ for cw in cw_list:
             fig.savefig(plotfile)
             plt.close()
 
-sumfile.close()
-print('Enviroment fractions: {}'.format(envsumfile))

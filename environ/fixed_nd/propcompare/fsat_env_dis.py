@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-Testing = True
+Testing = False
 
 propname = 'fsat'
 ytit = "Percentage of satellites"

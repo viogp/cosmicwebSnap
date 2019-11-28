@@ -10,7 +10,7 @@ Testing = False
 
 propname = 'sfr'
 xtit = '${\\rm log}_{10}({\\rm SFR}/M_{\odot}h^{-1}Gyr^{-1})$'
-xmin = 7. ; xmax = 12.
+xmin = 5. ; xmax = 12.
 
 ##########################################
 

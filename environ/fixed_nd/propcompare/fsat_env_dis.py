@@ -33,9 +33,9 @@ elabels = ['Voids','Sheets','Filaments','Knots']
 
 cw_list = ['Vweb','Pweb'] 
 nd_list = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
+cuts = ['m','sfr','lo2']
 
-cols = ['darkred','dodgerblue']
+cols = ['darkred','dodgerblue','palegreen']
 symbols = ['s','x','+'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
@@ -102,15 +102,17 @@ for cw in cw_list:
                 for iif,efile in enumerate(files):
                     ii += 1
                     pfile = fprop[iif] 
-
+                    
                     # Check if files exist and has more than one line
                     if (not os.path.isfile(efile) or not os.path.isfile(pfile)):
+                        if Testing:print('Jumping {}'.format(efile))
                         continue
                     wcl_line = subprocess.check_output(["wc", "-l",efile])
                     wcl = int(wcl_line.split()[0])
                     pcl_line = subprocess.check_output(["wc", "-l",pfile])
                     pcl = int(pcl_line.split()[0])
                     if (wcl <= 1 or pcl <= 1):
+                        if Testing:print('Jumping {}'.format(efile))
                         continue
 
                     # Read the file
@@ -175,6 +177,8 @@ for cw in cw_list:
             # Save figure
             fig.savefig(plotfile)
             plt.close()
+            if Testing:
+                print('Plot: {}'.format(plotfile))
 
 sumfile.close()
 print('Enviroment fractions: {}'.format(envsumfile))

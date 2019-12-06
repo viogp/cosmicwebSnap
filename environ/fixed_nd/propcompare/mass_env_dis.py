@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import mpl_style
 plt.style.use(mpl_style.style1)
 
+Testing = False
+
 propname = 'lmass'
 xtit = "$log_{10}(\\rm M_{*}/M_{\odot}h^{-1})$"
 xmin = 8.5 ; xmax = 12.
@@ -29,18 +31,27 @@ plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
-cuts = ['m','sfr']
+cuts = ['m','sfr','lo2']
 
-cols = ['darkred','dodgerblue']
-lstyle = ['-','--',':','-','--',':'] 
+cols = ['darkred','dodgerblue','palegreen']
+lstyle = ['-','--',':'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
 snaps = ['39','41']
+
+cw_list = ['Vweb','Pweb'] 
+nd_list = ['-2.0','-3.0','-4.2'] 
+
+if Testing:  
+    surveys1 = ['DEEP2'] ; surveys2 = ['DESI'] 
+    snaps = ['39'] #; cuts = ['lo2'] 
+    cw_list = ['Vweb'] ; nd_list=['-3.0'] 
+
 ##########################################
 
 # Loop over the different files
-for cw in ['Vweb','Pweb']:
+for cw in cw_list:
     epath = path+'env_files/'+model+cw+'/'
     plotroot = path+'plots/'+model+'environ/props/'+cw+'/'+propname+'_'
     print('\n Plots: {}* \n'.format(plotroot))
@@ -51,7 +62,7 @@ for cw in ['Vweb','Pweb']:
         lbar = dm*sep/numinleg
 
         iz = snaps[iis] 
-        for nd in ['-2.0','-3.0','-4.2']:
+        for nd in nd_list:
             # Initialize the parameters for the figures
             fig = plt.figure(figsize=(8.5,9.))
             jj = 111 ; ax = fig.add_subplot(jj)
@@ -88,12 +99,14 @@ for cw in ['Vweb','Pweb']:
 
                     # Check if files exist and has more than one line
                     if (not os.path.isfile(efile) or not os.path.isfile(pfile)):
+                        if Testing: print('Jumping {}'.efile) 
                         continue
                     wcl_line = subprocess.check_output(["wc", "-l",efile])
                     wcl = int(wcl_line.split()[0])
                     pcl_line = subprocess.check_output(["wc", "-l",pfile])
                     pcl = int(pcl_line.split()[0])
                     if (wcl <= 1 or pcl <= 1):
+                        if Testing: print('Jumping {}'.efile) 
                         continue
 
                     # Read the file
@@ -147,11 +160,11 @@ for cw in ['Vweb','Pweb']:
                         # Extremes
                         if ((ic == 0) and (ienv == 0)):
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[ii], lw=1,
+                                      color=cols[ic], linestyle=lstyle[iif], lw=1,
                                       label=inleg[ii])
                         else:
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[ii], lw=1)
+                                      color=cols[ic], linestyle=lstyle[iif], lw=1)
 
             newnd = nd.replace('.','p')
             plotfile = plotroot+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
@@ -165,3 +178,5 @@ for cw in ['Vweb','Pweb']:
             # Save figure
             fig.savefig(plotfile)
             plt.close()
+            if Testing: 
+                print('Plot: {}'.format(plotfile))

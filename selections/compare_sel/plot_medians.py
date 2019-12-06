@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 model = 'gp19/'
 
 sn_list = ['41','39']
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+surveys = ['All','VVDS-DEEP','DEEP2','eBOSS-SGC','DESI'] 
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
+cuts = ['m','sfr','lo2']
 
 verbose = False
 
@@ -25,7 +25,7 @@ massh,mass,sfr,lum_ext = np.loadtxt(infile,usecols=(1,2,3,4),unpack=True)
 oplot = ndpath+model+'medians.pdf'
 symbols=['*','^','s','p','o']
 colours=['navy','royalblue','lightsteelblue']
-filling=['none','full']
+pattern=['none','full','left']
 fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col') 
 ax3.set_xlabel('M*') ; ax4.set_xlabel('SFR')
 ax1.set_ylabel('Mhalo') ; ax3.set_ylabel('Mhalo')
@@ -50,31 +50,31 @@ for ii,info in enumerate(dinfo):
     if (sn == '41'):
         if (itop == 0):
             ax1.plot(massh[ii],mass[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic],
+                     marker=symbols[iis],fillstyle=pattern[iic],
                      label='sn='+sn)
             ax2.plot(sfr[ii],lum_ext[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic],
+                     marker=symbols[iis],fillstyle=pattern[iic],
                      label='sn='+sn)
             itop += 1
         else:
             ax1.plot(massh[ii],mass[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic])
+                     marker=symbols[iis],fillstyle=pattern[iic])
             ax2.plot(sfr[ii],lum_ext[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic])
+                     marker=symbols[iis],fillstyle=pattern[iic])
     else:
         if (ibottom == 0):
             ax3.plot(massh[ii],mass[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic],
+                     marker=symbols[iis],fillstyle=pattern[iic],
                      label='sn='+sn)
             ax4.plot(sfr[ii],lum_ext[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic],
+                     marker=symbols[iis],fillstyle=pattern[iic],
                      label='sn='+sn)
             ibottom += 1
         else:
             ax3.plot(massh[ii],mass[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic])
+                     marker=symbols[iis],fillstyle=pattern[iic])
             ax4.plot(sfr[ii],lum_ext[ii],color=colours[iin],
-                     marker=symbols[iis],fillstyle=filling[iic])
+                     marker=symbols[iis],fillstyle=pattern[iic])
         
 ax1.legend(loc=2,frameon= False)
 ax2.legend(loc=2,frameon= False)

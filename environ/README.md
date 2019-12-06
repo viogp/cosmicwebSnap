@@ -2,15 +2,15 @@
  Environment data is stored in:
 /cosma5/data/durham/violeta/lines/cosmicweb/env_files/
 
-**env_hist_nd.py** Plot histograms for the fraction of galaxies per LSE type for number density cuts: 1 plot per ELG selection for each number density and redshift.
+**run_jobs.csh** To run jobs
 
-**hist2_env_nd.py** Plot histograms for the fraction of galaxies per LSE type for number density cuts, showing together DEEP2+DESI and VVDS+eBOSS.
+**elg_lo2_env.py** Histogram per environment of the ELGs vs fixed number selected with a cut in L[OII].
 
-**tailoredcuts** Plots the cuts at stellar masses and SFR varying for each survey.
+**hod.py** Create files with HODs per environment.
 
-**compare_fracs** Compare the fraction diferences.
+**plot_hod.py** Plot individual HODs.
 
 ## Directories ##
-**propcompare** Properties (stellar mass, etc.) compared by environment for each sample.
+**fixed_nd** Properties (stellar mass, etc.) compared by environment for the mass and SFR selected samples with fixed number densities.
 
-**tailoredcuts** Comparisson when density cuts are made to match the model ELG numbers.
+**elg_lo2_violin** Comparisson of properties, violin plots, for the ELG (no fixed number density) and the sample selected by a cut in LO2.

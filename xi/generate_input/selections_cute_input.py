@@ -11,10 +11,13 @@ print('WARNING : check that the cosmology corresponds to the model')
 set_cosmology(omega0=0.27,omegab=0.05,lambda0=0.73, \
               h0=0.70, universe="Flat",include_radiation=False)
 
-sn_list = ['41','39'] ; zz_list = [0.83,0.99]
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+sn_list = ['41','39']
+zz_list = [0.83,0.99]
+surveys1 = ['VVDS-DEEP','DEEP2']
+surveys2 = ['eBOSS-SGC','DESI']
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
+cuts = ['lo2']
+#cuts = ['m','sfr']
 
 verbose = False
 
@@ -25,7 +28,6 @@ if testing:
     sn_list = ['39'] ; zz_list = [0.99]
     surveys = ['DEEP2'] ; nds = ['-2.0']
     cuts = ['m','sfr']
-    #cuts = ['test']
 #------------------
 
 # Paths
@@ -39,6 +41,7 @@ info = open(info_file,'w')
 # Loop over all the files
 for iis,sn in enumerate(sn_list):
     zz = zz_list[iis]
+    surveys = ['All',surveys1[iis],surveys2[iis]]
 
     for cut in cuts:
         for survey in surveys:
@@ -51,7 +54,6 @@ for iis,sn in enumerate(sn_list):
                     if verbose:
                         print('WARNING: {} not found'.format(infile))
                     continue
-
                 # Jump files with only the header (1 line)
                 wcl_line = subprocess.check_output(["wc","-l",infile])
                 wcl = int(wcl_line.split()[0])
@@ -59,6 +61,8 @@ for iis,sn in enumerate(sn_list):
                     if verbose:
                         print('WARNING: {} has too few lines'.format(infile))
                     continue
+
+                print('Reading {}'.format(infile))
 
                 # Read the ascii files with the number density selections
                 if (space == 'r'): # r-space
@@ -73,9 +77,9 @@ for iis,sn in enumerate(sn_list):
                          cut+'cut_'+survey+'_nd'+nd+'_sn'+sn+\
                          '_4cute_'+space+'.dat'
 
-                tofile = zip(x,y,z) #np.column_stack((x,y,z))
-                with open(outfile,'w') as ff:
-                    np.savetxt(ff, tofile, fmt=('%.5f'))
+                tofile = np.column_stack((x,y,z))
+                with open(outfile,'w') as outf:
+                    np.savetxt(outf, tofile, fmt='%.5f')
 
                 # Write file name in info_file
                 info.write(outfile+' \n')

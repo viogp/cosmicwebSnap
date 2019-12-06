@@ -8,7 +8,7 @@ infile = path+'env_fractions.txt'
 
 sns = ['39','41']
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
+cuts = ['m','sfr','lo2']
 nelgs = ['DEEP2','DESI','VVDS-DEEP','eBOSS-SGC']
 lse = ['Voids','Sheets','Filaments','Knots']
 cw_list = ['Vweb','Pweb']

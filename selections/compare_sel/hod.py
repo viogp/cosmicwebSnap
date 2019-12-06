@@ -5,10 +5,11 @@ import numpy as np
 model = 'gp19/'
 
 sn_list = ['41','39']
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+surveys1 = ['VVDS-DEEP','DEEP2']
+surveys2 = ['eBOSS-SGC','DESI']
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
-#cuts = ['test'] 
+#cuts = ['m','sfr']
+cuts = ['lo2'] 
 
 verbose = False
 
@@ -18,11 +19,13 @@ ndpath = inpath+'selections/'
 hodpath = inpath+'hod/'
 
 # Read the information from the different surveys
-for sn in sn_list: 
+for iiz, sn in enumerate(sn_list): 
     # Read the number of haloes
     #hmffile = hodpath+model+'hmf_sn'+sn+'_2vols.txt'
     hmffile = hodpath+model+'hmf_sn'+sn+'.txt' # Full volume
     mhist,mlow,mhigh,nhs = np.loadtxt(hmffile,unpack='True')
+
+    surveys = ['All',surveys1[iiz],surveys2[iiz]]
 
     for cut in cuts:
         for survey in surveys:
@@ -77,7 +80,7 @@ for sn in sn_list:
                 # Output file
                 hfile = hodpath+model+cut+\
                          'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'
-                tofile = zip(mhist,hod[0,:],hod[1,:],hod[2,:])
+                tofile = np.column_stack((mhist,hod[0,:],hod[1,:],hod[2,:]))
                 with open(hfile, 'w') as outf:
                     outf.write('# log10(Mh/Msun/h)_midpoint, log10<Nall>, log10<Ncentrals>, log10<Nsatellites>')
                     np.savetxt(outf,tofile,fmt=('%.5f'))

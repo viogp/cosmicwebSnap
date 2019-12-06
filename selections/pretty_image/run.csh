@@ -3,7 +3,7 @@
 #set exec = pretty_plots.py
 set exec = pretty41.py
 
-python $exec
+python3 $exec
 
 echo 'The end'
 

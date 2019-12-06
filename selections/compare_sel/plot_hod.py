@@ -9,11 +9,10 @@ plt.style.use(mpl_style.style1)
 model = 'gp19/'
 
 sn_list = ['41','39'] ; zz_list = ['0.83','0.99']
-#surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
-surveys = ['eBOSS-SGC']
+surveys1 = ['VVDS-DEEP','DEEP2']  
+surveys2 = ['eBOSS-SGC','DESI']
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
-#cuts = ['test']
+cuts = ['m','sfr','lo2']
 
 verbose = False
 
@@ -33,24 +32,26 @@ ytit = "$\\langle N_M\\rangle$"
 xmin = 10. ; xmax = 15.
 ymin = -3. ; ymax = 2.
 
-cols = ['navy','royalblue']
-cutlabel = ['Mass cut','SFR cut']
+cols = ['navy','royalblue','palegreen']
+cutlabel = ['Mass cut','SFR cut','L[OII] cut']
 
-## Loop over the files
-for survey in surveys:
-    plotfile = inpath+'plots/'+model+'selections/hod/hods_'+survey+'.pdf'
-    fig, ax = plt.subplots(len(nds),len(sn_list), #row,colum
-                           #sharex='all', sharey='all',
-                           figsize=(9.,15.)) 
+for iiz, sn in enumerate(sn_list):
+    szz = zz_list[iiz]
 
-    for izz, sn in enumerate(sn_list):
-        szz = zz_list[izz]
+    surveys = ['All',surveys1[iiz],surveys2[iiz]]
+
+    ## Loop over the files
+    for survey in surveys:
+        plotfile = inpath+'plots/'+model+'selections/hod/hods_'+survey+'_sn'+sn+'.pdf'
+        fig, ax = plt.subplots(len(nds), #row,colum
+                               #sharex='all', sharey='all',
+                               figsize=(9.,15.)) 
 
         for iind,nd in enumerate(nds):
             ifile = 0
-            ax[iind,izz].set_xlim(xmin,xmax) ; ax[iind,izz].set_ylim(ymin,ymax)
-            ax[iind,izz].set_xlabel(xtit,fontsize = fs) ; ax[iind,izz].set_ylabel(ytit,fontsize = fs)
-            ax[iind,izz].text(11.6,1.5,survey+', z='+szz+', nd='+nd, fontsize='small')
+            ax[iind].set_xlim(xmin,xmax) ; ax[iind].set_ylim(ymin,ymax)
+            ax[iind].set_xlabel(xtit,fontsize = fs) ; ax[iind].set_ylabel(ytit,fontsize = fs)
+            ax[iind].text(11.6,1.5,survey+', z='+szz+', nd='+nd, fontsize='small')
 
             for ic, cut in enumerate(cuts):
                 hfile = hodpath+model+cut+'cut_'+survey+'_nd'+nd+'_sn'+sn+'.dat'
@@ -64,17 +65,17 @@ for survey in surveys:
 
                 # All
                 ind = np.where(nall>-999.)
-                ax[iind,izz].plot(mh[ind],nall[ind],color=cols[ic],linestyle='-',
+                ax[iind].plot(mh[ind],nall[ind],color=cols[ic],linestyle='-',
                         linewidth=2.5,label=cutlabel[ic])
                 # Centrals
                 ind = np.where(ncen>-999.)
-                ax[iind,izz].plot(mh[ind],ncen[ind],color=cols[ic],linestyle='--')
+                ax[iind].plot(mh[ind],ncen[ind],color=cols[ic],linestyle='--')
                 # Satellites
                 ind = np.where(nsat>-999.)
-                ax[iind,izz].plot(mh[ind],nsat[ind],color=cols[ic],linestyle=':')
+                ax[iind].plot(mh[ind],nsat[ind],color=cols[ic],linestyle=':')
 
             if (ifile > 0):
-                leg = ax[iind,izz].legend(loc=2, fontsize='small',
+                leg = ax[iind].legend(loc=2, fontsize='small',
                                 handlelength=0, handletextpad=0)
                 for item in leg.legendHandles:
                     item.set_visible(False)
@@ -82,7 +83,7 @@ for survey in surveys:
                     text.set_color(color)
                     leg.draw_frame(False)
             
-    # Save figures
-    fig.savefig(plotfile)
-    print('Output: {}'.format(plotfile))
-#    sys.exit()
+        # Save figures
+        fig.savefig(plotfile)
+        print('Output: {}'.format(plotfile))
+

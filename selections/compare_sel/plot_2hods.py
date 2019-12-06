@@ -15,7 +15,7 @@ model = 'gp19/'
 sn = '41' ; zz = '0.83'
 surveys = ['All','VVDS-DEEP']
 nd = '-2.0'
-cuts = ['m','sfr']
+cuts = ['m','sfr','lo2']
 
 #############################
 inpath = '/cosma5/data/durham/violeta/lines/cosmicweb/'
@@ -32,8 +32,8 @@ ytit = "$\\langle N_M\\rangle$"
 xmin = 11. ; xmax = 15.
 ymin = -2.9 ; ymax = 2.
 
-cols = ['darkred','dodgerblue']
-cutlabel = ['Mass cut','SFR cut']
+cols = ['darkred','dodgerblue','palegreen']
+cutlabel = ['Mass cut','SFR cut','L[OII] cut']
 
 # Loop over the redshifts of interest
 jj = 410

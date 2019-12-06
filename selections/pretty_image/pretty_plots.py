@@ -21,8 +21,8 @@ surveys = ['DEEP2','DESI'] ; sn = 39 # 0.988
 #surveys = ['VVDS-DEEP','eBOSS-SGC'] ; sn = 41 # 0.83
 
 nds = ['-4.2','-3.0','-2.0']
-cuts = ['m','sfr']
-marks = ['o','*'] ; cols = ['darkred','dodgerblue']
+cuts = ['m','sfr','lo2']
+marks = ['o','^','*'] ; cols = ['darkred','dodgerblue']
 
 # Plot only a section of the box
 vols = 512
@@ -101,11 +101,11 @@ def extract_particles(isnap, xlow, xup, ylow, yup, zlow, zup):
     for ifile in range(vols):
         # Read coordinates from one file
         fname = "%s.%d.hdf5" % (basename,ifile)
-        print "Reading: %s" % fname
+        print("Reading: {}".format(fname))
         f = h5py.File(fname, "r")
-        pos_x = f["PartType1/Coordinates"].value[:,0]
-        pos_y = f["PartType1/Coordinates"].value[:,1]
-        pos_z = f["PartType1/Coordinates"].value[:,2]
+        pos_x = f["PartType1/Coordinates"][:,0]
+        pos_y = f["PartType1/Coordinates"][:,1]
+        pos_z = f["PartType1/Coordinates"][:,2]
         f.close()
 
         # Discard particles not in z slice and outside xlow, ylow, etc
@@ -232,5 +232,5 @@ for survey in surveys:
                        '_nd'+nd+'_sn'+str(sn)+'.pdf'
             
             plt.savefig(plotfile)
-            print '* Output: ',plotfile
+            print('* Output: {}'.format(plotfile))
         plt.clf()

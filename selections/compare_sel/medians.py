@@ -6,10 +6,10 @@ from stats import percentiles
 model = 'gp19/'
 
 sn_list = ['41','39']
-surveys = ['All','DEEP2','VVDS-DEEP','eBOSS-SGC','DESI']
+surveys1 = ['VVDS-DEEP','DEEP2']  
+surveys2 = ['eBOSS-SGC','DESI'] 
 nds = ['-2.0','-3.0','-4.2']
-cuts = ['m','sfr']
-#cuts = ['test'] 
+cuts = ['m','sfr','lo2'] 
 
 verbose = False
 
@@ -23,7 +23,9 @@ with open(ofile,'w') as of:
     of.write('#sample median(log10(massh),log10(mass/Msun/h), log10(sfr/Msun/h/Gyr), log10(lum_ext/h^-2 erg/s)) \n')
 
 # Read the information from the different files
-for sn in sn_list: 
+for iiz, sn in enumerate(sn_list):
+    surveys = ['All',surveys1[iiz],surveys2[iiz]] 
+
     for iin,nd in enumerate(nds):
         for iic,cut in enumerate(cuts):
             for iis,survey in enumerate(surveys):
@@ -47,12 +49,13 @@ for sn in sn_list:
                 data = np.loadtxt(infile,usecols=(6,7,8,10),unpack=True)
                 val0 = np.shape(data)[0] ; val1 = np.shape(data)[1] 
 
-                # Convert luminosity to log10(luminosity)+40.
-                lum_ext = data[val0-1,:] 
-                dd = np.zeros(shape=val1) ; dd.fill(-999.)
-                ind = np.where(lum_ext > 0.) 
-                dd[ind] = np.log10(lum_ext[ind]) + 40.
-                data[val0-1,:] = dd
+                if (cut != 'lo2'):
+                    # Convert luminosity to log10(luminosity)+40.
+                    lum_ext = data[val0-1,:] 
+                    dd = np.zeros(shape=val1) ; dd.fill(-999.)
+                    ind = np.where(lum_ext > 0.) 
+                    dd[ind] = np.log10(lum_ext[ind]) + 40.
+                    data[val0-1,:] = dd
 
                 meds = np.zeros(shape=(val0)) ; meds.fill(-999.)
 

@@ -31,10 +31,11 @@ plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
-cuts = ['m','sfr']
+cuts = ['m','sfr','lo2']
 
-cols = ['darkred','dodgerblue']
-lstyle = ['-','--',':','-','--',':'] 
+cols = ['darkred','dodgerblue','palegreen']
+#lstyle = ['-','--',':','-','--',':','-','--',':'] 
+lstyle = ['-','--',':'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -44,7 +45,7 @@ nd_list = ['-2.0','-3.0','-4.2']
 
 if Testing:
     surveys1 = ['DEEP2'] ; surveys2 = ['DESI']
-    snaps = ['39']
+    snaps = ['39'] #; cuts = ['lo2']
     cw_list = ['Vweb'] ; nd_list=['-3.0']
 
 ##########################################
@@ -98,12 +99,14 @@ for cw in cw_list:
 
                     # Check if files exist and has more than one line
                     if (not os.path.isfile(efile) or not os.path.isfile(pfile)):
+                        if Testing: print('Jumping {}'.efile)
                         continue
                     wcl_line = subprocess.check_output(["wc", "-l",efile])
                     wcl = int(wcl_line.split()[0])
                     pcl_line = subprocess.check_output(["wc", "-l",pfile])
                     pcl = int(pcl_line.split()[0])
                     if (wcl <= 1 or pcl <= 1):
+                        if Testing: print('Jumping {}'.efile)
                         continue
 
                     # Read the file
@@ -133,10 +136,14 @@ for cw in cw_list:
 
                     # Loop over type of environment
                     for ienv in np.unique(env):
-                        ind = np.where((env == ienv) & (lum_ext > 0.))
-                        if (np.shape(ind)[1] <= 1):
-                            continue
-                        prop = np.log10(lum_ext[ind]) + 40.
+                        if (cut == 'lo2'):
+                            ind = np.where(env == ienv)
+                            prop = lum_ext[ind]
+                        else:
+                            ind = np.where((env == ienv) & (lum_ext > 0.))
+                            if (np.shape(ind)[1] <= 1):
+                                continue
+                            prop = np.log10(lum_ext[ind]) + 40.
                         #print(prop) ; sys.exit()
 
                         # Plot
@@ -157,11 +164,11 @@ for cw in cw_list:
                         # Extremes
                         if ((ic == 1) and (ienv == 0)):
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[ii], lw=1,
+                                      color=cols[ic], linestyle=lstyle[iif], lw=1,
                                       label=inleg[ii-3])
                         else:
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[ii], lw=1)
+                                      color=cols[ic], linestyle=lstyle[iif], lw=1)
 
             newnd = nd.replace('.','p')
             plotfile = plotroot+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
@@ -175,3 +182,5 @@ for cw in cw_list:
             # Save figure
             fig.savefig(plotfile)
             plt.close()
+            if Testing:
+                print('Plot: {}'.format(plotfile))

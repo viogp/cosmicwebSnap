@@ -27,8 +27,9 @@ elabels = ['Voids','Sheets','Filaments','Knots']
 ytit = 'Fraction'
 ymin = 0. ; ymax = 1.
 
-cols = ['darkred','dodgerblue']
-hatching = [' ','/','o',' ','//','O'] 
+cuts = ['m','sfr','lo2']
+cols = ['darkred','dodgerblue','palegreen']
+hatching = [' ','/','o'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -38,8 +39,8 @@ cw_list = ['Vweb','Pweb']
 nd_list = ['-2.0','-3.0','-4.2']
 
 if Testing:
-    surveys1 = ['VVDS-DEEP'] ; surveys2 = ['eBOSS-SGC']
-    snap_list = ['41']
+    #surveys1 = ['VVDS-DEEP'] ; surveys2 = ['eBOSS-SGC'] ;snap_list = ['41']
+    surveys1 = ['DEEP2'] ; surveys2 = ['DESI'] ;snap_list = ['39']
     cw_list = ['Vweb'] ; nd_list = ['-4.2']
     
 ##########################################
@@ -56,7 +57,8 @@ for cw in cw_list:
     
     for iis,survey in enumerate(surveys1):
         inleg = ['Mass cut, All','Mass cut, '+survey,'Mass cut, '+surveys2[iis],
-                 'SFR cut, All','SFR cut, '+survey,'SFR cut, '+surveys2[iis]]
+                 'SFR cut, All','SFR cut, '+survey,'SFR cut, '+surveys2[iis],
+                 'L[OII] cut, All','L[OII] cut, '+survey,'L[OII] cut, '+surveys2[iis]]
         numinleg = len(inleg)
         lbar = dm*sep/numinleg
 
@@ -77,7 +79,7 @@ for cw in cw_list:
             ax.text(1.7, 0.95, ztext)
 
             ii = -1
-            for ic, cut in enumerate(['m','sfr']):
+            for ic, cut in enumerate(cuts):
                 allfile = epath+cut+'cut_All_nd'+nd+'_sn'+iz+'.dat'
                 elgfile1 = epath+cut+'cut_'+survey+\
                          '_nd'+nd+'_sn'+iz+'.dat'
@@ -85,7 +87,7 @@ for cw in cw_list:
                          '_nd'+nd+'_sn'+iz+'.dat'
                 files = [allfile,elgfile1,elgfile2]
 
-                for efile in files:
+                for iie,efile in enumerate(files):
                     ii += 1
 
                     # Check if exists and has more than one line
@@ -116,7 +118,7 @@ for cw in cw_list:
                     else:
                         ax.bar(xenv, frac, lbar, \
                                color=cols[ic], label=inleg[ii],\
-                               hatch=hatching[ii],fill=False,edgecolor=cols[ic])
+                               hatch=hatching[iie],fill=False,edgecolor=cols[ic])
 
             newnd = nd.replace('.','p')
             plotfile = path+'plots/'+model+'environ/'+cw+\

@@ -1,8 +1,11 @@
 #! /bin/tcsh -f
 
-set Testing = False
+#set exec = 'hod.py'
+#set exec = 'fsat.py'
+#set exec = 'sfr_m.py'
+set exec = 'xi_bias.py'
 
-set exec = 'lo2_lf.py'
+set Testing = False
 
 set nom = 'elgs'
 set logpath = /cosma5/data/durham/$user/Junk

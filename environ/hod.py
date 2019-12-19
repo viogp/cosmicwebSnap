@@ -20,19 +20,16 @@ volume = np.power(500.,3.)
 
 cut = 'elg'
 # Initialize the parameters for the figures
-xmin = 10. ; xmax = 15.
+xmin = 11. ; xmax = 15.
 ymin = -3. ; ymax = 2.
 
-xtit = '${\\rm log}_{10}(M_{\\rm halo}/M_{\odot}h^{-1})$'
-ytit = '$\\langle N_M\\rangle$'
-
-plt.rcParams['legend.numpoints'] = 1
-plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
+xtit = '${\\rm log}_{10}(M_{\\rm halo}/h^{-1}{\\rm M}_{\odot})$'
+ytit = '$\\langle N_{\\rm M}\\rangle$'
 
 ylabels = np.array([0,1,2,3])
-elabels = ['Knots','Filaments','Sheets','Voids']
+elabels = ['Voids','Sheets','Filaments','Knots']
 
-cols = ['k','darkolivegreen','forestgreen','limegreen','greenyellow']
+cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
 lstyle = ['-','--',':']
 lwidth = [4,2,2,2,2] 
 
@@ -64,14 +61,14 @@ for cw in cw_list:
 
         surveys = [surveys1[iiz],surveys2[iiz]]
         for survey in surveys:
-            ztext = 'z = '+zzs[iiz]+', '+survey
+            ztext = 'Total, '+survey+', z = '+zzs[iiz]
             # Initialize the parameters for the figures
-            fig = plt.figure(figsize=(8.5,9.))
+            fig = plt.figure(figsize=(6.5,7.))
             jj = 111 ; ax = fig.add_subplot(jj)
             ax.set_autoscale_on(False) ;  ax.minorticks_on() 
-            ax.set_xlabel(xtit,fontsize=fs) ; ax.set_xlim(xmin,xmax)
-            ax.set_ylabel(ytit,fontsize=fs) ; ax.set_ylim(ymin,ymax)
-            ax.text(xmin+0.02*(xmax-xmin),ymax-0.03*(ymax-ymin), ztext) 
+            ax.set_xlabel(xtit) ; ax.set_xlim(xmin,xmax)
+            ax.set_ylabel(ytit) ; ax.set_ylim(ymin,ymax)
+            #ax.text(xmax-0.5*(xmax-xmin),ymax-0.05*(ymax-ymin), ztext) 
 
             end = cut+'cut_'+survey+'_sn'+sn+'.dat'
             efile = epath+end
@@ -129,7 +126,7 @@ for cw in cw_list:
 
                 if (ii == 0):
                     ax.plot(x,y,color=cols[0],linestyle=lstyle[ii],
-                            linewidth=lwidth[0],label='Total')
+                            linewidth=lwidth[0],label=ztext)
                 else:
                     ax.plot(x,y,color=cols[0],linestyle=lstyle[ii],
                             linewidth=lwidth[0])
@@ -194,7 +191,7 @@ for cw in cw_list:
                             linewidth=lwidth[iie+1])
 
             # Legend
-            leg = plt.legend(loc=4)
+            leg = plt.legend(loc=2)
             for item in leg.legendHandles:
                 item.set_visible(False) 
             for color,text in zip(cols,leg.get_texts()):

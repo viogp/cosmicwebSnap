@@ -33,13 +33,10 @@ smin = 3. ; smax = 13. ; ds = 0.1
 sbins = np.arange(smin,smax,ds)
 shist = sbins + ds*0.5  
 
-plt.rcParams['legend.numpoints'] = 1
-plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
-
 ylabels = np.array([0,1,2,3])
-elabels = ['Knots','Filaments','Sheets','Voids']
+elabels = ['Voids','Sheets','Filaments','Knots']
 
-cols = ['k','darkolivegreen','forestgreen','limegreen','greenyellow']
+cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
 lwidth = [4,2,2,2,2] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
@@ -66,14 +63,14 @@ for cw in cw_list:
 
         for survey in surveys:
             # Initialize the parameters for the figures
-            fig = plt.figure(figsize=(8.5,9.))
+            fig = plt.figure(figsize=(7.,7.))
             gs = gridspec.GridSpec(3, 3)
             gs.update(wspace=0., hspace=0.) 
             ax = plt.subplot(gs[1:,:-1]) 
 
             # Fig. SFRF vs M   
-            xtit="$log_{10}(\\rm M_{*}/M_{\odot}h^{-1})$" 
-            ytit="$log_{10}(\\rm SFR/M_{\odot}h^{-1}Gyr^{-1})$"  
+            xtit="${\\rm log}_{10}(M_{*}/h^{-1}{\\rm M}_{\odot})$" 
+            ytit="${\\rm log}_{10}(SFR/h^{-1}{\\rm M}_{\odot}{\\rm Gyr}^{-1})$"  
             xmin=mmin ; xmax=11.9 ; ymin=6. ; ymax=smax 
             ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax) 
             ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)

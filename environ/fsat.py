@@ -9,7 +9,7 @@ plt.style.use(mpl_style.style1)
 Testing = False
 
 propname = 'lo2'
-xtit = '${\\rm log}_{10}(M_*/M_{\odot}h^{-1})$'
+xtit = '${\\rm log}_{10}(M_*/h^{-1}{\\rm M}_{\odot})$'
 
 # Initialize histogram  
 lmin = 8.5 ; lmax = 15. ; dl = 0.1
@@ -35,9 +35,9 @@ plt.rcParams['legend.numpoints'] = 1
 plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
 
 ylabels = np.array([0,1,2,3])
-elabels = ['Knots','Filaments','Sheets','Voids']
+elabels = ['Voids','Sheets','Filaments','Knots'] 
 
-cols = ['k','darkolivegreen','forestgreen','limegreen','greenyellow']
+cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
 #lstyle = ['-','-','--','-.',':']
 lstyle = ['-','-','-','-','-']
 lwidth = [4,2,2,2,2] 

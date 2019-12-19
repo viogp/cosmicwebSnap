@@ -1,9 +1,12 @@
 #! /bin/tcsh -f
 
-#set exec = 'hod.py'
+#set exec = 'fenv.py'
 #set exec = 'fsat.py'
+#set exec = 'lo2_lf.py'
+#set exec = 'hod.py'
 #set exec = 'sfr_m.py'
-set exec = 'xi_bias.py'
+#set exec = 'xi_bias.py'
+set exec = 'mh.py'
 
 set Testing = False
 

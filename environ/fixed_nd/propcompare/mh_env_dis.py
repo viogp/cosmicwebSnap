@@ -9,7 +9,7 @@ plt.style.use(mpl_style.style1)
 Testing = False
 
 propname = 'lmh'
-xtit = "$log_{10}({\\rm M}_{\\rm halo}/M_{\odot}h^{-1})$"
+xtit = "${\\rm log}_{10}(M_{\\rm halo}/h^{-1}{\\rm M}_{\odot})$"
 xmin = 10.5 ; xmax = 15.
 
 ##########################################
@@ -25,16 +25,13 @@ sep = 0.85
 ebins = np.arange(emin,emax, dm)  
 
 # Initialize the parameters for the figures
-plt.rcParams['legend.numpoints'] = 1
-plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
-
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
 cuts = ['m','sfr','lo2']
 
 cols = ['darkred','dodgerblue','palegreen']
-lstyle = ['-','--',':'] 
+lstyle = [':','--','-']
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -56,24 +53,25 @@ for cw in cw_list:
     print('\n Plots: {}* \n'.format(plotroot))
 
     for iis,survey in enumerate(surveys1):
-        inleg = ['All',survey,surveys2[iis]]
+        inleg = [surveys2[iis],survey,'All']
         numinleg = len(inleg)*len(cuts)
         lbar = dm*sep/numinleg
 
         iz = snaps[iis] 
         for nd in nd_list:
             # Initialize the parameters for the figures
-            fig = plt.figure(figsize=(8.5,9.))
+            fig = plt.figure(figsize=(7.,7.))
             jj = 111 ; ax = fig.add_subplot(jj)
             plt.yticks(ylabels,elabels)
+            #plt.yticks(ylabels,[' ',' ',' ',' '])
             ax.tick_params(axis='y',which='minor',right=False,left=False)
-            ax.set_xlabel(xtit,fontsize=fs) ; ax.set_xlim(xmin,xmax)
+            ax.set_xlabel(xtit) ; ax.set_xlim(xmin,xmax)
 
             if(iz == '41'):
-                ztext = 'z = 0.83; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
+                ztext = 'z = 0.83; $10^{'+nd+'}h^3{\\rm Mpc}^{-3}$'
             elif(iz == '39'):
-                ztext = 'z = 0.99; $10^{'+nd+'}{\\rm Mpc}^{-3}{\\rm h}^{3}$'
-            ax.text(xmax-0.45*(xmax-xmin),emax-0.02*(emax-emin), ztext) 
+                ztext = 'z = 0.99; $10^{'+nd+'}h^3{\\rm Mpc}^{-3}$'
+            ax.text(xmax-0.5*(xmax-xmin),emax-0.02*(emax-emin), ztext) 
 
             ii = -1
             for ic, cut in enumerate(cuts):
@@ -89,8 +87,8 @@ for cw in cw_list:
                 elgfile2 = epath+end
                 elg2prop = proppath+end
 
-                files = [allfile,elgfile1,elgfile2]
-                fprop = [allprop,elg1prop,elg2prop]
+                files = [elgfile2,elgfile1,allfile]
+                fprop = [elg2prop,elg1prop,allprop]
 
                 for iif,efile in enumerate(files):
                     ii += 1
@@ -159,17 +157,17 @@ for cw in cw_list:
                         # Extremes
                         if ((ic == 0) and (ienv == 0)):
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[iif], lw=1,
-                                      label=inleg[ii])
+                                      color=cols[ic], linestyle=lstyle[iif], lw=2,
+                                      label=inleg[iif])
                         else:
                             ax.hlines(yenv, np.min(prop), np.max(prop), 
-                                      color=cols[ic], linestyle=lstyle[iif], lw=1)
+                                      color=cols[ic], linestyle=lstyle[iif], lw=2)
 
             newnd = nd.replace('.','p')
             plotfile = plotroot+survey+'_nd'+newnd+'_sn'+iz+'_env2.pdf'
 
             # Legend
-            leg = plt.legend(loc=3)
+            leg = plt.legend(loc=4)
             for ll in leg.legendHandles:
                 ll.set_color('k')
             leg.draw_frame(False)

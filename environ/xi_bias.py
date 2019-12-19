@@ -48,25 +48,22 @@ if Testing:
 ##################################
 
 # Initialize the parameters for the figures
-plt.rcParams['legend.numpoints'] = 1
-plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
-
 xmin = -2. ; xmax = 2.
-ytitb = "$\sqrt{\\xi_{gg}/\\xi_{DM}}$"
+ytitb = "$\sqrt{\\xi_{\\rm gg}/\\xi_{\\rm DM}}$"
 yminb = -1. ; ymaxb = 3.
 ymin = -2.9 ; ymax = 5.
 
 if (space == 'r'):
-    xtit = "${\\rm log}_{10}(\\rm{r/Mpc}\, h^{-1})$"
-    ytit = "${\\rm log}_{10}\\xi (\\rm{r})$" 
+    xtit = "${\\rm log}_{10}(r/h^{-1}{\\rm Mpc})$"
+    ytit = "${\\rm log}_{10}\\xi (r)$" 
 else:
-    xtit = "${\\rm log}_{10}(\\rm{s/Mpc}\, h^{-1})$"
-    ytit = "${\\rm log}_{10}\\xi (\\rm{s})$" 
+    xtit = "${\\rm log}_{10}(s/h^{-1}{\\rm Mpc})$"
+    ytit = "${\\rm log}_{10}\\xi (s)$" 
 
 cut = 'elg'
 
-elabels = ['Total','Knots','Filaments','Sheets','Voids']  
-cols = ['k','darkolivegreen','forestgreen','limegreen','greenyellow'] 
+elabels = ['Total','Voids','Sheets','Filaments','Knots'] 
+cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
 lstyle = ['-','-','-','-','-'] 
 lwidth = [4,2,2,2,2] 
 
@@ -107,7 +104,7 @@ for cw in cw_list:
         surveys = [surveys1[iiz],surveys2[iiz]] 
         for survey in surveys:
             # Initialize the parameters for the figures
-            fig = plt.figure(figsize=(8.,9.))
+            fig = plt.figure(figsize=(6.5,9.))
             gs = gridspec.GridSpec(4,1)
             gs.update(wspace=0., hspace=0.)
 
@@ -115,17 +112,16 @@ for cw in cw_list:
             axb = plt.subplot(gs[3,:])
             axb.set_autoscale_on(False) ; axb.minorticks_on()
             axb.set_xlim(xmin,xmax) ; axb.set_ylim(yminb,ymaxb)
-            axb.set_xlabel(xtit, fontsize=fs)
-            axb.set_ylabel(ytitb, fontsize=fs)
+            axb.set_xlabel(xtit) ; axb.set_ylabel(ytitb)
     
             # Plot 2PCF r-space
             ax = plt.subplot(gs[:-1,:],sharex=axb)
-            ax.set_ylabel(ytit, fontsize=fs)
+            ax.set_ylabel(ytit)
             ax.set_autoscale_on(False) ; ax.minorticks_on()
             ax.set_ylim(ymin,ymax) ; start, end = ax.get_xlim()
             ax.xaxis.set_ticks(np.arange(start, end, 1.))
-            ztext = 'z = '+zz+', '+survey
-            ax.text(xmax-0.5*(xmax-xmin),ymax-0.07*(ymax-ymin), ztext)
+            ztext = survey+', z = '+zz
+            ax.text(xmax-0.4*(xmax-xmin),ymax-0.07*(ymax-ymin), ztext)
             plt.setp(ax.get_xticklabels(), visible=False)
     
             # DM
@@ -137,8 +133,9 @@ for cw in cw_list:
                     efile = epath+cut+'cut_'+survey+\
                         '_sn'+sn+'_CUTExi_'+space+'.dat'
                 else:
-                    efile = epath+elabel+'_'+cut+'cut_'+survey+\
+                    efile = epath+elabel+'_'+cw+'_'+cut+'cut_'+survey+\
                         '_sn'+sn+'_CUTExi_'+space+'.dat'
+
                 if (not os.path.isfile(efile)):
                     continue
     
@@ -206,7 +203,7 @@ for cw in cw_list:
             # Legends
             handles, labels = ax.get_legend_handles_labels()
             handles = [h[0] for h in handles]
-            leg = ax.legend(handles, labels, loc=3, fontsize = fs-2)
+            leg = ax.legend(handles, labels, loc=3)
             leg.draw_frame(False)
     
             # Save figure

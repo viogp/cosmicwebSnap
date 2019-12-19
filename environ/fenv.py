@@ -15,7 +15,7 @@ volume = np.power(500.,3.)
 
 cut = 'elg'
 
-elabels = ['Knots','Filaments','Sheets','Voids']
+elabels = ['Voids','Sheets','Filaments','Knots']
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -69,7 +69,7 @@ for cw in cw_list:
             # type 11 (0= Centrals; 1,2= Satellites) 
             px, py, pz = np.loadtxt(pfile, usecols=(0,1,2), unpack=True)
 
-            # Write total  to summary file
+            # Write total to summary file
             ntot = float(len(px))
             sumfile.write('{:.2f} {} {} {} {}\n'.format(ntot,'Total',
                                                         survey,sn,cw)) 

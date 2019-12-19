@@ -4,11 +4,21 @@
 
 **run_jobs.csh** To run jobs
 
-**elg_lo2_env.py** Histogram per environment of the ELGs vs fixed number selected with a cut in L[OII].
+**fenv.py** Calculate the fraction of ELGs per environment.
+
+**fsat.py** Calculate the percentage of satellites per environment.
+
+**lo2_lf.py** L[OII] Luminosity function
 
 **hod.py** Create files with HODs per environment.
 
 **plot_hod.py** Plot individual HODs.
+
+**xi_bias.py** Plot the two point correlation function and bias.
+
+**sfr_m.py** SFR vs M
+
+**mh.py** Average Mhalo
 
 ## Directories ##
 **fixed_nd** Properties (stellar mass, etc.) compared by environment for the mass and SFR selected samples with fixed number densities.

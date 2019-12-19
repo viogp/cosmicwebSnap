@@ -7,7 +7,7 @@ set exec = lf2_cuts.py
 #set exec = lf2_2eboss_cuts.py
 #set exec = lf2_calz.py
 
-python $exec
+python3 $exec
 
 echo 'The end'
 

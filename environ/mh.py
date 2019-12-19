@@ -1,18 +1,10 @@
 import sys,os.path
 import subprocess
 import numpy as np
-import matplotlib ; matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import mpl_style
-plt.style.use(mpl_style.style1)
 
 Testing = False
 
-propname = 'lo2'
-xtit = '${\\rm log}_{10}(L{\\rm [OII]}/h^{-2}{\\rm erg\, s}^{-1})$'
-
-# Initialize histogram  
-lmin = 38. ; lmax = 46. ; dl = 0.1
+propname = 'mh'
 
 ##########################################
 model = 'gp19/'
@@ -22,22 +14,8 @@ volume = np.power(500.,3.)
 ##########################################
 
 cut = 'elg'
-# Initialize the parameters for the figures
-xmin = 40.2 ; xmax = 43.7
-ymin = -5.9 ; ymax = -1.
 
-lbins = np.arange(lmin,lmax,dl)  
-xhist = lbins + dl*0.5 
-
-ytit = "${\\rm log}_{10}(\Phi/h^3{\\rm Mpc}^{-3}{\\rm dex}^{-1})$" 
-
-ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
-
-cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen'] 
-#lstyle = ['-','-','--','-.',':']
-lstyle = ['-','-','-','-','-']
-lwidth = [4,2,2,2,2] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -51,6 +29,12 @@ if Testing:
     cw_list = ['Vweb'] 
 
 ##########################################
+# Output percentage summary
+envsumfile = path+'env_files/'+model+propname+'_elg.txt'
+sumfile = open(envsumfile, 'w')
+sumfile.write('# Median host halo mass ELGs, P10, P90, LSE, Survey, Snapshot, Vweb/Pweb \n')
+sumfile.close()
+sumfile = open(envsumfile, 'a')
 
 # Loop over the different files
 for cw in cw_list:
@@ -62,15 +46,6 @@ for cw in cw_list:
         surveys = [surveys1[iiz],surveys2[iiz]]
 
         for survey in surveys:
-            ztext = 'z = '+zzs[iiz]+', '+survey
-            # Initialize the parameters for the figures
-            fig = plt.figure(figsize=(6.5,7.))
-            jj = 111 ; ax = fig.add_subplot(jj)
-            ax.set_autoscale_on(False) ;  ax.minorticks_on() 
-            ax.set_xlabel(xtit) ; ax.set_xlim(xmin,xmax)
-            ax.set_ylabel(ytit,fontsize=fs) ; ax.set_ylim(ymin,ymax)
-            ax.text(xmin+0.02*(xmax-xmin),ymin+0.02*(ymax-ymin), ztext) 
-
             end = cut+'cut_'+survey+'_sn'+sn+'.dat'
             efile = epath+end
             pfile = proppath+end
@@ -92,17 +67,17 @@ for cw in cw_list:
             # log10(massh) 6, log10(mass/Msun/h) 7, log10(sfr/Msun/h/Gyr) 8, 
             # log10(lum/h^-2 erg/s) 9, log10(lum_ext/h^-2 erg/s) 10,
             # type 11 (0= Centrals; 1,2= Satellites) 
-            px, py, pz, lum_ext = np.loadtxt(pfile, usecols=(0,1,2,10), unpack=True)
+            px, py, pz, mh = np.loadtxt(pfile, usecols=(0,1,2,6), unpack=True)
 
-            # Plot total 
-            H, bins_edges = np.histogram(lum_ext,bins=np.append(lbins,lmax)) 
-            yhist = H/dl/volume
-            ind = np.where(yhist>0.)                
-            if (np.shape(ind)[1]>1):
-                ax.plot(xhist[ind],np.log10(yhist[ind]),
-                        color=cols[0],linestyle=lstyle[0],
-                        linewidth=lwidth[0],label='Total')
-
+            # Write total to summary file
+            prop = 10.**mh
+            q1, median, q9 = np.percentile(prop, [10, 50, 90])
+            lq1 = np.log10(q1)
+            lme = np.log10(median)
+            lq9 = np.log10(q9)
+            sumfile.write('{:.2f} {:.2f} {:.2f} {} {} {} {}\n'.format(
+                lme,lq1,lq9,'Total',survey,sn,cw)) 
+            
             # Read the environmental file
             xx, yy, zz, fenv = np.loadtxt(efile,unpack=True)
             env = fenv.astype(int)
@@ -123,26 +98,13 @@ for cw in cw_list:
             # Loop over type of environment
             for iie, ienv in enumerate(np.unique(env)):
                 ind = np.where(env == ienv)
-                prop = lum_ext[ind]
-                #print(prop) ; sys.exit()
+                if(np.shape(ind)[1]<2): continue
+                prop = 10.**mh[ind]
+                q1, median, q9 = np.percentile(prop, [10, 50, 90])
+                lq1 = np.log10(q1)
+                lme = np.log10(median)
+                lq9 = np.log10(q9)
+                sumfile.write('{:.2f} {:.2f} {:.2f} {}\n'.format(lme,lq1,lq9,elabels[iie])) 
 
-                # Plot hist 
-                H, bins_edges = np.histogram(prop,bins=np.append(lbins,lmax)) 
-                yhist = H/dl/volume
-                ind = np.where(yhist>0.)                
-                if (np.shape(ind)[1]>1):
-                    ax.plot(xhist[ind],np.log10(yhist[ind]),
-                            color=cols[iie+1],linestyle=lstyle[iie+1],
-                            linewidth=lwidth[iie+1],label=elabels[iie])
-
-            # Legend
-            leg = plt.legend(loc=1)
-            for color,text in zip(cols,leg.get_texts()):
-                text.set_color(color) 
-            leg.draw_frame(False)
-
-            # Save figure
-            plotfile = plotroot+'lfo2_'+survey+'_sn'+sn+'.pdf'
-            if (Testing): print(plotfile)
-            fig.savefig(plotfile)
-            plt.close()
+print('Summary file: {}'.format(envsumfile))
+sumfile.close()

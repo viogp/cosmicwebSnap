@@ -19,7 +19,7 @@ surveys1 = ['VVDS-DEEP','DEEP2']
 surveys2 = ['eBOSS-SGC','DESI']
 cuts = ['elg']
 
-elabels = ['Knots','Filaments','Sheets','Voids'] 
+elabels = ['Voids','Sheets','Filaments','Knots'] 
 cw_list = ['Vweb','Pweb']
 
 # Testing
@@ -28,7 +28,7 @@ if Testing:
     verbose = True
     sn_list = ['39'] ; zz_list = [0.99]
     surveys1 = ['DEEP2'] ; surveys2 = ['DESI']
-    cw_list = ['Vweb']
+    cw_list = ['Vweb'] 
 
 #------------------
 
@@ -81,7 +81,7 @@ for cw in cw_list:
                     (len(zz) != len(pz))):                                               
                     print('[PROBLEM] Different lengths coordinates: {}\n {}\n'.          
                           format(efile,pfile)) ; continue                                
-                # Chech that the coordinates are ordered in the same way                 
+                # Check that the coordinates are ordered in the same way                 
                 if ((not np.allclose(xx,px,atol=1e-08,equal_nan=True)) or                
                     (not np.allclose(yy,py,atol=1e-08,equal_nan=True)) or                
                     (not np.allclose(zz,pz,atol=1e-08,equal_nan=True))):                 
@@ -91,7 +91,10 @@ for cw in cw_list:
                 # Loop over type of environment
                 for iie, ienv in enumerate(np.unique(env)):
                     ind = np.where(env == ienv)
-    
+                    if (np.shape(ind)[1]<2): 
+                        print('Not enough {}'.format(elabels[iie]))
+                        continue
+
                     y = py[ind] ; z = pz[ind]
                     if (space == 'r'): # r-space
                         x = px[ind]
@@ -100,14 +103,24 @@ for cw in cw_list:
     
                     # Write the input file for CUTE
                     outfile = inpath+'/iz'+sn+'/'+space+'/'+\
-                              elabels[iie]+'_'+cut+'cut_'+survey+'_sn'+sn+\
+                              elabels[iie]+'_'+cw+'_'+cut+'cut_'+\
+                              survey+'_sn'+sn+\
                               '_4cute_'+space+'.dat'
+                    if (verbose): print('Output: {}'.format(outfile))
 
+                    #arr_ienv = np.zeros(shape=len(x)) ; arr_ienv.fill(ienv)
                     tofile = np.column_stack((x,y,z))
                     with open(outfile,'w') as outf:
                         np.savetxt(outf, tofile, fmt='%.5f')
     
                     # Write file name in info_file
                     info.write(outfile+' \n')
+
+                # Flush arrays
+                px.fill(-999.) ; py.fill(-999.) ; pz.fill(-999.)
+                vx.fill(-999.) ; fenv.fill(-999.)
+                xx.fill(-999.) ; yy.fill(-999.) ; zz.fill(-999.)
+                x.fill(-999.) ; y.fill(-999.) ; z.fill(-999.)
+
 info.close()
 print(' - Info file: {}'.format(info_file))

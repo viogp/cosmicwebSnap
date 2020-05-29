@@ -27,7 +27,7 @@ plt.rcParams['axes.labelsize'] = 10.0 ; fs = 15
 fig = plt.figure(figsize=(9.,16.))
 
 xtit = "${\\rm log}_{10}(M_{\\rm halo}/M_{\odot}h^{-1})$"
-ytit = "$\\langle N_M\\rangle$"
+ytit = "${\\rm log}_{10}(\\langle N_M\\rangle)$"
 
 xmin = 10. ; xmax = 15.
 ymin = -3. ; ymax = 2.

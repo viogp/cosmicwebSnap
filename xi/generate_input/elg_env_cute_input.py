@@ -80,13 +80,13 @@ for cw in cw_list:
                     (len(yy) != len(py)) or                                              
                     (len(zz) != len(pz))):                                               
                     print('[PROBLEM] Different lengths coordinates: {}\n {}\n'.          
-                          format(efile,pfile)) ; continue                                
+                          format(efile,infile)) ; continue                                
                 # Check that the coordinates are ordered in the same way                 
                 if ((not np.allclose(xx,px,atol=1e-08,equal_nan=True)) or                
                     (not np.allclose(yy,py,atol=1e-08,equal_nan=True)) or                
                     (not np.allclose(zz,pz,atol=1e-08,equal_nan=True))):                 
                     print('[PROBLEM] Files with different coordinates: {}\n {}\n'.       
-                          format(efile,pfile)) ; continue   
+                          format(efile,infile)) ; continue   
     
                 # Loop over type of environment
                 for iie, ienv in enumerate(np.unique(env)):

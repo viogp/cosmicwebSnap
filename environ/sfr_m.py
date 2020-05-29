@@ -36,8 +36,9 @@ shist = sbins + ds*0.5
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
-cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
-lwidth = [4,2,2,2,2] 
+#cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
+cols = ['k','#e7d4e8','#7fbf7b','#af8dc3','#1b7837']
+lwidth = [4,2.5,2.5,2.5,2.5] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -71,7 +72,10 @@ for cw in cw_list:
             # Fig. SFRF vs M   
             xtit="${\\rm log}_{10}(M_{*}/h^{-1}{\\rm M}_{\odot})$" 
             ytit="${\\rm log}_{10}(SFR/h^{-1}{\\rm M}_{\odot}{\\rm Gyr}^{-1})$"  
-            xmin=mmin ; xmax=11.9 ; ymin=6. ; ymax=smax 
+            if (survey == 'DESI'):
+                xmin=mmin ; xmax=11.9 ; ymin=8.5 ; ymax=11. 
+            else:
+                xmin=mmin ; xmax=11.9 ; ymin=6. ; ymax=smax 
             ax.set_xlim(xmin,xmax) ; ax.set_ylim(ymin,ymax) 
             ax.set_xlabel(xtit) ; ax.set_ylabel(ytit)
 
@@ -79,14 +83,20 @@ for cw in cw_list:
             axm = plt.subplot(gs[0, :-1],sharex=ax) 
             ytit="$log_{10}(\Phi)$" ; axm.set_ylabel(ytit) 
             axm.set_autoscale_on(False) ;  axm.minorticks_on()
-            axm.set_ylim(-5.5,-1.)
+            if (survey == 'DESI'):
+                axm.set_ylim(-5.5,-2.)
+            else:
+                axm.set_ylim(-5.5,-1.)
             plt.setp(axm.get_xticklabels(), visible=False)  
 
             # SFRF
             axs = plt.subplot(gs[1:, 2],sharey=ax)  
             xtit="$log_{10}(\Phi)$" ; axs.set_xlabel(xtit) 
             axs.set_autoscale_on(False) ;  axs.minorticks_on()
-            axs.set_xlim(-4.4,0.0)  
+            if (survey == 'DESI'):
+                axs.set_xlim(-4.4,-2.)
+            else:
+                axs.set_xlim(-4.4,0.0)
             start, end = axs.get_xlim() 
             axs.xaxis.set_ticks(np.arange(-4., end, 1.))
             plt.setp(axs.get_yticklabels(), visible=False) 

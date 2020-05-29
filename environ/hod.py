@@ -24,14 +24,15 @@ xmin = 11. ; xmax = 15.
 ymin = -3. ; ymax = 2.
 
 xtit = '${\\rm log}_{10}(M_{\\rm halo}/h^{-1}{\\rm M}_{\odot})$'
-ytit = '$\\langle N_{\\rm M}\\rangle$'
+ytit = '${\\rm log}_{10}\\langle N_{\\rm M}\\rangle$'
 
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
-cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
-lstyle = ['-','--',':']
-lwidth = [4,2,2,2,2] 
+#cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
+cols = ['k','#e7d4e8','#7fbf7b','#af8dc3','#1b7837'] 
+lstyle = ['-',':','--']
+lwidth = [4,2.5,2.5,2.5,2.5] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -61,7 +62,9 @@ for cw in cw_list:
 
         surveys = [surveys1[iiz],surveys2[iiz]]
         for survey in surveys:
-            ztext = 'Total, '+survey+', z = '+zzs[iiz]
+            if (survey == 'DESI'):
+                ymax = 0.2
+            ztext = 'All '+survey+', z = '+zzs[iiz]
             # Initialize the parameters for the figures
             fig = plt.figure(figsize=(6.5,7.))
             jj = 111 ; ax = fig.add_subplot(jj)
@@ -119,6 +122,7 @@ for cw in cw_list:
 
             #Plot the 3 HODs:
             for ii in range(3):
+                if (ii == 1): continue #skip centrals
                 yy = hod[ii,:]
                 ind = np.where(yy>0.)
                 x = mhist[ind]
@@ -135,7 +139,7 @@ for cw in cw_list:
             xx, yy, zz, fenv = np.loadtxt(efile,unpack=True)
             env = fenv.astype(int)
 
-            # Chech that the coordinates have the same size
+            # ChecK that the coordinates have the same size
             if ((len(xx) != len(px)) or 
                 (len(yy) != len(py)) or
                 (len(zz) != len(pz))):
@@ -178,6 +182,7 @@ for cw in cw_list:
 
                 #Plot the 3 HODs:
                 for ii in range(3):
+                    if (ii == 1): continue #skip centrals
                     yy = hod[ii,:]
                     ind = np.where(yy>0.)
                     x = mhist[ind]

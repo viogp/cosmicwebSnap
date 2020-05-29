@@ -26,6 +26,8 @@ log_rmax = 1
 
 # The number of OpenMP threads to use if OpenMP enabled during compilation.
 nthreads = 4 # Change this on a cluster
+# Sergio: pedir un nodo solamente (digamos que ese nodo tenga 24 cpu o algo así), 
+#         y nthreads = numero de CPU (24 por ejemplo)
 
 # Binfile: A sequence of ``r`` values that provides the bin-edges
 binfile = np.logspace(log_rmin,log_rmax,NBin+1,True)

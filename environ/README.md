@@ -12,8 +12,6 @@
 
 **hod.py** Create files with HODs per environment.
 
-**plot_hod.py** Plot individual HODs.
-
 **xi_bias.py** Plot the two point correlation function and bias.
 
 **sfr_m.py** SFR vs M

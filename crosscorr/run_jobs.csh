@@ -1,18 +1,13 @@
 #! /bin/tcsh -f
 
-#set exec = 'fenv.py'
-#set exec = 'fsat.py'
-set exec = 'lo2_lf.py'
-#set exec = 'hod.py'
-#set exec = 'sfr_m.py'
-#set exec = 'xi_bias.py'
-#set exec = 'mh.py'
+#set exec = 'plot_crosscorr.py'
+set exec = 'crosscorr.py'
 
 set Testing = False
 
 set nom = 'elgs'
 set logpath = /cosma5/data/durham/$user/Junk
-set logname = ${logpath}/props_$nom.%A.%a.log
+set logname = ${logpath}/crosscor_$nom.%A.%a.log
 set job_file = ${logpath}/${nom}.job
 
 if ($Testing == 'True') then
@@ -23,7 +18,7 @@ else
     cat > $job_file <<EOF
 #! /bin/tcsh -ef
 #
-#SBATCH --ntasks 1
+#SBATCH --ntasks 1 --cpus-per-task 16
 #SBATCH -J ${nom}
 #SBATCH -o ${logname}
 #SBATCH -p cordelia

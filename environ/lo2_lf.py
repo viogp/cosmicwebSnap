@@ -34,10 +34,11 @@ ytit = "${\\rm log}_{10}(\Phi/h^3{\\rm Mpc}^{-3}{\\rm dex}^{-1})$"
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
-cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen'] 
+#cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen'] 
+cols = ['k','#e7d4e8','#7fbf7b','#af8dc3','#1b7837']
 #lstyle = ['-','-','--','-.',':']
 lstyle = ['-','-','-','-','-']
-lwidth = [4,2,2,2,2] 
+lwidth = [4,2.5,2.5,2.5,2.5] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -62,14 +63,17 @@ for cw in cw_list:
         surveys = [surveys1[iiz],surveys2[iiz]]
 
         for survey in surveys:
-            ztext = 'z = '+zzs[iiz]+', '+survey
+            if (survey=='DESI'):
+                xmin = 41. ; xmax = 43.
+                ymin = -5.9 ; ymax = -2.
+
             # Initialize the parameters for the figures
             fig = plt.figure(figsize=(6.5,7.))
             jj = 111 ; ax = fig.add_subplot(jj)
             ax.set_autoscale_on(False) ;  ax.minorticks_on() 
             ax.set_xlabel(xtit) ; ax.set_xlim(xmin,xmax)
-            ax.set_ylabel(ytit,fontsize=fs) ; ax.set_ylim(ymin,ymax)
-            ax.text(xmin+0.02*(xmax-xmin),ymin+0.02*(ymax-ymin), ztext) 
+            ax.set_ylabel(ytit) ; ax.set_ylim(ymin,ymax)
+            #ax.text(xmin+0.02*(xmax-xmin),ymin+0.02*(ymax-ymin), ztext) 
 
             end = cut+'cut_'+survey+'_sn'+sn+'.dat'
             efile = epath+end
@@ -101,7 +105,7 @@ for cw in cw_list:
             if (np.shape(ind)[1]>1):
                 ax.plot(xhist[ind],np.log10(yhist[ind]),
                         color=cols[0],linestyle=lstyle[0],
-                        linewidth=lwidth[0],label='Total')
+                        linewidth=lwidth[0],label='All '+survey+', z = '+zzs[iiz])
 
             # Read the environmental file
             xx, yy, zz, fenv = np.loadtxt(efile,unpack=True)

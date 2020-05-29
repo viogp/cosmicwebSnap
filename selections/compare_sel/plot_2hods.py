@@ -27,7 +27,7 @@ plotfile = inpath+'plots/'+model+'selections/hod/hods_All_VVDS.pdf'
 fig = plt.figure(figsize=(6.5,14.))
 
 xtit = "${\\rm log}_{10}(M_{\\rm halo}/M_{\odot}h^{-1})$"
-ytit = "$\\langle N_M\\rangle$"
+ytit = "${\\rm log}_{10}\\langle N_M\\rangle$"
 
 xmin = 11. ; xmax = 15.
 ymin = -2.9 ; ymax = 2.

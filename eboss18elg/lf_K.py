@@ -100,7 +100,7 @@ start, end = ax.get_xlim()
 
 cols = get_distinct(len(models)+1) 
 colors = cols #; g = ['grey'] ; colors.extend(g)
-colors[len(colors)-1] = 'grey'        
+colors[len(colors)-1] = 'k'        
 
 # Observational data
 dobs = '/cosma/home/dphlss/violeta/Galform2/galform/Obs_Data2/'
@@ -117,7 +117,8 @@ eh = np.log10(den[ind]+err[ind]) - np.log10(den[ind])
 el = np.log10(den[ind]) - np.log10(den[ind]-err[ind]) 
 ind = np.where(np.isinf(el) | np.isnan(el))
 el[ind] = 999.
-ax.errorbar(x,y,yerr=[el,eh],fmt='o', ecolor='grey',color='grey', mec='grey', label='GAMA, Driver+2012')
+ax.errorbar(x,y,yerr=[el,eh],fmt='o', s=3, 
+            ecolor='k',color='k', mec='k', label='GAMA, Driver+2012')
 
 # For Chi2
 ind = np.where((den > 0.) & (mag<-15.) & (mag>-23.))

@@ -195,13 +195,13 @@ for iz,zsnap in enumerate(snap_list):
     oxr = oxr[arrinds]
     oyr = oyr[arrinds]
 
-    if(isinstance(ox, (np.ndarray))):
-        if (iz == 0):
-            ax1.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
-                             ecolor='grey',color='grey',mec='grey')
-        else:
-            ax.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
-                            ecolor='grey',color='grey',mec='grey')
+    #if(isinstance(ox, (np.ndarray))):
+    #    if (iz == 0):
+    #        ax1.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
+    #                         ecolor='grey',color='grey',mec='grey')
+    #    else:
+    #        ax.errorbar(ox,oy,yerr=[el,eh],fmt='o',\
+    #                        ecolor='grey',color='grey',mec='grey')
     # Plot the observations  O2_3728-*-z*.txt
     for i,isurvey in enumerate(obsnom):
         ox, oy, el, eh = jc.read_jc_indlf(

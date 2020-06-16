@@ -8,7 +8,7 @@ propname = 'fenv'
 
 ##########################################
 model = 'gp19/'
-path = '/cosma5/data/durham/violeta/lines/cosmicweb/'
+path = '/cosma6/data/dp004/dc-gonz3/lines/cosmicweb/'
 proppath = path+'selections/'+model+'ascii_files/'
 volume = np.power(500.,3.)
 ##########################################

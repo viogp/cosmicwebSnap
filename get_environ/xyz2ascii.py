@@ -13,7 +13,7 @@ nvol = 64
 inleg = ['centrals,20 particles']
 ntypes = len(inleg)
 
-path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/gp19/iz41/'
+path = '/cosma6/data/dp004/dc-gonz3/Galform_Out/v2.7.0/stable/MillGas/gp19/iz41/'
 #############################
 line = 'OII3727' ; lline = '[OII]'
 

@@ -6,6 +6,19 @@ import h5py
 import numpy as np
 from Cosmology import *
 
+# Functions
+
+def add2sat(pos,gtype,mult=1):
+    '''
+    Add (mult=1) or remove (mult=-1) the position of the central to the satellites
+    '''
+    last = pos[0]
+    for i in range(len(pos)):
+        if gtype[i]:
+            #here: gtype working as expected?
+
+############################################
+
 Testing = True
 
 nvol = 64
@@ -28,36 +41,56 @@ for iz, sn in enumerate(sn_list):
     volume = 0. ; iifil = -1
     for ivol in range(nvol):
         gfile = path+model+'iz'+sn+'/ivol'+str(ivol)+'/galaxies.hdf5'
-        if (os.path.isfile(gfile)):        
-            iifil += 1
-            if Testing: 
-                if iifil>2: break
+        if (not os.path.isfile(gfile)):
+            continue
+        iifil += 1
+        if Testing: 
+            if iifil>2: break
 
-            # Read the halo information
-            f = h5py.File(gfile,'r')
-            group = f['Output001']
-            vol1 = f['Parameters/volume'][()] ; volume = volume + vol1
-            tjm = group['Trees/jm'][:]
-            tngals = group['Trees/ngals'][:] 
-            jm = np.repeat(tjm,tngals) ;print(gfile)
-            ihhalo = group['ihhalo'][:] 
-            haloid = 10e10*ivol + 10e6*jm + ihhalo
-            print(haloid,np.shape(haloid),type(haloid)) ; sys.exit()
-            ###here Is this a good id for the shuffling?
-            if (iifil==0):
-                xgal   = group['xgal'][:]   # Mpc/h
-                ygal   = group['ygal'][:]
-                zgal   = group['zgal'][:]
-                mhhalo = group['mhhalo'][:]   # Msun/h
-                gtype  = group['type'][:] # 0= Centrals; 1,2= Satellites
-            else:
-                xgal   = np.append(xgal,group['xgal'][:])   # Mpc/h
-                ygal   = np.append(ygal,group['ygal'][:])
-                zgal   = np.append(zgal,group['zgal'][:])
-                mhhalo = np.append(mhhalo,group['mhhalo'][:])   # Msun/h
-                gtype  = np.append(gtype,group['type'][:]) # 0= Centrals; 1,2= Satellites
-            f.close()
-    
-            
+        # Read the halo information
+        f = h5py.File(gfile,'r')
+        group = f['Output001']
+        vol1 = f['Parameters/volume'][()] ; volume = volume + vol1
+        tjm = group['Trees/jm'][:]
+        tngals = group['Trees/ngals'][:] 
+
+        ixgal   = group['xgal'][:]   # Mpc/h
+        iygal   = group['ygal'][:]
+        izgal   = group['zgal'][:]
+        imhhalo = np.log10(group['mhhalo'][:])   # log10(M/Msun/h)
+        igtype  = group['type'][:] # 0= Centrals; 1,2= Satellites
+        ijm     = np.repeat(tjm,tngals) 
+        iihhalo = group['ihhalo'][:] 
+        
+        f.close()
+
+        # Array with subvolumes
+        ivols = np.zeros(shape=len(ixgal),dtype=int) ; ivols.fill(ivol)
+
+        # Sort haloes within one subvolume
+        ind = np.lexsort((igtype,iihhalo,ijm)) # Sort by jm, then by ihhalo, then by gtype
+
+        if (iifil==0):
+            xgal   = ixgal[ind]
+            ygal   = iygal[ind]
+            zgal   = izgal[ind]
+            mhhalo = imhhalo[ind]
+            gtype  = igtype[ind]
+            jm     = ijm[ind]
+            ihhalo = iihhalo[ind]
+            vols   = ivols
+        else:
+            xgal   = np.append(xgal,ixgal[ind])
+            ygal   = np.append(ygal,iygal[ind])
+            zgal   = np.append(zgal,izgal[ind])
+            mhhalo = np.append(mhhalo,imhhalo[ind])
+            gtype  = np.append(gtype,igtype[ind])
+            jm     = np.append(jm,ijm[ind])
+            ihhalo = np.append(ihhalo,iihhalo[ind])
+            vols   = np.append(vols,ivols)
+
     lbox = pow(volume,1./3.)
     print('sn={}, Box side (Mpc/h) ={}'.format(sn,lbox))
+
+    # Find the bin each halo mass belongs to
+    imass = ((np.copy(mhhalo)-mmin)/(mmax-mmin)*nbin).astype(int)

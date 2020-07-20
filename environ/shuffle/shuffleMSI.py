@@ -8,15 +8,56 @@ from Cosmology import *
 
 # Functions
 
-def add2sat(pos,gtype,mult=1):
+def add2sat(xgal,ygal,zgal,gtype,add=True):
     '''
-    Add (mult=1) or remove (mult=-1) the position of the central to the satellites
+    Add or remove the position of the central to the satellites
     '''
-    last = pos[0]
-    for i in range(len(pos)):
-        if gtype[i]:
-            #here: gtype working as expected?
+    xlast = xgal[0]
+    ylast = ygal[0]
+    zlast = zgal[0]
 
+    for i in range(len(xgal)):
+        if gtype[i]:
+            if (add):
+                xgal[i] = xgal[i] + xlast
+                ygal[i] = ygal[i] + ylast
+                zgal[i] = zgal[i] + zlast
+            else:
+                xgal[i] = xgal[i] - xlast
+                ygal[i] = ygal[i] - ylast
+                zgal[i] = zgal[i] - zlast
+        else:
+            xlast = xgal[0]
+            ylast = ygal[0]
+            zlast = zgal[0]
+
+
+def correct_periodic(xgal,ygal,zgal,gtype,lbox,halfbox=False):
+    '''
+    Correct for peridic boundary conditions
+    '''
+    lbox2 = lbox/2.
+    
+    for arr in [xgal,ygal,zgal]:
+        if halfbox:
+            ind = np.where((arr > lbox2) & (gtype > 0))
+            arr[ind] = arr[ind] - lbox
+
+            ind = np.where((arr < -lbox2) & (gtype > 0))
+            arr[ind] = arr[ind] + lbox
+        else:
+            ind = np.where((arr >= lbox) & (gtype > 0))
+            arr[ind] = arr[ind] - lbox
+
+            ind = np.where((arr < 0) & (gtype > 0))
+            arr[ind] = arr[ind] + lbox
+
+
+def mhhalo2sat(mhhalo,gtype):
+    '''
+    Assign the co 
+    '''
+##here
 ############################################
 
 Testing = True
@@ -35,7 +76,8 @@ model = 'gp19/'
 
 ############################################
 
-nbin, mmin, mmax = 70.,9.,16.
+nbin = 70
+mmin, mmax = 9., 16.
 
 for iz, sn in enumerate(sn_list):
     volume = 0. ; iifil = -1
@@ -92,5 +134,40 @@ for iz, sn in enumerate(sn_list):
     lbox = pow(volume,1./3.)
     print('sn={}, Box side (Mpc/h) ={}'.format(sn,lbox))
 
+    # Initialise arrays to contain shuffled properties
+    s_xgal = np.copy(xgal)
+    s_ygal = np.copy(ygal)
+    s_zgal = np.copy(zgal)
+    s_mhhalo = np.copy(mhhalo)
+
     # Find the bin each halo mass belongs to
     imass = ((np.copy(mhhalo)-mmin)/(mmax-mmin)*nbin).astype(int)
+
+    # Change the position of the satellites to be relative to the halo
+    add2sat(xgal,ygal,zgal,gtype,add=False)
+
+    # Correct for periocid boundary conditions (for satellites)
+    correct_periodic(xgal,ygal,zgal,gtype,lbox,halfbox=False) 
+
+    # Shuffle the centrals in each halo mass bin
+    for i in range(nbin):
+        # Select all central galaxies in the halo mass bin
+        ind = np.where((gtype == 0) & (i == imass))
+        if (np.shape(ind)[1] < 1): continue
+
+        # Get shuffled indexes
+        ind_shuffle = np.copy(ind)
+        np.random.shuffle(ind_shuffle)
+
+        # Reassigned properties
+        s_xgal[ind] = xgal[ind_shuffle]
+        s_ygal[ind] = ygal[ind_shuffle]
+        s_zgal[ind] = zgal[ind_shuffle]
+        s_mhhalo[ind] = mhhalo[ind_shuffle]
+
+    # Add the central position
+    add2sat(s_xgal,s_ygal,s_zgal,gtype,add=True)
+
+    # Change the mass of the host halo for the satellites
+    mhhalo2sat(s_mhhalo,gtype)
+

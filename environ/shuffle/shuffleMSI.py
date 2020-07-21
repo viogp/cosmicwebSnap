@@ -17,9 +17,9 @@ def add2sat(xgal,ygal,zgal,gtype,add=True):
     zlast = zgal[0]
 
     for i in range(len(xgal)):
-        if gtype[i]:
+        if (gtype[i] > 0):
             if (add):
-                xgal[i] = xgal[i] + xlast
+                xgal[i] = xgal[i] + xlast 
                 ygal[i] = ygal[i] + ylast
                 zgal[i] = zgal[i] + zlast
             else:
@@ -27,14 +27,14 @@ def add2sat(xgal,ygal,zgal,gtype,add=True):
                 ygal[i] = ygal[i] - ylast
                 zgal[i] = zgal[i] - zlast
         else:
-            xlast = xgal[0]
-            ylast = ygal[0]
-            zlast = zgal[0]
-
+            xlast = xgal[i]
+            ylast = ygal[i]
+            zlast = zgal[i]
+        
 
 def correct_periodic(xgal,ygal,zgal,gtype,lbox,halfbox=False):
     '''
-    Correct for peridic boundary conditions
+    Correct satellites for periodic boundary conditions
     '''
     lbox2 = lbox/2.
     
@@ -52,12 +52,18 @@ def correct_periodic(xgal,ygal,zgal,gtype,lbox,halfbox=False):
             ind = np.where((arr < 0) & (gtype > 0))
             arr[ind] = arr[ind] + lbox
 
+def mhhalo2sat(mh,gtype):
+    '''
+    Assign the new halo mass to the satellite galaxies 
+    '''
+    mhlast = mh[0]
 
-def mhhalo2sat(mhhalo,gtype):
-    '''
-    Assign the co 
-    '''
-##here
+    for i in range(len(mh)):
+        if (gtype[i] > 0):
+            mh[i] = mhlast
+        else:
+            mhlast = mh[i]
+
 ############################################
 
 Testing = True
@@ -101,8 +107,8 @@ for iz, sn in enumerate(sn_list):
         izgal   = group['zgal'][:]
         imhhalo = np.log10(group['mhhalo'][:])   # log10(M/Msun/h)
         igtype  = group['type'][:] # 0= Centrals; 1,2= Satellites
-        ijm     = np.repeat(tjm,tngals) 
-        iihhalo = group['ihhalo'][:] 
+        ijm     = np.repeat(tjm,tngals) # tree index 
+        iihhalo = group['ihhalo'][:]    # dhalo index within a tree
         
         f.close()
 
@@ -134,6 +140,13 @@ for iz, sn in enumerate(sn_list):
     lbox = pow(volume,1./3.)
     print('sn={}, Box side (Mpc/h) ={}'.format(sn,lbox))
 
+    # Change the position of the satellites to be relative to the halo
+    add2sat(xgal,ygal,zgal,gtype,add=False)
+
+    # Correct for periocid boundary conditions (for satellites)
+    lbox = 500. #here
+    correct_periodic(xgal,ygal,zgal,gtype,lbox,halfbox=True) 
+
     # Initialise arrays to contain shuffled properties
     s_xgal = np.copy(xgal)
     s_ygal = np.copy(ygal)
@@ -143,17 +156,11 @@ for iz, sn in enumerate(sn_list):
     # Find the bin each halo mass belongs to
     imass = ((np.copy(mhhalo)-mmin)/(mmax-mmin)*nbin).astype(int)
 
-    # Change the position of the satellites to be relative to the halo
-    add2sat(xgal,ygal,zgal,gtype,add=False)
-
-    # Correct for periocid boundary conditions (for satellites)
-    correct_periodic(xgal,ygal,zgal,gtype,lbox,halfbox=False) 
-
     # Shuffle the centrals in each halo mass bin
     for i in range(nbin):
         # Select all central galaxies in the halo mass bin
-        ind = np.where((gtype == 0) & (i == imass))
-        if (np.shape(ind)[1] < 1): continue
+        ind = np.where((gtype == 0) & (i == imass))[0]
+        if (len(ind) < 1): continue
 
         # Get shuffled indexes
         ind_shuffle = np.copy(ind)
@@ -171,3 +178,5 @@ for iz, sn in enumerate(sn_list):
     # Change the mass of the host halo for the satellites
     mhhalo2sat(s_mhhalo,gtype)
 
+    # Correct satellites again for periodic boundaries
+    correct_periodic(s_xgal,s_ygal,s_zgal,gtype,lbox,halfbox=False) 

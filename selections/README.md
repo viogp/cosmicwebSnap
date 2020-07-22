@@ -4,6 +4,8 @@
 
 **elg_selections.py** Create the environment input for ELGs: ascii tables with x,y,z and some other galactic properties.
 
+**shuffled_elgs.py** Create the shuffled environment input for ELGs, modifying the elg_selections.py to consider the files output from ../environ/shuffle/shuffleMSI.py
+
 **gsmf_files.py** Generate files with the GSMF (unrelated to the environment study).
 
 Directories:

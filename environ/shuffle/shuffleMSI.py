@@ -5,12 +5,6 @@ import os.path, sys
 import h5py
 import numpy as np
 from Cosmology import *
-from Corrfunc.theory.xi import xi # For test plot
-import matplotlib ; matplotlib.use('Agg')
-from matplotlib import pyplot as plt 
-import matplotlib.gridspec as gridspec 
-import mpl_style 
-plt.style.use(mpl_style.style1)
 
 # Functions
 
@@ -172,7 +166,7 @@ for iz, sn in enumerate(sn_list):
         # Get shuffled indexes
         ind_shuffle = np.copy(ind)
         np.random.shuffle(ind_shuffle)
-
+        
         # Reassigned properties
         s_xgal[ind] = s_xgal[ind_shuffle]
         s_ygal[ind] = s_ygal[ind_shuffle]
@@ -187,6 +181,7 @@ for iz, sn in enumerate(sn_list):
 
     # Correct satellites again for periodic boundaries
     correct_periodic(s_xgal,s_ygal,s_zgal,gtype,lbox,halfbox=False) 
+    print('Length xgal - length s_gal = {}'.format(len(xgal)-len(s_xgal)))
 
     # Save the shuffled information into a file
     outff = path+model+'iz'+sn+'/shuffled.hdf5'
@@ -196,6 +191,10 @@ for iz, sn in enumerate(sn_list):
     hf.create_dataset('jm',data=jm)
     hf.create_dataset('ihhalo',data=ihhalo)
     hf.create_dataset('gtype',data=gtype)
+    hf.create_dataset('xgal',data=xgal)
+    hf.create_dataset('ygal',data=ygal)
+    hf.create_dataset('zgal',data=zgal)
+    hf.create_dataset('mhhalo',data=mhhalo)
     hf.create_dataset('s_xgal',data=s_xgal)
     hf.create_dataset('s_ygal',data=s_ygal)
     hf.create_dataset('s_zgal',data=s_zgal)
@@ -203,52 +202,3 @@ for iz, sn in enumerate(sn_list):
     hf.close()
 
     print('Output: {}'.format(outff))
-
-    # Plot to test the shuffling
-    nd = 3.16e-4   # Number density cut
-    s_mhhalo = np.sort(s_mhhalo)[::-1] # Sort in reverse order
-    mcut = s_mhhalo[int(nd*lbox**3)]
-    print('Mcut for plot ={}'.format(mcut))
-
-    mask = mhhalo>mcut
-    x1 = xgal[mask]
-    y1 = ygal[mask]
-    z1 = zgal[mask]
-
-    mask = s_mhhalo>mcut
-    x2 = s_xgal[mask]
-    y2 = s_ygal[mask]
-    z2 = s_zgal[mask]
-
-    rbins = np.logspace(-2.,2.,40)
-    rbins_mid = rbins[:-1] + (rbins[1]-rbins[0])/2.
-
-    nthreads = 4
-    xi1_cf = xi(lbox, nthreads, rbins, x1, y1, z1)
-    xi2_cf = xi(lbox, nthreads, rbins, x2, y2, z2)
-    ratio = xi1_cf['xi']/xi2_cf['xi']
-    #print('Clustering ratios = {}'.format(ratio))
-
-    # Plot the clustering as a test
-    fig, ax0 = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
-    gs = gridspec.GridSpec(2, 1)
-    gs.update(hspace=0.0)
-    ax = plt.subplot(gs[0,0])
-    ax2 = plt.subplot(gs[1,0])
-
-    ax.plot(np.log10(rbins_mid), np.log10(xi1_cf['xi']),label='nd='+str(nd))
-    ax.plot(np.log10(rbins_mid), np.log10(xi2_cf['xi']),label='Shuffle')
-    ax.legend(loc='best',frameon=False)
-                                                                                 
-    ax2.plot([-3,3], [1,1], color='k',ls=':',linewidth=1)
-    ax2.plot(np.log10(rbins_mid), ratio)
-
-    ax.set_xlim([-1.,1.5]) ; ax.set_xlim([-2.,3.5])
-    ax2.set_xlim([-1.,1.5]) ; ax2.set_ylim([0.8,1.2])
-    ax.set_ylabel(r'$\rm log(\xi(r))$')
-    ax2.set_ylabel(r'$\rm log(r/h^{-1}Mpc$')
-    ax2.set_ylabel(r'$\rm Ratios$')
-
-    plotff = path+model+'iz'+sn+'/shuffled.pdf'
-    plt.savefig(plotff,bbox_inches='tight')
-    print('Plot at {}'.format(plotff))

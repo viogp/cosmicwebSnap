@@ -21,13 +21,13 @@ if Testing:
     sn_list = ['39']
 
 #############################
-path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+path = '/cosma6/data/dp004/dc-gonz3/Galform_Out/v2.7.0/stable/MillGas/'
 model = 'gp19/'
 
 line = 'OII3727' ; lline = '[OII]'
 ############################################
 # Path to mass cuts
-ndpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
+ndpath = '/cosma6/data/dp004/dc-gonz3/lines/cosmicweb/selections/'
 
 # Generate output files with a header
 for iz, sn in enumerate(sn_list):
@@ -44,8 +44,20 @@ for iz, sn in enumerate(sn_list):
 for iz, sn in enumerate(sn_list):
     surveys = [surveys1[iz],surveys2[iz]]
 
+    # Read the shuffled MS-W7 for this snapshot
+    hf = h5py.File(path+model+'iz'+sn+'/shuffled.hdf5','r')
+    s_vols   = hf['vols'][:]
+    s_jm     = hf['jm'][:]
+    s_ihhalo = hf['ihhalo'][:]
+    s_xgal = hf['s_xgal'][:]
+    s_ygal = hf['s_ygal'][:]
+    s_zgal = hf['s_zgal'][:]
+    s_mhhalo = hf['s_mhhalo'][:]
+    hf.close()
+
     volume = 0.
     for ivol in range(nvol):
+        ###here: somewhere to reduce arrays for the given volume
         gfile = path+model+'iz'+sn+'/ivol'+str(ivol)+'/galaxies.hdf5'
         if (os.path.isfile(gfile)):        
             # Get some of the model constants
@@ -56,6 +68,10 @@ for iz, sn in enumerate(sn_list):
             omega0 = group['omega0'][()] ; omegab = group['omegab'][()]
     
             group = f['Output001']
+            tjm = group['Trees/jm'][:] 
+            tngals = group['Trees/ngals'][:]
+            jm     = np.repeat(tjm,tngals) 
+            iihhalo = group['ihhalo'][:]  
             zz     = group['redshift'][()]
             set_cosmology(omega0=omega0,omegab=omegab,\
                               lambda0=lambda0,h0=h0,\
@@ -63,14 +79,10 @@ for iz, sn in enumerate(sn_list):
                               include_radiation=False)
             tomag = band_corrected_distance_modulus(zz)
     
-            xgal   = group['xgal'][:]   # Mpc/h
-            ygal   = group['ygal'][:]
-            zgal   = group['zgal'][:]
             vxgal  = group['vxgal'][:]*(1.+zz)/H(zz)  # km/s
             vygal  = group['vygal'][:]*(1.+zz)/H(zz)
             vzgal  = group['vzgal'][:]*(1.+zz)/H(zz)
     
-            mhhalo = group['mhhalo'][:]   # Msun/h
             gtype  = group['type'][:] # 0= Centrals; 1,2= Satellites
     
             mdisk = group['mstars_disk'][:] # Msun/h

@@ -66,10 +66,10 @@ def mhhalo2sat(mh,gtype):
 
 ############################################
 
-Testing = False
+Testing = True
 
 nvol = 64
-sn_list = ['39','41']
+sn_list = ['39','41','61']
 
 if Testing:
     nvol = 2
@@ -90,6 +90,7 @@ for iz, sn in enumerate(sn_list):
     volume = 0. ; iifil = -1
     for ivol in range(nvol):
         gfile = path+model+'iz'+sn+'/ivol'+str(ivol)+'/galaxies.hdf5'
+
         if (not os.path.isfile(gfile)):
             continue
         iifil += 1
@@ -102,6 +103,10 @@ for iz, sn in enumerate(sn_list):
         vol1 = f['Parameters/volume'][()] ; volume = volume + vol1
         tjm = group['Trees/jm'][:]
         tngals = group['Trees/ngals'][:] 
+        mtot = group['mstars_disk'][:] + group['mstars_bulge'][:]
+        imgal = np.zeros(len(mtot)) ; imgal.fill(-999.) 
+        ind = np.where(mtot>0.)  
+        imgal[ind] = np.log10(mtot[ind])
 
         ixgal   = group['xgal'][:]   # Mpc/h
         iygal   = group['ygal'][:]
@@ -109,33 +114,35 @@ for iz, sn in enumerate(sn_list):
         imhhalo = np.log10(group['mhhalo'][:])   # log10(M/Msun/h)
         igtype  = group['type'][:] # 0= Centrals; 1,2= Satellites
         ijm     = np.repeat(tjm,tngals) # tree index 
-        iihhalo = group['ihhalo'][:]    # dhalo index within a tree
-        
+        iihhalo = group['ihhalo'][:]    # dhalo index within a tree        
+
         f.close()
 
         # Array with subvolumes
         ivols = np.zeros(shape=len(ixgal),dtype=int) ; ivols.fill(ivol)
 
-        # Sort haloes within one subvolume
-        ind = np.lexsort((igtype,iihhalo,ijm)) # Sort by jm, then by ihhalo, then by gtype
+        # Sort by jm, then by ihhalo, then by gtype
+        indsort = np.lexsort((igtype,iihhalo,ijm))
 
         if (iifil==0):
-            xgal   = ixgal[ind]
-            ygal   = iygal[ind]
-            zgal   = izgal[ind]
-            mhhalo = imhhalo[ind]
-            gtype  = igtype[ind]
-            jm     = ijm[ind]
-            ihhalo = iihhalo[ind]
+            xgal   = ixgal[indsort]
+            ygal   = iygal[indsort]
+            zgal   = izgal[indsort]
+            mhhalo = imhhalo[indsort]
+            gtype  = igtype[indsort]
+            jm     = ijm[indsort]
+            ihhalo = iihhalo[indsort]
+            mgal   = imgal[indsort]
             vols   = ivols
         else:
-            xgal   = np.append(xgal,ixgal[ind])
-            ygal   = np.append(ygal,iygal[ind])
-            zgal   = np.append(zgal,izgal[ind])
-            mhhalo = np.append(mhhalo,imhhalo[ind])
-            gtype  = np.append(gtype,igtype[ind])
-            jm     = np.append(jm,ijm[ind])
-            ihhalo = np.append(ihhalo,iihhalo[ind])
+            xgal   = np.append(xgal,ixgal[indsort])
+            ygal   = np.append(ygal,iygal[indsort])
+            zgal   = np.append(zgal,izgal[indsort])
+            mhhalo = np.append(mhhalo,imhhalo[indsort])
+            gtype  = np.append(gtype,igtype[indsort])
+            jm     = np.append(jm,ijm[indsort])
+            ihhalo = np.append(ihhalo,iihhalo[indsort])
+            mgal   = np.append(mgal,imgal[indsort])
             vols   = np.append(vols,ivols)
 
     lbox = pow(volume,1./3.)
@@ -147,6 +154,7 @@ for iz, sn in enumerate(sn_list):
     s_ygal = np.copy(ygal)
     s_zgal = np.copy(zgal)
     s_mhhalo = np.copy(mhhalo)
+    s_mgal  = np.copy(mgal)
 
     # Change the position of the satellites to be relative to the halo
     add2sat(s_xgal,s_ygal,s_zgal,gtype,add=False)
@@ -166,22 +174,22 @@ for iz, sn in enumerate(sn_list):
         # Get shuffled indexes
         ind_shuffle = np.copy(ind)
         np.random.shuffle(ind_shuffle)
-        
+
         # Reassigned properties
-        s_xgal[ind] = s_xgal[ind_shuffle]
-        s_ygal[ind] = s_ygal[ind_shuffle]
-        s_zgal[ind] = s_zgal[ind_shuffle]
+        s_xgal[ind]   = s_xgal[ind_shuffle]
+        s_ygal[ind]   = s_ygal[ind_shuffle]
+        s_zgal[ind]   = s_zgal[ind_shuffle]
         s_mhhalo[ind] = s_mhhalo[ind_shuffle]
 
     # Add the central position
     add2sat(s_xgal,s_ygal,s_zgal,gtype,add=True)
 
-    # Change the mass of the host halo for the satellites
-    mhhalo2sat(s_mhhalo,gtype)
-
     # Correct satellites again for periodic boundaries
     correct_periodic(s_xgal,s_ygal,s_zgal,gtype,lbox,halfbox=False) 
     print('Length xgal - length s_gal = {}'.format(len(xgal)-len(s_xgal)))
+
+    # Change the mass of the host halo for the satellites
+    mhhalo2sat(s_mhhalo,gtype) 
 
     # Save the shuffled information into a file
     outff = path+model+'iz'+sn+'/shuffled.hdf5'
@@ -195,6 +203,7 @@ for iz, sn in enumerate(sn_list):
     hf.create_dataset('ygal',data=ygal)
     hf.create_dataset('zgal',data=zgal)
     hf.create_dataset('mhhalo',data=mhhalo)
+    hf.create_dataset('mgal',data=mgal)
     hf.create_dataset('s_xgal',data=s_xgal)
     hf.create_dataset('s_ygal',data=s_ygal)
     hf.create_dataset('s_zgal',data=s_zgal)

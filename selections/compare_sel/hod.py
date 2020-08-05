@@ -14,7 +14,7 @@ cuts = ['lo2']
 verbose = False
 
 # Paths
-inpath = '/cosma5/data/durham/violeta/lines/cosmicweb/'
+inpath = '/cosma6/data/dp004/dc-gonz3/lines/cosmicweb/'
 ndpath = inpath+'selections/'
 hodpath = inpath+'hod/'
 

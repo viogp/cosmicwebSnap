@@ -1,10 +1,11 @@
 #! /bin/tcsh -f
 
-set exec = 'shuffleMSI.py'
+#set exec = shuffled_elgs.py
+set exec = elg_selections.py
 
 set Testing = False
 
-set nom = 'shuffle'
+set nom = selections
 set logpath = /cosma6/data/dp004/dc-gonz3/Junk/
 set logname = ${logpath}/props_$nom.%A.%a.log
 set job_file = ${logpath}/${nom}.job

@@ -21,13 +21,13 @@ if Testing:
     sn_list = ['39']
 
 #############################
-path = '/cosma5/data/durham/violeta/Galform_Out/v2.7.0/stable/MillGas/'
+path = '/cosma6/data/dp004/dc-gonz3/Galform_Out/v2.7.0/stable/MillGas/'
 model = 'gp19/'
 
 line = 'OII3727' ; lline = '[OII]'
 ############################################
 # Path to mass cuts
-ndpath = '/cosma5/data/durham/violeta/lines/cosmicweb/selections/'
+ndpath = '/cosma6/data/dp004/dc-gonz3/lines/cosmicweb/selections/'
 
 # Generate output files with a header
 for iz, sn in enumerate(sn_list):

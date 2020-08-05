@@ -11,10 +11,10 @@ import matplotlib.gridspec as gridspec
 import mpl_style 
 plt.style.use(mpl_style.style1)
 
-Testing = True
+Testing = False
 
 sn_list = ['39','41']
-nd = 5.e-3   # Number density cut
+nd = 0.01   # Number density cut
 lbox = 500.
 
 if Testing:
@@ -37,27 +37,32 @@ for iz, sn in enumerate(sn_list):
     xgal = hf['xgal'][:]
     ygal = hf['ygal'][:]
     zgal = hf['zgal'][:]
-    mhhalo = hf['mhhalo'][:]
+    mgal = hf['mgal'][:]
     s_xgal = hf['s_xgal'][:]
     s_ygal = hf['s_ygal'][:]
     s_zgal = hf['s_zgal'][:]
-    s_mhhalo = hf['s_mhhalo'][:]
     hf.close()
 
     # Plot to test the shuffling
-    mass2cut = np.sort(s_mhhalo)[::-1] # Sort in reverse order
+    mass2cut = np.sort(mgal)[::-1] # Sort in reverse order
     mcut = mass2cut[int(nd*lbox**3)]
     print('Mcut for plot ={} ({} galaxies)'.format(mcut,int(nd*lbox**3)))
 
-    mask = mhhalo>mcut
+    mask = (mgal>mcut)
     x1 = xgal[mask]
     y1 = ygal[mask]
     z1 = zgal[mask]
 
-    mask = s_mhhalo>mcut
     x2 = s_xgal[mask]
     y2 = s_ygal[mask]
     z2 = s_zgal[mask]
+
+    # Plot the clustering as a test
+    fig, ax0 = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
+    gs = gridspec.GridSpec(2, 1)
+    gs.update(wspace=0., hspace=0.)
+    ax = plt.subplot(gs[0,0])
+    ax2 = plt.subplot(gs[1,0],sharex=ax)
 
     rbins = np.logspace(-2.,2.,40)
     rbins_mid = rbins[:-1] + (rbins[1]-rbins[0])/2.
@@ -68,27 +73,18 @@ for iz, sn in enumerate(sn_list):
     ratios = xi1_cf['xi']/xi2_cf['xi']
     print('Clustering ratios = {}'.format(ratios))
 
-    # Plot the clustering as a test
-    fig, ax0 = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
-    gs = gridspec.GridSpec(2, 1)
-    gs.update(wspace=0., hspace=0.)
-
-    ax = plt.subplot(gs[0,0])
     ax.set_xlim([-1.,1.5]) ; ax.set_xlim([-2.,3.5])    
     ax.set_ylabel(r'$\rm log_{10}\xi(r)$')
-
-    ax2 = plt.subplot(gs[1,0],sharex=ax)
-    ax2.set_ylim([-2.,2.])
-    ax2.set_ylabel(r'$\rm log(r/h^{-1}Mpc$')
-    ax2.set_ylabel(r'$\rm Ratios$')
-
     ax.plot(np.log10(rbins_mid), np.log10(xi1_cf['xi']),label='nd='+str(nd))
     ax.plot(np.log10(rbins_mid), np.log10(xi2_cf['xi']),label='Shuffled')
-    ax.legend(loc='best',frameon=False)
-                                                                                 
+    
+    ax2.set_ylim([0.5,1.5])
+    ax2.set_ylabel(r'$\rm log(r/h^{-1}Mpc$')
+    ax2.set_ylabel(r'$\rm Ratios$')
     ax2.plot([-3,3], [1,1], color='k',ls=':',linewidth=1)
     ax2.plot(np.log10(rbins_mid), ratios)
 
+    ax.legend(loc='best',frameon=False)
     plotff = path+model+'iz'+sn+'/shuffled.pdf'
     plt.savefig(plotff,bbox_inches='tight')
     print('Plot at {}'.format(plotff))

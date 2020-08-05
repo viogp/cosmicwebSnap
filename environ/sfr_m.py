@@ -14,7 +14,7 @@ propname = 'sfr_m'
 
 ##########################################
 model = 'gp19/'
-path = '/cosma5/data/durham/violeta/lines/cosmicweb/'
+path = '/cosma6/data/dp004/dc-gonz3/lines/cosmicweb/'
 proppath = path+'selections/'+model+'ascii_files/'
 hodpath = path+'hod/'
 volume = np.power(500.,3.)

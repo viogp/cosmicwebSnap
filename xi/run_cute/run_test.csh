@@ -1,7 +1,7 @@
 #!/bin/tcsh
 
 # ifort reformat125.f90 -L/gpfs/data/violeta/f90lib  -lvio
-set exec = /cosma5/data/durham/violeta/CUTE/CUTE_box/CUTE_box
+set exec = /cosma6/data/dp004/dc-gonz3/CUTE/CUTE_box/CUTE_box
 
 limit datasize unlimited
 limit stacksize unlimited

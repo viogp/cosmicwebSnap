@@ -1,7 +1,7 @@
 #! /bin/tcsh -f
 
-#set exec = shuffled_elgs.py
-set exec = elg_selections.py
+set exec = shuffled_elgs.py
+#set exec = elg_selections.py
 
 set Testing = False
 

@@ -1,6 +1,10 @@
 #! /bin/tcsh -f
 
-set exec = 'shuffleMSI.py'
+#set exec = shuffleMSI.py
+#set exec = crosscorr.py
+#set exec = lo2_lf.py
+#set exec = sfr_m.py
+set exec = crosscorr.py
 
 set Testing = False
 

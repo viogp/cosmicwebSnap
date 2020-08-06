@@ -11,7 +11,7 @@ set testing = false
 echo "Running CUTE with testing =" $testing
 
 set jobname    = cute
-set logname = /cosma5/data/durham/$user/Junk/$jobname.%A.%a.log
+set logname = /cosma6/data/dp004/dc-gonz3/Junk/$jobname.%A.%a.log
 
 # Test file: /cosma5/data/durham/violeta/CUTE/CUTE_box/test/params.txt
 set file_list = (`awk '{print $1}' in.txt`)
@@ -46,9 +46,9 @@ foreach file ($file_list)
 #SBATCH --ntasks 1
 #SBATCH -J ${jobname}
 #SBATCH -o ${logname}
-#SBATCH -p cordelia
-#SBATCH -A durham
-#SBATCH -t 72:00:00
+#SBATCH -p cosma6
+#SBATCH -A dp004
+#SBATCH -t 2:00:00
 #
 # Set parameters
 set parfil = ${parfil}

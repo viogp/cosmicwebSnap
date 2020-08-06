@@ -19,7 +19,7 @@ STEPS:
    > ps ax | grep get_env
 
 4. Copy into cosma the environment files:
-   scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /cosma5/data/durham/violeta/lines/cosmicweb/env_files
+   scp -r vgonzalez@taurus.ft.uam.es:/home2/vgonzalez/cosmicweb/env_files/ /cosma6/data/dp004/dc-gonz3/lines/cosmicweb/env_files
 
 ## 'cosmicweb' folder at taurus ##
 

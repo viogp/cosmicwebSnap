@@ -35,9 +35,9 @@ shist = sbins + ds*0.5
 ylabels = np.array([0,1,2,3])
 elabels = ['Voids','Sheets','Filaments','Knots']
 
-#cols = ['k','greenyellow','limegreen','forestgreen','darkolivegreen']
-cols = ['k','#e7d4e8','#7fbf7b','#af8dc3','#1b7837']
+cols = ['k','grey','#e7d4e8','r','#7fbf7b','b','#af8dc3','c','#1b7837','m']
 lwidth = [4,2.5,2.5,2.5,2.5] 
+slstyle = [':'] 
 
 surveys1 = ['DEEP2','VVDS-DEEP']
 surveys2 = ['DESI','eBOSS-SGC']
@@ -117,23 +117,51 @@ for cw in cw_list:
                 if Testing: print('Jumping {} or {}'.format(efile,pfile))
                 continue
 
+            # Original
+            oend = 'elgcut_'+survey+'_sn'+sn+'.dat'
+            oefile = epath+oend
+            opfile = proppath+oend
+
+            if (not os.path.isfile(oefile) or not os.path.isfile(opfile)):
+                if Testing: print('Jumping {} or {}'.format(oefile,opfile))
+                continue
+            wcl_line = subprocess.check_output(["wc", "-l",oefile])
+            wcl = int(wcl_line.split()[0])
+            pcl_line = subprocess.check_output(["wc", "-l",opfile])
+            pcl = int(pcl_line.split()[0])
+            if (wcl <= 1 or pcl <= 1):
+                if Testing: print('Jumping {} or {}'.format(oefile,opfile))
+                continue
+
             # Read property file
             # xgal 0, ygal 1, zgal 2 (Mpc/h), vxgal 3,vygal 4,vzgal 5 (Km/s),
             # log10(massh) 6, log10(mass/Msun/h) 7, log10(sfr/Msun/h/Gyr) 8, 
             # log10(lum/h^-2 erg/s) 9, log10(lum_ext/h^-2 erg/s) 10,
             # type 11 (0= Centrals; 1,2= Satellites) 
             px, py, pz, mass, sfr = np.loadtxt(pfile, usecols=(0,1,2,7,8), unpack=True)
+            opx, opy, opz, omass, osfr = np.loadtxt(opfile, usecols=(0,1,2,7,8), unpack=True)
 
 
             # Total values: GSMF
             H, bins_edges = np.histogram(mass,bins=np.append(mbins,mmax))
             gsmf = H/volume/dm  # In Mpc^3/h^3 
 
+            H, bins_edges = np.histogram(omass,bins=np.append(mbins,mmax))
+            ogsmf = H/volume/dm  # In Mpc^3/h^3 
+
             # Total values: sSFR
             H, bins_edges = np.histogram(sfr,bins=np.append(sbins,smax))
             sfrf = H/volume/ds  # In Mpc^3/h^3 
 
+            H, bins_edges = np.histogram(osfr,bins=np.append(sbins,smax))
+            osfrf = H/volume/ds  # In Mpc^3/h^3 
+
             # Total: sSFR-GSMF
+            H, xedges, yedges = np.histogram2d(osfr,omass,                     
+                                               bins=[np.append(sbins,smax),    
+                                                     np.append(mbins,mmax)])
+            osmf = H/volume/dm/ds
+
             H, xedges, yedges = np.histogram2d(sfr,mass,                     
                                                bins=[np.append(sbins,smax),    
                                                      np.append(mbins,mmax)])
@@ -142,8 +170,8 @@ for cw in cw_list:
             # Plot SMF vs SFR                                                  
             matplotlib.rcParams['contour.negative_linestyle'] = '-'      
             zz = np.zeros(shape=(len(shist),len(mhist))) ; zz.fill(-999.)      
-            ind = np.where(smf>0.)                                             
-            zz[ind] = np.log10(smf[ind])                                       
+            ind = np.where(osmf>0.)                                             
+            zz[ind] = np.log10(osmf[ind])                                       
                                                                                    
             ind = np.where(zz>-999.)                                           
             if (np.shape(ind)[1]>1):                                           
@@ -151,16 +179,35 @@ for cw in cw_list:
                 cs = ax.contour(xx, yy, zz, levels=al,
                                 colors=cols[0],
                                 linewidths=lwidth[0])                          
+
+            matplotlib.rcParams['contour.negative_linestyle'] = ':'      
+            zz = np.zeros(shape=(len(shist),len(mhist))) ; zz.fill(-999.)      
+            ind = np.where(smf>0.)                                             
+            zz[ind] = np.log10(smf[ind])                                       
                                                                                    
-            # GSMF                                                             
-            ind = np.where(gsmf>0.) ; y = np.log10(gsmf[ind])
+            ind = np.where(zz>-999.)                                           
+            if (np.shape(ind)[1]>1):                                           
+                xx,yy = np.meshgrid(mbins,sbins) # Contours
+                cs = ax.contour(xx, yy, zz, levels=al,
+                                colors=cols[1],
+                                linewidths=lwidth[-1])                          
+                                                                                   
+            # GSMF original                                              
+            ind = np.where(ogsmf>0.) ; y = np.log10(ogsmf[ind])
             x = mhist[ind] 
             ind = np.where(y < 0.)                                             
             axm.plot(x[ind],y[ind],color=cols[0],
                      linestyle='-',linewidth=lwidth[0])
 
-            # SFRF                                                             
-            ind = np.where(sfrf>0.) ; x = np.log10(sfrf[ind])
+            # GSMF shuffled
+            ind = np.where(gsmf>0.) ; y = np.log10(gsmf[ind])
+            x = mhist[ind] 
+            ind = np.where(y < 0.)                                             
+            axm.plot(x[ind],y[ind],color=cols[1],
+                     linestyle=slstyle[0],linewidth=lwidth[-1])
+
+            # SFRF original                                                    
+            ind = np.where(osfrf>0.) ; x = np.log10(osfrf[ind])
             y = shist[ind] 
             ind = np.where(x < 0.)
             inleg = survey+', z='+zzs[iiz]
@@ -168,7 +215,32 @@ for cw in cw_list:
                      linestyle='-',linewidth=lwidth[0],
                      label=inleg) 
 
+            # SFRF shuffled
+            ind = np.where(sfrf>0.) ; x = np.log10(sfrf[ind])
+            y = shist[ind] 
+            ind = np.where(x < 0.)
+            inleg = 'Shuffled'
+            axs.plot(x[ind],y[ind],color=cols[1],
+                     linestyle=slstyle[0],linewidth=lwidth[-1],
+                     label=inleg) 
+
             # Read the environmental file
+            oxx, oyy, ozz, fenv = np.loadtxt(oefile,unpack=True)
+            oenv = fenv.astype(int)
+
+            # Chech that the coordinates have the same size
+            if ((len(oxx) != len(opx)) or 
+                (len(oyy) != len(opy)) or
+                (len(ozz) != len(opz))):
+                print('[PROBLEM] Different lengths coordinates: {}\n {}\n'.
+                      format(oefile,opfile)) ; continue
+            # Chech that the coordinates are ordered in the same way
+            if ((not np.allclose(oxx,opx,atol=1e-08,equal_nan=True)) or 
+                (not np.allclose(oyy,opy,atol=1e-08,equal_nan=True)) or
+                (not np.allclose(ozz,opz,atol=1e-08,equal_nan=True))):
+                print('[PROBLEM] Files with different coordinates: {}\n {}\n'.
+                      format(oefile,opfile)) ; continue
+
             xx, yy, zz, fenv = np.loadtxt(efile,unpack=True)
             env = fenv.astype(int)
 
@@ -186,7 +258,58 @@ for cw in cw_list:
                       format(efile,pfile)) ; continue
 
             # Loop over type of environment
+            icol=1
             for iie, ienv in enumerate(np.unique(env)):
+                #Originals
+                icol +=1
+                ind = np.where(oenv == ienv)
+                emass = omass[ind]
+                esfr = osfr[ind]
+
+                # Total values: GSMF
+                H, bins_edges = np.histogram(emass,bins=np.append(mbins,mmax))
+                gsmf = H/volume/dm  # In Mpc^3/h^3 
+
+                # Total values: sSFR
+                H, bins_edges = np.histogram(esfr,bins=np.append(sbins,smax))
+                sfrf = H/volume/ds  # In Mpc^3/h^3 
+
+                # Total: sSFR-GSMF
+                H, xedges, yedges = np.histogram2d(esfr,emass,                     
+                                                   bins=[np.append(sbins,smax),    
+                                                         np.append(mbins,mmax)])
+                smf = H/volume/dm/ds
+
+                # Plot SMF vs SFR
+                matplotlib.rcParams['contour.negative_linestyle'] = '-'
+                zz = np.zeros(shape=(len(shist),len(mhist))) ; zz.fill(-999.)      
+                ind = np.where(smf>0.)                                             
+                zz[ind] = np.log10(smf[ind])                                       
+                                                                                   
+                ind = np.where(zz>-999.)                                           
+                if (np.shape(ind)[1]>1):                                           
+                    xx,yy = np.meshgrid(mbins,sbins) # Contours
+                    cs = ax.contour(xx, yy, zz, levels=al,
+                                    colors=cols[icol],
+                                    linewidths=lwidth[iie+1])
+                                                                                   
+                # GSMF                                                             
+                ind = np.where(gsmf>0.)                                  
+                x = mhist[ind] ; y = np.log10(gsmf[ind])                             
+                ind = np.where(y < 0.)                                             
+                axm.plot(x[ind],y[ind],color=cols[icol],
+                         linestyle='-',linewidth=lwidth[iie+1])
+
+                # SFRF                                                             
+                ind = np.where(sfrf>0.)                                  
+                y = shist[ind] ; x = np.log10(sfrf[ind])                             
+                ind = np.where(x < 0.)                                             
+                axs.plot(x[ind],y[ind],color=cols[icol],
+                         linestyle='-',linewidth=lwidth[iie+1],
+                         label=elabels[iie]) 
+
+                ### Shuffled
+                icol +=1
                 ind = np.where(env == ienv)
                 emass = mass[ind]
                 esfr = sfr[ind]
@@ -205,7 +328,8 @@ for cw in cw_list:
                                                          np.append(mbins,mmax)])
                 smf = H/volume/dm/ds
 
-                # Plot SMF vs SFR                                              
+                # Plot SMF vs SFR                                      
+                matplotlib.rcParams['contour.negative_linestyle'] = ':'        
                 zz = np.zeros(shape=(len(shist),len(mhist))) ; zz.fill(-999.)      
                 ind = np.where(smf>0.)                                             
                 zz[ind] = np.log10(smf[ind])                                       
@@ -214,23 +338,23 @@ for cw in cw_list:
                 if (np.shape(ind)[1]>1):                                           
                     xx,yy = np.meshgrid(mbins,sbins) # Contours
                     cs = ax.contour(xx, yy, zz, levels=al,
-                                    colors=cols[iie+1],
-                                    linewidths=lwidth[iie+1])
+                                    colors=cols[icol],
+                                    linewidths=lwidth[-1])
                                                                                    
                 # GSMF                                                             
                 ind = np.where(gsmf>0.)                                  
                 x = mhist[ind] ; y = np.log10(gsmf[ind])                             
                 ind = np.where(y < 0.)                                             
-                axm.plot(x[ind],y[ind],color=cols[iie+1],
-                         linestyle='-',linewidth=lwidth[iie+1])
+                axm.plot(x[ind],y[ind],color=cols[icol],
+                         linestyle=':',linewidth=lwidth[-1])
 
                 # SFRF                                                             
                 ind = np.where(sfrf>0.)                                  
                 y = shist[ind] ; x = np.log10(sfrf[ind])                             
                 ind = np.where(x < 0.)                                             
-                axs.plot(x[ind],y[ind],color=cols[iie+1],
-                         linestyle='-',linewidth=lwidth[iie+1],
-                         label=elabels[iie]) 
+                axs.plot(x[ind],y[ind],color=cols[icol],
+                         linestyle=':',linewidth=lwidth[-1],
+                         label='S_'+elabels[iie]) 
 
             # Legend
             leg = axs.legend(bbox_to_anchor=(1., 1.4),fontsize='small',
@@ -243,6 +367,6 @@ for cw in cw_list:
 
             # Save figure
             plotfile = plotroot+'sfr_m_'+survey+'_sn'+sn+'.pdf'
-            if (Testing): print(plotfile)
             fig.savefig(plotfile)
             plt.close()
+            if (Testing): print(plotfile) ; sys.exit()

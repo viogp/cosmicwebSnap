@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import mpl_style
 plt.style.use(mpl_style.style1)
 
-Testing = False
+Testing = True
 
 model = 'gp19/'
-path = '/cosma5/data/durham/violeta/lines/cosmicweb/'
+path = '/cosma6/data/dp004/dc-gonz3/lines/cosmicweb/'
 ##########################################
 
 # Bins and separation of histograms in the plot
@@ -39,9 +39,10 @@ cw_list = ['Vweb','Pweb']
 nd_list = ['-2.0','-3.0','-4.2']
 
 if Testing:
-    #surveys1 = ['VVDS-DEEP'] ; surveys2 = ['eBOSS-SGC'] ;snap_list = ['41']
-    surveys1 = ['DEEP2'] ; surveys2 = ['DESI'] ;snap_list = ['39']
-    cw_list = ['Vweb'] ; nd_list = ['-4.2']
+    surveys1 = ['VVDS-DEEP'] ; surveys2 = ['eBOSS-SGC'] ;snap_list = ['41']
+    #surveys1 = ['DEEP2'] ; surveys2 = ['DESI'] ; snap_list = ['39']
+    cw_list = ['Pweb'] 
+    #nd_list = ['-4.2']
     
 ##########################################
 # Output fraction summary
@@ -54,7 +55,7 @@ sumfile = open(envsumfile,'a')
 # Loop over the different files
 for cw in cw_list:
     epath = path+'env_files/'+model+cw+'/'
-    
+
     for iis,survey in enumerate(surveys1):
         inleg = ['Mass cut, All','Mass cut, '+survey,'Mass cut, '+surveys2[iis],
                  'SFR cut, All','SFR cut, '+survey,'SFR cut, '+surveys2[iis],

@@ -172,8 +172,8 @@ for iz,zsnap in enumerate(snap_list):
                         ncum[index,:] = ncum[index,:] + H
                 f.close()
 
-    ncum = ncum/dp/volume 
-    ncum_ext = ncum_ext/dp/volume
+    ncum = ncum/dp/volume #This should not be divided by dp
+    ncum_ext = ncum_ext/dp/volume #This should not be divided by dp
     print('Side of the explored box (Mpc/h) = {}'.format(pow(volume,1./3.)))
 
     # Write output
